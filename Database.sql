@@ -36,7 +36,6 @@ CREATE TABLE Invoice
 	invoiceID VARCHAR(30) PRIMARY KEY NOT NULL,
 	userID VARCHAR(30) NOT NULL,
 	veterinaID VARCHAR(30) NOT NULL,
-	datdata VARCHAR(50),
 	total INT,
 	CONSTRAINT PK_userID_2 FOREIGN KEY (userID) REFERENCES Users(userID),
 	CONSTRAINT PK_veterinaID FOREIGN KEY (veterinaID) REFERENCES Veterinarians(veterinaID)
@@ -54,13 +53,11 @@ CREATE TABLE Schedule
 
 CREATE TABLE Feedback 
 (
-	invoiceID VARCHAR(30) PRIMARY KEY NOT NULL,
-	userID VARCHAR(30) NOT NULL,
-	veterinaID VARCHAR(30) NOT NULL,
+	feedbackID VARCHAR(30) NOT NULL,
+	invoiceID VARCHAR(30) NOT NULL,
+	PRIMARY KEY(feedbackID, invoiceID),
 	comment VARCHAR(100),
 	rating FLOAT,
-	CONSTRAINT PK_userID_3 FOREIGN KEY (userID) REFERENCES Users(userID),
-	CONSTRAINT PK_veterinaID_3 FOREIGN KEY (veterinaID) REFERENCES Veterinarians(veterinaID),
 	CONSTRAINT PK_invoiceID FOREIGN KEY (invoiceID) REFERENCES INVOICE(invoiceID)
 );
 
@@ -76,4 +73,13 @@ CREATE TABLE FishInformation
 	CONSTRAINT PK_userID_4 FOREIGN KEY (userID) REFERENCES Users(userID)
 );
 
-DROP TABLE FishInformation
+CREATE TABLE InvoiceDetails
+(
+	invoiceID VARCHAR(30) NOT NULL,
+	serviceID VARCHAR(30) NOT NULL,
+	PRIMARY KEY(serviceID, invoiceID),
+	quantity INT,
+	CONSTRAINT PK_invoiceID_2 FOREIGN KEY (invoiceID) REFERENCES Invoice(invoiceID),
+	CONSTRAINT PK_serviceID FOREIGN KEY (serviceID) REFERENCES Services(serviceID)
+);
+drop table Feedback
