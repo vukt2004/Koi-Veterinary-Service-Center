@@ -37,6 +37,7 @@ CREATE TABLE Invoice
 	userID VARCHAR(30) NOT NULL,
 	veterinaID VARCHAR(30) NOT NULL,
 	total INT,
+	invDate DATE,
 	CONSTRAINT PK_userID_2 FOREIGN KEY (userID) REFERENCES Users(userID),
 	CONSTRAINT PK_veterinaID FOREIGN KEY (veterinaID) REFERENCES Veterinarians(veterinaID)
 );
@@ -82,4 +83,4 @@ CREATE TABLE InvoiceDetails
 	CONSTRAINT PK_invoiceID_2 FOREIGN KEY (invoiceID) REFERENCES Invoice(invoiceID),
 	CONSTRAINT PK_serviceID FOREIGN KEY (serviceID) REFERENCES Services(serviceID)
 );
-drop table Feedback
+
