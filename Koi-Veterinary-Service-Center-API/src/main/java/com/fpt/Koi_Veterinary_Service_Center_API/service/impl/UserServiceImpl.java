@@ -44,7 +44,7 @@ public class UserServiceImpl implements IUserService {
         } else {
             user.setUserID(userRequest.getUserID());
         }
-        Role role = roleRepository.findByTitle(userRequest.getRole()).orElseThrow(() -> new AppException("Role not found"));
+        Role role = roleRepository.findByTitle("CUSTOMER").orElseThrow(() -> new AppException("Role not found"));
         user.setRole(role);
         user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         user.setAddress(userRequest.getAddress());
@@ -159,7 +159,7 @@ public class UserServiceImpl implements IUserService {
         userResponse response = new userResponse();
         User user = userRepository.findByUserID(userRequest.getUserID()).orElseThrow(() -> new AppException("User not found"));
         user.setUserID(userRequest.getUserID());
-        Role role = roleRepository.findByTitle(userRequest.getRole()).orElseThrow(() -> new AppException("Role not found"));
+        Role role = roleRepository.findByTitle("CUSTOMER").orElseThrow(() -> new AppException("Role not found"));
         user.setRole(role);
         user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         user.setAddress(userRequest.getAddress());

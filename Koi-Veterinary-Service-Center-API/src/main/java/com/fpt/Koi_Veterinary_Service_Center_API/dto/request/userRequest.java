@@ -18,8 +18,6 @@ public class userRequest {
     private String email;
     @NotBlank(message = "Empty phone number")
     private String phoneNumber;
-    @NotNull(message = "Empty role")
-    private String role;
     @NotBlank(message = "Empty address")
     private String address;
 }

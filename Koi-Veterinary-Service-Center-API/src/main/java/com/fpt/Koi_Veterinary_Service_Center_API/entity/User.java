@@ -20,7 +20,7 @@ import java.util.Collection;
 @NoArgsConstructor
 public class User implements UserDetails {
     @Id
-    @Column(length = 30, nullable = false)
+    @Column( nullable = false)
     private String userID;
 
     @Column(length = 60, nullable = false)
