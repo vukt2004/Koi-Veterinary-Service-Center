@@ -1,126 +1,106 @@
-USE master
-DROP DATABASE KoiVeterinaryServiceCenter
-GO
-CREATE DATABASE KoiVeterinaryServiceCenter
-USE KoiVeterinaryServiceCenter
-
-CREATE TABLE Roles
-(
-	roleID VARCHAR(30) PRIMARY KEY NOT NULL,
-	title VARCHAR(100)
+-- Table: Roles
+CREATE TABLE Roles (
+    roleID CHAR(1) PRIMARY KEY NOT NULL,
+    title VARCHAR(10)
 );
 
-CREATE TABLE Users
-(
-	userID VARCHAR(30) PRIMARY KEY NOT NULL,
-	password VARCHAR(20) NOT NULL,
-	name NVARCHAR(100),
-	email VARCHAR(50),
-	phoneNumber VARCHAR(10) NOT NULL,
-	roleID VARCHAR(30) NOT NULL,
-	address NVARCHAR(100),
-	CONSTRAINT PK_roleID FOREIGN KEY (roleID) REFERENCES Roles(roleID)
+-- Table: Slots
+CREATE TABLE Slots (
+    slot INT PRIMARY KEY NOT NULL,
+    startTime TIME,
+    endTime TIME
 );
 
-CREATE TABLE Veterinarians
-(
-	veterinaID VARCHAR(30) PRIMARY KEY NOT NULL,
-	rating FLOAT,
-	userID VARCHAR(30) NOT NULL,
-	status VARCHAR(10) NOT NULL,
-	CONSTRAINT PK_userID FOREIGN KEY (userID) REFERENCES Users(userID)
+-- Table: Users
+CREATE TABLE Users (
+    userID VARCHAR(30) PRIMARY KEY NOT NULL,
+    password VARCHAR(20) NOT NULL,
+    name NVARCHAR(100),
+    email VARCHAR(50),
+    phoneNumber VARCHAR(10) NOT NULL,
+    roleID CHAR(1) NOT NULL,
+    address NVARCHAR(100),
+    FOREIGN KEY (roleID) REFERENCES Roles(roleID)
 );
 
-CREATE TABLE Services
-(
-	serviceID VARCHAR(30) PRIMARY KEY NOT NULL,
-	name NVARCHAR(50) NOT NULL,
-	type VARCHAR(50),
-	price FLOAT,
+-- Table: Veterina
+CREATE TABLE Veterina (
+    veterinaID VARCHAR(30) PRIMARY KEY NOT NULL,
+    userID VARCHAR(30) NOT NULL,
+    description NVARCHAR(200),
+    status BIT,
+    FOREIGN KEY (userID) REFERENCES Users(userID)
 );
 
-CREATE TABLE TravelExpenses
-(
-	ExpenseID VARCHAR(30) PRIMARY KEY NOT NULL,
-	ExpenseAmount FLOAT NOT NULL,
-	startLocation VARCHAR(50) NOT NULL, 
-	endLocation VARCHAR(50) NOT NULL,
-	--CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- Table: Fish
+CREATE TABLE Fish (
+    userID VARCHAR(30) NOT NULL,
+    fishID VARCHAR(30) NOT NULL,
+    weight FLOAT,
+    length FLOAT,
+    months INT,
+    description NVARCHAR(100),
+    PRIMARY KEY (userID, fishID),
+    FOREIGN KEY (userID) REFERENCES Users(userID)
 );
 
-CREATE TABLE Orders
-(
-	orderID VARCHAR(30) PRIMARY KEY NOT NULL,
-	serviceID VARCHAR(30) NOT NULL,
-	veterinaID VARCHAR(30) NOT NULL,
-	userID VARCHAR(30) NOT NULL,
-	orderDate DATE,
-	startTime TIME,
-	endTime TIME,
-	CONSTRAINT PK_userID_2 FOREIGN KEY (userID) REFERENCES Users(userID),
-	CONSTRAINT PK_serviceID FOREIGN KEY (serviceID) REFERENCES Services(serviceID),
-	CONSTRAINT PK_veterinaID FOREIGN KEY (veterinaID) REFERENCES Veterinarians(veterinaID)
+-- Table: Services
+CREATE TABLE Services (
+    serviceID VARCHAR(30) PRIMARY KEY NOT NULL,
+    name NVARCHAR(50) NOT NULL,
+    type VARCHAR(50),
+    price FLOAT
 );
 
-CREATE TABLE Invoice
-(
-	invoiceID VARCHAR(30) PRIMARY KEY NOT NULL,
-	userID VARCHAR(30) NOT NULL,
-	veterinaID VARCHAR(30) NOT NULL,
-	total INT,
-	invDate DATE,
-	CONSTRAINT PK_userID_3 FOREIGN KEY (userID) REFERENCES Users(userID),
-	CONSTRAINT PK_veterinaID_2 FOREIGN KEY (veterinaID) REFERENCES Veterinarians(veterinaID)
+-- Table: TravelExpenses
+CREATE TABLE TravelExpenses (
+    ExpenseID VARCHAR(30) PRIMARY KEY NOT NULL,
+    Fee INT NOT NULL,
+    endLocation VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE InvoiceDetails
-(
-	invoiceID VARCHAR(30) NOT NULL,
-	orderID VARCHAR(30) NOT NULL,
-	PRIMARY KEY(orderID, invoiceID),
-	quantity INT,
-	CONSTRAINT PK_invoiceID_2 FOREIGN KEY (invoiceID) REFERENCES Invoice(invoiceID),
-	CONSTRAINT PK_orderID_2 FOREIGN KEY (orderID) REFERENCES Orders(orderID)
+-- Table: Orders
+CREATE TABLE Orders (
+    orderID VARCHAR(30) PRIMARY KEY NOT NULL,
+    veterinaID VARCHAR(30) NOT NULL,
+    userID VARCHAR(30) NOT NULL,
+    orderDate DATE,
+    slot INT,
+    ExpenseID VARCHAR(30) NOT NULL,
+    address VARCHAR(100) NOT NULL,
+    description NVARCHAR(255),
+    status VARCHAR(10),
+    FOREIGN KEY (veterinaID) REFERENCES Veterina(veterinaID),
+    FOREIGN KEY (userID) REFERENCES Users(userID),
+    FOREIGN KEY (slot) REFERENCES Slots(slot),
+    FOREIGN KEY (ExpenseID) REFERENCES TravelExpenses(ExpenseID)
 );
 
-CREATE TABLE Schedule
-(
-	scheduleID VARCHAR(30) NOT NULL PRIMARY KEY,
-	veterinaID VARCHAR(30) NOT NULL,
-	scheduleDate DATE NOT NULL,
-	startTime TIME NOT NULL,
-	endTime TIME NOT NULL,
-	CONSTRAINT PK_veterinaID_3 FOREIGN KEY (veterinaID) REFERENCES Veterinarians(veterinaID)
+-- Table: Invoice
+CREATE TABLE Invoice (
+    invoiceID VARCHAR(30) PRIMARY KEY NOT NULL,
+    orderID VARCHAR(30) NOT NULL,
+    total INT,
+    invDate DATE,
+    FOREIGN KEY (orderID) REFERENCES Orders(orderID)
 );
 
-CREATE TABLE Feedback 
-(
-	feedbackID VARCHAR(30) NOT NULL,
-	invoiceID VARCHAR(30) NOT NULL,
-	PRIMARY KEY(feedbackID, invoiceID),
-	comment VARCHAR(100),
-	rating FLOAT,
-	feedbackDateTime DATETIME,
-	CONSTRAINT PK_invoiceID FOREIGN KEY (invoiceID) REFERENCES INVOICE(invoiceID)
+-- Table: OrderDetails
+CREATE TABLE OrderDetails (
+    orderID VARCHAR(30) NOT NULL,
+    serviceID VARCHAR(30) NOT NULL,
+    quantity INT,
+    PRIMARY KEY (orderID, serviceID),
+    FOREIGN KEY (orderID) REFERENCES Orders(orderID),
+    FOREIGN KEY (serviceID) REFERENCES Services(serviceID)
 );
 
-CREATE TABLE FishInformation
-(
-	fishID VARCHAR(30) NOT NULL,
-	userID VARCHAR(30) NOT NULL,
-	PRIMARY KEY (fishID, userID),
-	weight FLOAT,
-	age INT,
-	length FLOAT,
-	healthRecord NVARCHAR(MAX),
-	CONSTRAINT PK_userID_4 FOREIGN KEY (userID) REFERENCES Users(userID)
-);
-
-CREATE TABLE Proccess
-(
-	proccessID VARCHAR(30) PRIMARY KEY NOT NULL,
-	veterinaID VARCHAR(30) NOT NULL,
-	Description VARCHAR(100),
-	status BIT NOT NULL,
-	CONSTRAINT PK_veterinaID_4 FOREIGN KEY (veterinaID) REFERENCES Veterinarians(veterinaID)
+-- Table: Feedback
+CREATE TABLE Feedback (
+    feedbackID VARCHAR(30) PRIMARY KEY NOT NULL,
+    invoiceID VARCHAR(30) NOT NULL,
+    comment NVARCHAR(100),
+    rating FLOAT,
+    feedbackDateTime DATETIME,
+    FOREIGN KEY (invoiceID) REFERENCES Invoice(invoiceID)
 );
