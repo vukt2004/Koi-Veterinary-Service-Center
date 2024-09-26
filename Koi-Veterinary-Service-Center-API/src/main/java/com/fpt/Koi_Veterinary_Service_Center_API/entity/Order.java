@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,19 +18,24 @@ import java.time.LocalTime;
 @NoArgsConstructor
 public class Order {
     @Id
+    @GenericGenerator( name = "orderID", type = IdGenerator.class, parameters = {
+            @org.hibernate.annotations.Parameter( name = IdGenerator.VALUE_PREFIX_PARAMETER, value = "O" ),
+            @org.hibernate.annotations.Parameter( name = IdGenerator.NUMBER_FORMAT_PARAMETER, value = "%01d" ) } )
+    @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "orderID" )
     private String orderID;
     private LocalDate orderDate;
-    private LocalTime startTime;
-    private LocalTime endTime;
-
+    private int slot;
+    @Column(nullable = false)
+    private String address;
+    private String description;
+    private String status;
     @ManyToOne
-    @JoinColumn(name = "serviceID", nullable = false)
-    private Service service;
-
+    @JoinColumn(name = "expenseID", nullable = false)
+    private TravelExpense travelExpense;
     @ManyToOne
     @JoinColumn(name = "veterinarianID", nullable = false)
     private Veterinarian veterinarian;
-
     @ManyToOne
+    @JoinColumn(name = "UserID", nullable = false)
     private User user;
 }

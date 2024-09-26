@@ -22,24 +22,15 @@ public class User implements UserDetails {
     @Id
     @Column( nullable = false)
     private String userID;
-
-    @Column(length = 60, nullable = false)
+    @Column(nullable = false)
     private String password;
-
-    @Column(length = 100)
     private String name;
-
-    @Column(length = 50)
     private String email;
-
-    @Column(length = 10)
+    @Column(nullable = false)
     private String phoneNumber;
-
     @ManyToOne
     @JoinColumn(name="roleID", nullable=false)
     private Role role;
-
-    @Column(length = 100)
     private String address;
 
     @Override

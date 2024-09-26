@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user")
 public class UserController {
     @Autowired
     private IUserService userService;
@@ -32,42 +31,42 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/Id/{id}")
+    @GetMapping("/User/Id/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> getUserById(@PathVariable("id") String id) {
         userResponse user = userService.getUserByID(id);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @GetMapping
+    @GetMapping("/User")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> getAllUser() {
         List<userResponse> users = userService.getAllUser();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @GetMapping("/name/{name}")
+    @GetMapping("/User/name/{name}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> getAllUserByName(@PathVariable("name") String name) {
         List<userResponse> users = userService.getAllUserByName(name);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @GetMapping("/role/{role}")
+    @GetMapping("/User/role/{role}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> getAllUserByRole(@PathVariable("role") String role) {
         List<userResponse> users = userService.getAllUserByRole(role);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/User/delete/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> deleteUserById(@PathVariable("id") String id) {
         userService.deleteUserByID(id);
         return new ResponseEntity<>("Deleted", HttpStatus.OK);
     }
 
-    @PutMapping("/update")
+    @PutMapping("/User/update")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> updateUser(@Valid @RequestBody userRequest userRequest) {
         userResponse response = userService.updateUser(userRequest);

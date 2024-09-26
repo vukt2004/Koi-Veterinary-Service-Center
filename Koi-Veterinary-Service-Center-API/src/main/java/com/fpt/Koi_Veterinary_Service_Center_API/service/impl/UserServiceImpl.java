@@ -53,7 +53,7 @@ public class UserServiceImpl implements IUserService {
         user.setEmail(userRequest.getEmail());
         User savedUser = userRepository.save(user);
         response.setUserID(savedUser.getUserID());
-        response.setRole(savedUser.getRole());
+        response.setRole(savedUser.getRole().getTitle());
         response.setPassword(savedUser.getPassword());
         response.setAddress(savedUser.getAddress());
         response.setName(savedUser.getName());
@@ -81,7 +81,7 @@ public class UserServiceImpl implements IUserService {
         User user = userRepository.findByUserID(id).orElseThrow(() -> new AppException("User Not Found"));
         userResponse response = new userResponse();
         response.setUserID(user.getUserID());
-        response.setRole(user.getRole());
+        response.setRole(user.getRole().getTitle());
         response.setPassword(user.getPassword());
         response.setAddress(user.getAddress());
         response.setName(user.getName());
@@ -97,7 +97,7 @@ public class UserServiceImpl implements IUserService {
         for (User user : users) {
             userResponse response = new userResponse();
             response.setUserID(user.getUserID());
-            response.setRole(user.getRole());
+            response.setRole(user.getRole().getTitle());
             response.setPassword(user.getPassword());
             response.setAddress(user.getAddress());
             response.setName(user.getName());
@@ -115,7 +115,7 @@ public class UserServiceImpl implements IUserService {
         for (User user : users) {
             userResponse response = new userResponse();
             response.setUserID(user.getUserID());
-            response.setRole(user.getRole());
+            response.setRole(user.getRole().getTitle());
             response.setPassword(user.getPassword());
             response.setAddress(user.getAddress());
             response.setName(user.getName());
@@ -134,7 +134,7 @@ public class UserServiceImpl implements IUserService {
         for (User user : users) {
             userResponse response = new userResponse();
             response.setUserID(user.getUserID());
-            response.setRole(user.getRole());
+            response.setRole(user.getRole().getTitle());
             response.setPassword(user.getPassword());
             response.setAddress(user.getAddress());
             response.setName(user.getName());
@@ -168,7 +168,7 @@ public class UserServiceImpl implements IUserService {
         user.setEmail(userRequest.getEmail());
         User savedUser = userRepository.save(user);
         response.setUserID(savedUser.getUserID());
-        response.setRole(savedUser.getRole());
+        response.setRole(savedUser.getRole().getTitle());
         response.setPassword(savedUser.getPassword());
         response.setAddress(savedUser.getAddress());
         response.setName(savedUser.getName());

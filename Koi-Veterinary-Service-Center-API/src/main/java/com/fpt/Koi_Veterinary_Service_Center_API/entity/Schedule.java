@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,19 +18,16 @@ import java.time.LocalTime;
 @NoArgsConstructor
 public class Schedule {
     @Id
-    @Column(name = "scheduleID", length = 30, nullable = false)
+    @GenericGenerator( name = "sID", type = IdGenerator.class, parameters = {
+            @org.hibernate.annotations.Parameter( name = IdGenerator.VALUE_PREFIX_PARAMETER, value = "S" ),
+            @org.hibernate.annotations.Parameter( name = IdGenerator.NUMBER_FORMAT_PARAMETER, value = "%01d" ) } )
+    @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "sID" )
     private String scheduleId;
-
+    @Column(nullable = false)
+    private LocalDate scheduleDate;
+    private int slot;
     @ManyToOne
     @JoinColumn(name = "veterinarianID", nullable = false)
     private Veterinarian veterinarian;
 
-    @Column(name = "scheduleDate")
-    private LocalDate scheduleDate;
-
-    @Column(name = "startTime")
-    private LocalTime startTime;
-
-    @Column(name = "endTime")
-    private LocalTime endTime;
 }

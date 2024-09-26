@@ -16,14 +16,11 @@ import lombok.Setter;
 public class InvoiceDetail {
     @Id
     @ManyToOne
-    @JoinColumn(name = "invoiceID", nullable = false)
-    private Invoice invoice;
-
+    @JoinColumn(name = "serviceID", nullable = false)
+    private Service service;
     @Id
     @ManyToOne
     @JoinColumn(name = "orderID", nullable = false)
     private Order order;
-
-    @Column(name = "quantity")
-    private Integer quantity;
+    private int quantity;
 }

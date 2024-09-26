@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDate;
 
@@ -16,14 +17,14 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class Invoice {
     @Id
+    @GenericGenerator( name = "invoiceID", type = IdGenerator.class, parameters = {
+            @org.hibernate.annotations.Parameter( name = IdGenerator.VALUE_PREFIX_PARAMETER, value = "I" ),
+            @org.hibernate.annotations.Parameter( name = IdGenerator.NUMBER_FORMAT_PARAMETER, value = "%01d" ) } )
+    @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "invoiceID" )
     private String invoiceID;
     private int total;
-    private LocalDate invDate;
-
+    private LocalDate Date;
     @ManyToOne
-    @JoinColumn(name = "userID", nullable = false)
-    private User user;
-
-    @ManyToOne
-    private Veterinarian veterinarian;
+    @JoinColumn(name = "orderID", nullable = false)
+    private Order order;
 }

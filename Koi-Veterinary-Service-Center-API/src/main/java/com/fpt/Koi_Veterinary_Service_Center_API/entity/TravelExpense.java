@@ -1,12 +1,11 @@
 package com.fpt.Koi_Veterinary_Service_Center_API.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "TravelExpenses")
@@ -16,8 +15,13 @@ import lombok.Setter;
 @NoArgsConstructor
 public class TravelExpense {
     @Id
+    @GenericGenerator( name = "exID", type = IdGenerator.class, parameters = {
+            @org.hibernate.annotations.Parameter( name = IdGenerator.VALUE_PREFIX_PARAMETER, value = "E" ),
+            @org.hibernate.annotations.Parameter( name = IdGenerator.NUMBER_FORMAT_PARAMETER, value = "%01d" ) } )
+    @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "exID" )
     private String expenseID;
-    private Float expenseAmount;
-    private String startLocation;
+    @Column(nullable = false)
+    private int Fee;
+    @Column(nullable = false)
     private String endLocation;
 }

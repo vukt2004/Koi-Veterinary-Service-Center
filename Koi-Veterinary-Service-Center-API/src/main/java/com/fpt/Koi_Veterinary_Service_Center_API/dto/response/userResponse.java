@@ -13,6 +13,6 @@ public class userResponse {
     private String name;
     private String email;
     private String phoneNumber;
-    private Role role;
+    private String role;
     private String address;
 }
