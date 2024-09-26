@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class Feedback {
     @Id
     @GenericGenerator( name = "feID", type = IdGenerator.class, parameters = {
-            @org.hibernate.annotations.Parameter( name = IdGenerator.VALUE_PREFIX_PARAMETER, value = "F" ),
+            @org.hibernate.annotations.Parameter( name = IdGenerator.VALUE_PREFIX_PARAMETER, value = "FE" ),
             @org.hibernate.annotations.Parameter( name = IdGenerator.NUMBER_FORMAT_PARAMETER, value = "%01d" ) } )
     @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "feID" )
     private String feedbackId;
