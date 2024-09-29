@@ -1,3 +1,5 @@
+
+USE KoiServices
 -- Create table for Roles
 CREATE TABLE Roles (
     roleID VARCHAR(30) PRIMARY KEY NOT NULL,
