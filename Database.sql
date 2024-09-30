@@ -1,4 +1,10 @@
+<<<<<<< HEAD:Database.sql
 -- Table: Roles
+=======
+
+USE KoiServices
+-- Create table for Roles
+>>>>>>> 35fc267bd6673825e3536edef95302865e632cc4:Koi-project.sql
 CREATE TABLE Roles (
     roleID CHAR(1) PRIMARY KEY NOT NULL,
     title VARCHAR(10)
