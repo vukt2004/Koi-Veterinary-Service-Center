@@ -61,16 +61,8 @@ function LoginSignUp() {
             <input type="password" />
           </label>
           <label>
-            <span>Email</span>
-            <input type="email" />
-          </label>
-          <label>
             <span>Phone Number</span>
             <input type="number" />
-          </label>
-          <label>
-            <span>Address</span>
-            <input type="text" />
           </label>
           <label>
             <input type="hidden" value={"user"} />
