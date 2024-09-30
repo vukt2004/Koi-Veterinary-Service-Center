@@ -6,9 +6,12 @@ import com.fpt.Koi_Veterinary_Service_Center_API.dto.response.loginResponse;
 import com.fpt.Koi_Veterinary_Service_Center_API.dto.response.userResponse;
 import com.fpt.Koi_Veterinary_Service_Center_API.entity.Role;
 import com.fpt.Koi_Veterinary_Service_Center_API.entity.User;
+import com.fpt.Koi_Veterinary_Service_Center_API.entity.Veterinarian;
+import com.fpt.Koi_Veterinary_Service_Center_API.entity.enums.Status;
 import com.fpt.Koi_Veterinary_Service_Center_API.exception.AppException;
 import com.fpt.Koi_Veterinary_Service_Center_API.repository.RoleRepository;
 import com.fpt.Koi_Veterinary_Service_Center_API.repository.UserRepository;
+import com.fpt.Koi_Veterinary_Service_Center_API.repository.VeterinarianRepository;
 import com.fpt.Koi_Veterinary_Service_Center_API.service.IUserService;
 import com.fpt.Koi_Veterinary_Service_Center_API.utils.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,8 @@ public class UserServiceImpl implements IUserService {
     private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private VeterinarianRepository veterinarianRepository;
     @Autowired
     private JWTUtils jwtUtils;
     @Autowired
@@ -148,8 +153,11 @@ public class UserServiceImpl implements IUserService {
     @Override
     @Transactional
     public void deleteUserByID(String id) {
-        if (!userRepository.existsByUserID(id)) {
-            throw new AppException("User not found");
+        User user = userRepository.findByUserID(id).orElseThrow(()-> new AppException("User not found"));
+        if(user.getRole().getTitle().equals("VETERINARIAN")){
+            Veterinarian veterinarian =veterinarianRepository.findByUser(user).orElseThrow(()-> new AppException("Veterinarian not found"));
+            veterinarian.setStatus(Status.INACTIVE);
+            return;
         }
         userRepository.deleteByUserID(id);
     }

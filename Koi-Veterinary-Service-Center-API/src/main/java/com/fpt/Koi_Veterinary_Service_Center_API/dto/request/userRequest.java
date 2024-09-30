@@ -2,7 +2,6 @@ package com.fpt.Koi_Veterinary_Service_Center_API.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data

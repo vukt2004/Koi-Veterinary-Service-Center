@@ -24,7 +24,7 @@ public class Fish {
     private Float weight;
     private Float length;
     private int month;
-    private String descibe;
+    private String describe;
     @Id
     @ManyToOne
     @JoinColumn(name = "userID", nullable = false)

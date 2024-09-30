@@ -7,19 +7,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "InvoiceDetails")
+@Table(name = "OrderDetails")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@IdClass(InvoiceDetailsId.class)
-public class InvoiceDetail {
+@IdClass(OrderDetailId.class)
+public class OrderDetail {
     @Id
     @ManyToOne
     @JoinColumn(name = "serviceID", nullable = false)
     private Service service;
     @Id
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "orderID", nullable = false)
     private Order order;
     private int quantity;

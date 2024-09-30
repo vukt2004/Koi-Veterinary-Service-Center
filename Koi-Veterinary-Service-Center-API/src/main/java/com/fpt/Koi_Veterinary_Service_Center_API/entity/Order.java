@@ -1,5 +1,6 @@
 package com.fpt.Koi_Veterinary_Service_Center_API.entity;
 
+import com.fpt.Koi_Veterinary_Service_Center_API.entity.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Orders")
@@ -24,11 +25,14 @@ public class Order {
     @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "orderID" )
     private String orderID;
     private LocalDate orderDate;
-    private int slot;
     @Column(nullable = false)
     private String address;
     private String description;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
+    @OneToOne
+    @JoinColumn(name = "slot", nullable = false)
+    private Slot slot;
     @ManyToOne
     @JoinColumn(name = "expenseID", nullable = false)
     private TravelExpense travelExpense;

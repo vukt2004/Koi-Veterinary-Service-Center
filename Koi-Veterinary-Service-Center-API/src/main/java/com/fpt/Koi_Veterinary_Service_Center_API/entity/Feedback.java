@@ -25,7 +25,7 @@ public class Feedback {
     private String comment;
     private Float rating;
     private LocalDateTime feedbackDateTime;
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "invoiceID", nullable = false)
     private Invoice invoice;
 }

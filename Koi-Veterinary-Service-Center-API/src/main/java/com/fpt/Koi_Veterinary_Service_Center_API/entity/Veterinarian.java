@@ -1,5 +1,6 @@
 package com.fpt.Koi_Veterinary_Service_Center_API.entity;
 
+import com.fpt.Koi_Veterinary_Service_Center_API.entity.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,10 +21,10 @@ public class Veterinarian {
             @org.hibernate.annotations.Parameter( name = IdGenerator.NUMBER_FORMAT_PARAMETER, value = "%01d" ) } )
     @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "vetID" )
     private String veterinarianID;
-    private Float rating;
     @Column(nullable = false)
-    private String status;
-    @ManyToOne
+    @Enumerated(EnumType.STRING)
+    private Status status;
+    @OneToOne
     @JoinColumn(name="userID", nullable=false)
     private User user;
 }

@@ -5,5 +5,5 @@ import com.fpt.Koi_Veterinary_Service_Center_API.entity.FishID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FishRepository extends JpaRepository<Fish, FishID> {
-
+    Boolean existsByFishID(String FishID);
 }

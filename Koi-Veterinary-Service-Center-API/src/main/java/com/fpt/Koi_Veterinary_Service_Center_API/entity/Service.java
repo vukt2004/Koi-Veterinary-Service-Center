@@ -1,5 +1,6 @@
 package com.fpt.Koi_Veterinary_Service_Center_API.entity;
 
+import com.fpt.Koi_Veterinary_Service_Center_API.entity.enums.Type;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,6 +23,7 @@ public class Service {
     private String serviceID;
     @Column(nullable = false)
     private String name;
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private Type type;
     private Float price;
 }

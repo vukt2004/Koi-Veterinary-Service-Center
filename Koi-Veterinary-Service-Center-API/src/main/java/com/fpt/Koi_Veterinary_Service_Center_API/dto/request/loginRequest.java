@@ -5,8 +5,8 @@ import lombok.Data;
 
 @Data
 public class loginRequest {
-    @NotBlank(message = "userid is empty")
+    @NotBlank(message = "Empty userid")
     String userID;
-    @NotBlank(message = "password is empty")
+    @NotBlank(message = "Empty password")
     String password;
 }

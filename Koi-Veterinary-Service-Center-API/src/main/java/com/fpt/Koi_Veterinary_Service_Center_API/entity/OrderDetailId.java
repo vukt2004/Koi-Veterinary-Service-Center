@@ -12,7 +12,7 @@ import java.util.Objects;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class InvoiceDetailsId implements Serializable {
+public class OrderDetailId implements Serializable {
     private String service;
     private String order;
 
@@ -21,7 +21,7 @@ public class InvoiceDetailsId implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        InvoiceDetailsId that = (InvoiceDetailsId) o;
+        OrderDetailId that = (OrderDetailId) o;
         return Objects.equals(service, that.service) &&
                 Objects.equals(order, that.order);
     }

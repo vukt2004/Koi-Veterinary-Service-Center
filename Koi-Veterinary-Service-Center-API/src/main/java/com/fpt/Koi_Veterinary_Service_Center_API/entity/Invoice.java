@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Invoice")
@@ -23,8 +24,8 @@ public class Invoice {
     @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "invoiceID" )
     private String invoiceID;
     private int total;
-    private LocalDate Date;
-    @ManyToOne
+    private LocalDateTime invDate;
+    @OneToOne
     @JoinColumn(name = "orderID", nullable = false)
     private Order order;
 }
