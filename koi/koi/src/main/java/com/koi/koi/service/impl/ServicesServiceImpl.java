@@ -12,7 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServiceServiceImpl implements IServiceService {
+@org.springframework.stereotype.Service
+public class ServicesServiceImpl implements IServiceService {
 
     @Autowired
     private ServiceRepository serviceRepository;
