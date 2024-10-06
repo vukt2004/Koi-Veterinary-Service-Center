@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface IInvoiceService {
     invoiceResponse createInvoice(invoiceRequest request);
-    invoiceResponse updateInvoice(String invoiceId, invoiceRequest request);
-    void deleteInvoice(String invoiceId);
-    invoiceResponse getInvoiceById(String invoiceId);
+    invoiceResponse updateInvoice(invoiceRequest request);
+    void deleteInvoice(String invoiceID);
+    invoiceResponse getInvoiceById(String invoiceID);
     List<invoiceResponse> getAllInvoices();
 }

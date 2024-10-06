@@ -17,7 +17,7 @@ public class InvoiceDetail {
     @Id
     @ManyToOne
     @JoinColumn(name = "serviceID", nullable = false)
-    private Service service;
+    private Services service;
     @Id
     @ManyToOne
     @JoinColumn(name = "orderID", nullable = false)

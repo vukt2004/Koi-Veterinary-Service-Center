@@ -68,20 +68,6 @@ public class VeterinarianServiceImpl implements IVeterinarianService {
         return veterinarianResponses;
     }
 
-    @Override
-    public List<veterinarianResponse> getAllVeterinariansByName(String name) {
-        List<Veterinarian> veterinarians = veterinarianRepository.findAllByName(name);
-        List<veterinarianResponse> veterinarianResponses = new ArrayList<>();
-        for (Veterinarian veterinarian : veterinarians) {
-            veterinarianResponse response = new veterinarianResponse();
-            response.setVeterinarianID(veterinarian.getVeterinarianID());
-            response.setRating(veterinarian.getRating());
-            response.setStatus(veterinarian.getStatus());
-            response.setUser(veterinarian.getUser());
-            veterinarianResponses.add(response);
-        }
-        return veterinarianResponses;
-    }
 
     @Override
     @Transactional

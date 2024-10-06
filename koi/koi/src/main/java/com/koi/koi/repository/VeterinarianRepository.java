@@ -9,5 +9,4 @@ import java.util.Optional;
 public interface VeterinarianRepository extends JpaRepository<Veterinarian, String> {
     Optional<Veterinarian> findByVeterinarianID(String veterinarianID);
 
-    List<Veterinarian> findAllByName(String name);
 }

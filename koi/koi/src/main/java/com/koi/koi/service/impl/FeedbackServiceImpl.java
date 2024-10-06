@@ -49,7 +49,7 @@ public class FeedbackServiceImpl implements IFeedbackService {
 
     @Override
     public List<feedbackResponse> findAllFeedbacksByInvoiceID(String invoiceID) {
-        List<Feedback> feedbacks = feedbackRepository.findAllByInvoiceID(invoiceID);
+        List<Feedback> feedbacks = feedbackRepository.findAllByInvoice_InvoiceID(invoiceID);
         List<feedbackResponse> feedbackResponses = new ArrayList<>();
         for (Feedback feedback : feedbacks) {
             feedbackResponse response = new feedbackResponse();

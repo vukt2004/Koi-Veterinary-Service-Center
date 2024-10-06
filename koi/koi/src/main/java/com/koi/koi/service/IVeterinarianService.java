@@ -14,8 +14,6 @@ public interface IVeterinarianService {
 
     List<veterinarianResponse> getAllVeterinarians();
 
-    List<veterinarianResponse> getAllVeterinariansByName(String name);
-
     void deleteVeterinarianByVeterinarianID(String veterinarianID);
 
     veterinarianResponse updateVeterinarian(@Valid veterinarianRequest veterinarianRequest);

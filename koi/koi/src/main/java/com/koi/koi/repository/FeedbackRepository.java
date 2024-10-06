@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface FeedbackRepository extends JpaRepository<Feedback, String> {
-    List<Feedback> findAllByInvoiceID(String invoiceID);
+    List<Feedback> findAllByInvoice_InvoiceID(String invoiceID);
     List<Feedback> findAllByRating(Float rating);
 }
