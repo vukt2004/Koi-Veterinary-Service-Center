@@ -1,0 +1,40 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Tuananh3012001
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: [ "CMD", "sqlcmd", "-S", "localhost", "-U", "sa", "-P", "Tuananh3012001", "-Q", "SELECT 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - app-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+#    image: redfire3012001/koiapp:latest
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:sqlserver://sqlserver:1433;trustServerCertificate=true
+#      - SPRING_DATASOURCE_USERNAME=sa
+#      - SPRING_DATASOURCE_PASSWORD=Tuananh3012001
+    ports:
+      - "8080:8080"
+    depends_on:
+      - sqlserver
+    networks:
+      - app-network
+
+volumes:
+  sqlserver_data:
+
+networks:
+  app-network:
+    driver: bridge

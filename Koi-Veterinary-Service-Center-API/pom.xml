@@ -10,9 +10,9 @@
 	</parent>
 	<groupId>com.fpt</groupId>
 	<artifactId>Koi-Veterinary-Service-Center-API</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>Koi-Veterinary-Service-Center-API</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Koi Veterinary Service Center API</description>
 	<url/>
 	<licenses>
 		<license/>

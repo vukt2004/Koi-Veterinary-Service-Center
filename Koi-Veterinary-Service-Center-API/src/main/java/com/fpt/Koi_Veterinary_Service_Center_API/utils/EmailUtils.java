@@ -23,7 +23,7 @@ public class EmailUtils {
     }
 
     public void sendDemo(String email, String message) throws MessagingException {
-        String subject = "[Cursus]Demo Mail";
+        String subject = "Demo Mail";
         String content = """
                 <div>
                   Dear %s,<br>
