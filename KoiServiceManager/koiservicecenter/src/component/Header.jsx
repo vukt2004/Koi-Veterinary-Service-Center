@@ -1,6 +1,6 @@
-﻿import clock_icon from './assets/clock_icon.png';
-import logo from './assets/fpt_university_logo.jpg';
-import mail_icon from './assets/mail_icon.png';
+﻿import clock_icon from '../assets/clock_icon.png';
+import logo from '../assets/fpt_university_logo.jpg';
+import mail_icon from '../assets/mail_icon.png';
 function Header() {
     return (
         <>
@@ -68,13 +68,13 @@ function Header() {
                 backgroundColor: 'lightblue',
                 zIndex: 1000
             }}>
-                <a href="index.html" style={{ color: '#333', textDecoration: 'none', fontWeight: 'bold' }}>HOME</a>
-                <a href="service.html" style={{ color: '#333', textDecoration: 'none', fontWeight: 'bold' }}>SERVICE</a>
-                <a href="veterina.html" style={{ color: '#333', textDecoration: 'none', fontWeight: 'bold' }}>VETERINA</a>
-                <a href="#" style={{ color: '#333', textDecoration: 'none', fontWeight: 'bold' }}></a>
-                <a href="#" style={{ color: '#333', textDecoration: 'none', fontWeight: 'bold' }}>ABOUT US</a>
-                <a href="#" style={{ color: '#333', textDecoration: 'none', fontWeight: 'bold' }}>FAQ</a>
-                <a href="#" style={{ color: '#333', textDecoration: 'none', fontWeight: 'bold' }}>CONTACT</a>
+                <a href="/" style={{ color: '#333', textDecoration: 'none', fontWeight: 'bold' }}>HOME</a>
+                <a href="/service" style={{ color: '#333', textDecoration: 'none', fontWeight: 'bold' }}>SERVICE</a>
+                <a href="/veterina" style={{ color: '#333', textDecoration: 'none', fontWeight: 'bold' }}>VETERINA</a>
+                <a></a>
+                <a href="/aboutus" style={{ color: '#333', textDecoration: 'none', fontWeight: 'bold' }}>ABOUT US</a>
+                <a href="/faq" style={{ color: '#333', textDecoration: 'none', fontWeight: 'bold' }}>FAQ</a>
+                <a href="https://www.facebook.com/FPTU.HCM" target="_blank"style={{ color: '#333', textDecoration: 'none', fontWeight: 'bold' }}>CONTACT</a>
             </div>
         </>
     );
