@@ -17,13 +17,13 @@ import org.hibernate.annotations.GenericGenerator;
 public class Service {
     @Id
     @GenericGenerator( name = "seID", type = IdGenerator.class, parameters = {
-            @org.hibernate.annotations.Parameter( name = IdGenerator.VALUE_PREFIX_PARAMETER, value = "SE" ),
-            @org.hibernate.annotations.Parameter( name = IdGenerator.NUMBER_FORMAT_PARAMETER, value = "%01d" ) } )
+            @org.hibernate.annotations.Parameter( name = IdGenerator.VALUE_PREFIX_PARAMETER, value = "S" ),
+            @org.hibernate.annotations.Parameter( name = IdGenerator.NUMBER_FORMAT_PARAMETER, value = "%03d" ) } )
     @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "seID" )
     private String serviceID;
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     private String name;
-    @Enumerated(EnumType.STRING)
-    private Type type;
+    @Column(columnDefinition = "NVARCHAR(255)")
+    private String type;
     private Float price;
 }

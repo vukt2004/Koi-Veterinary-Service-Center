@@ -15,13 +15,9 @@ import org.hibernate.annotations.GenericGenerator;
 @NoArgsConstructor
 public class TravelExpense {
     @Id
-    @GenericGenerator( name = "exID", type = IdGenerator.class, parameters = {
-            @org.hibernate.annotations.Parameter( name = IdGenerator.VALUE_PREFIX_PARAMETER, value = "E" ),
-            @org.hibernate.annotations.Parameter( name = IdGenerator.NUMBER_FORMAT_PARAMETER, value = "%01d" ) } )
-    @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "exID" )
     private String expenseID;
     @Column(nullable = false)
     private int Fee;
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     private String endLocation;
 }

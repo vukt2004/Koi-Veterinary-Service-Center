@@ -15,6 +15,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import static java.lang.Boolean.TRUE;
+
 @Configuration
 public class InitialSetupConfig {
     private final UserRepository userRepository;
@@ -35,24 +37,28 @@ public class InitialSetupConfig {
     public ApplicationRunner initializer() {
 
         return args -> {
-            if(roleRepository.findByTitle("ADMIN").isEmpty()){
+            if(roleRepository.findByTitle("Manager").isEmpty()){
                 Role admin = new Role();
-                admin.setTitle("ADMIN");
+                admin.setTitle("Manager");
+                admin.setRoleID("M");
                 roleRepository.save(admin);
             }
-            if(roleRepository.findByTitle("CUSTOMER").isEmpty()){
+            if(roleRepository.findByTitle("Customer").isEmpty()){
                 Role customer = new Role();
-                customer.setTitle("CUSTOMER");
+                customer.setTitle("Customer");
+                customer.setRoleID("C");
                 roleRepository.save(customer);
             }
-            if(roleRepository.findByTitle("VETERINARIAN").isEmpty()){
+            if(roleRepository.findByTitle("Veterina").isEmpty()){
                 Role veterinarian = new Role();
-                veterinarian.setTitle("VETERINARIAN");
+                veterinarian.setTitle("Veterina");
+                veterinarian.setRoleID("V");
                 roleRepository.save(veterinarian);
             }
-            if(roleRepository.findByTitle("STAFF").isEmpty()){
+            if(roleRepository.findByTitle("Staff").isEmpty()){
                 Role staff = new Role();
-                staff.setTitle("STAFF");
+                staff.setTitle("Staff");
+                staff.setRoleID("S");
                 roleRepository.save(staff);
             }
             if (!userRepository.existsByUserID("admin")) {
@@ -62,7 +68,7 @@ public class InitialSetupConfig {
                 user.setName("admin");
                 user.setPhoneNumber("0123456789");
                 user.setPassword(passwordEncoder.encode("123"));
-                user.setRole(roleRepository.findByTitle("ADMIN").orElseThrow(() -> new AppException("Role not found")));
+                user.setRole(roleRepository.findByTitle("Manager").orElseThrow(() -> new AppException("Role not found")));
                 userRepository.save(user);
             }
             if (!userRepository.existsByUserID("veterinarian")) {
@@ -72,11 +78,12 @@ public class InitialSetupConfig {
                 user.setName("veterinarian");
                 user.setPhoneNumber("0123456789");
                 user.setPassword(passwordEncoder.encode("123"));
-                user.setRole(roleRepository.findByTitle("VETERINARIAN").orElseThrow(() -> new AppException("Role not found")));
+                user.setRole(roleRepository.findByTitle("Veterina").orElseThrow(() -> new AppException("Role not found")));
                 userRepository.save(user);
                 Veterinarian veterinarian = new Veterinarian();
-                veterinarian.setStatus(Status.ACTIVE);
+                veterinarian.setStatus(TRUE);
                 veterinarian.setUser(user);
+                veterinarian.setDescription("bác sĩ giỏi");
                 veterinarianRepository.save(veterinarian);
             }
             if (!userRepository.existsByUserID("customer")) {
@@ -86,7 +93,7 @@ public class InitialSetupConfig {
                 user.setName("customer");
                 user.setPhoneNumber("0123456789");
                 user.setPassword(passwordEncoder.encode("123"));
-                user.setRole(roleRepository.findByTitle("CUSTOMER").orElseThrow(() -> new AppException("Role not found")));
+                user.setRole(roleRepository.findByTitle("Customer").orElseThrow(() -> new AppException("Role not found")));
                 userRepository.save(user);
             }
             if (!userRepository.existsByUserID("staff")) {
@@ -96,7 +103,7 @@ public class InitialSetupConfig {
                 user.setName("staff");
                 user.setPhoneNumber("0123456789");
                 user.setPassword(passwordEncoder.encode("123"));
-                user.setRole(roleRepository.findByTitle("STAFF").orElseThrow(() -> new AppException("Role not found")));
+                user.setRole(roleRepository.findByTitle("Staff").orElseThrow(() -> new AppException("Role not found")));
                 userRepository.save(user);
             }
             if(!fishRepository.existsByFishID("F1")){

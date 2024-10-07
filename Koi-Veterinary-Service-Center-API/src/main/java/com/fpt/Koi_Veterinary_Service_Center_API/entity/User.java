@@ -24,6 +24,7 @@ public class User implements UserDetails {
     private String userID;
     @Column(nullable = false)
     private String password;
+    @Column(columnDefinition = "NVARCHAR(255)")
     private String name;
     private String email;
     @Column(nullable = false)
@@ -31,6 +32,7 @@ public class User implements UserDetails {
     @ManyToOne
     @JoinColumn(name="roleID", nullable=false)
     private Role role;
+    @Column(columnDefinition = "NVARCHAR(255)")
     private String address;
 
     @Override

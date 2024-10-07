@@ -32,42 +32,42 @@ public class UserController {
     }
 
     @GetMapping("/User/Id/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('Manager')")
     public ResponseEntity<?> getUserById(@PathVariable("id") String id) {
         userResponse user = userService.getUserByID(id);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @GetMapping("/User")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('Manager')")
     public ResponseEntity<?> getAllUser() {
         List<userResponse> users = userService.getAllUser();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @GetMapping("/User/name/{name}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('Manager')")
     public ResponseEntity<?> getAllUserByName(@PathVariable("name") String name) {
         List<userResponse> users = userService.getAllUserByName(name);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @GetMapping("/User/role/{role}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('Manager')")
     public ResponseEntity<?> getAllUserByRole(@PathVariable("role") String role) {
         List<userResponse> users = userService.getAllUserByRole(role);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @DeleteMapping("/User/delete/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('Manager')")
     public ResponseEntity<?> deleteUserById(@PathVariable("id") String id) {
         userService.deleteUserByID(id);
         return new ResponseEntity<>("Deleted", HttpStatus.OK);
     }
 
     @PutMapping("/User/update")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('Manager')")
     public ResponseEntity<?> updateUser(@Valid @RequestBody userRequest userRequest) {
         userResponse response = userService.updateUser(userRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);

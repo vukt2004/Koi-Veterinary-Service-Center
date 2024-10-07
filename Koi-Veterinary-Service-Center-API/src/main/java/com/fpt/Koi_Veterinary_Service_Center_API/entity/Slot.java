@@ -5,10 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "Slots")
@@ -18,7 +16,6 @@ import java.util.Date;
 @NoArgsConstructor
 public class Slot {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int slot;
     private LocalTime startTime;
     private LocalTime endTime;

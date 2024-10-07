@@ -16,10 +16,6 @@ import org.hibernate.annotations.GenericGenerator;
 @NoArgsConstructor
 public class Role {
     @Id
-    @GenericGenerator( name = "roleID", type = IdGenerator.class, parameters = {
-            @org.hibernate.annotations.Parameter( name = IdGenerator.VALUE_PREFIX_PARAMETER, value = "R" ),
-            @org.hibernate.annotations.Parameter( name = IdGenerator.NUMBER_FORMAT_PARAMETER, value = "%01d" ) } )
-    @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "roleID" )
     @JsonIgnore
     private String roleID;
     @Column(unique = true)
