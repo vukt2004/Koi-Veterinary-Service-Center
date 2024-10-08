@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api")
 public class ServiceController {
     @Autowired
     private IServiceService serviceService;
@@ -22,10 +23,10 @@ public class ServiceController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping("/Service")
+    @GetMapping("/services")
     public ResponseEntity<?> getAllServices() {
-        List<serviceResponse> fishes = serviceService.getAllServices();
-        return new ResponseEntity<>(fishes, HttpStatus.OK);
+        List<serviceResponse> services = serviceService.getAllServices();
+        return new ResponseEntity<>(services, HttpStatus.OK);
     }
 
     @GetMapping("/Service/{serviceID}")

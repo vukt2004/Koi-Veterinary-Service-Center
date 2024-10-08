@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api")
 public class VeterinarianController {
     @Autowired
     private IVeterinarianService veterinarianService;
@@ -22,7 +23,7 @@ public class VeterinarianController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping("/Veterinarian")
+    @GetMapping("/veterinas")
     public ResponseEntity<?> getVeterinarian() {
         List<veterinarianResponse> veterinarianResponses = veterinarianService.getVeterinarian();
         return new ResponseEntity<>(veterinarianResponses, HttpStatus.OK);
