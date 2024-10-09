@@ -1,5 +1,5 @@
 ﻿import React, { useEffect, useState } from 'react';
-import { fetchOrders, fetchVeterinas, updateOrderStatus } from '../config/api.jsx';
+import { fetchOrders, fetchVeterinas, updateOrderStatus } from '../src/config/api.jsx';
 
 const StaffOrdersPage = () => {
     const [orders, setOrders] = useState([]);

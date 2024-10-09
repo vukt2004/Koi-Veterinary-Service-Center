@@ -1,36 +1,37 @@
-﻿import React, { useState } from 'react';
-
-const danhSachDichVuCaKoi = [
-    { serviceID: 'S001', name: 'Kiểm tra sức khỏe cá Koi', type: 'Y tế', price: 700000 },
-    { serviceID: 'S002', name: 'Chăm sóc lông vây', type: 'Thẩm mỹ', price: 1050000 },
-    { serviceID: 'S003', name: 'Điều trị bệnh ký sinh trùng', type: 'Y tế', price: 1400000 },
-    { serviceID: 'S004', name: 'Điều trị bệnh nấm', type: 'Y tế', price: 1200000 },
-    { serviceID: 'S005', name: 'Thiết lập hồ cá', type: 'Thiết lập hồ', price: 3500000 },
-    { serviceID: 'S006', name: 'Thiết kế hồ cá Koi', type: 'Thiết lập hồ', price: 12000000 },
-    { serviceID: 'S007', name: 'Thay nước và làm sạch hồ', type: 'Bảo dưỡng', price: 2300000 },
-    { serviceID: 'S008', name: 'Tư vấn dinh dưỡng cho cá Koi', type: 'Dinh dưỡng', price: 580000 },
-];
+﻿import React, { useEffect, useState } from 'react';
+import { fetchServices, addService, updateService, deleteService } from '../src/config/api.jsx';
 
 const QuanLyDichVuCaKoi = () => {
-    const [dichVu, setDichVu] = useState(danhSachDichVuCaKoi); // Dữ liệu dịch vụ
-    const [dichVuMoi, setDichVuMoi] = useState({ name: '', type: '', price: '' }); // Dịch vụ mới
-    const [dichVuDangChinhSua, setDichVuDangChinhSua] = useState(null); // Dịch vụ đang chỉnh sửa
+    const [dichVu, setDichVu] = useState([]);
+    const [dichVuMoi, setDichVuMoi] = useState({ name: '', type: '', price: '' });
+    const [dichVuDangChinhSua, setDichVuDangChinhSua] = useState(null);
 
-    const handleThemDichVu = () => {
-        const newID = `S00${dichVu.length + 1}`;
-        setDichVu([...dichVu, { ...dichVuMoi, serviceID: newID, price: parseFloat(dichVuMoi.price) }]);
-        setDichVuMoi({ serviceID:'', name: '', type: '', price: '' });
+    useEffect(() => {
+        const loadServices = async () => {
+            const services = await fetchServices();
+            setDichVu(services);
+        };
+        loadServices();
+    }, []);
+
+    const handleThemDichVu = async () => {
+        const newService = { ...dichVuMoi, price: parseFloat(dichVuMoi.price) };
+        const createdService = await addService(newService);
+        setDichVu([...dichVu, createdService]);
+        setDichVuMoi({ name: '', type: '', price: '' });
     };
 
-    const handleCapNhatDichVu = () => {
+    const handleCapNhatDichVu = async () => {
+        const updatedService = await updateService(dichVuDangChinhSua.serviceID, dichVuDangChinhSua);
         const updatedServices = dichVu.map((dv) =>
-            dv.serviceID === dichVuDangChinhSua.serviceID ? dichVuDangChinhSua : dv
+            dv.serviceID === dichVuDangChinhSua.serviceID ? updatedService : dv
         );
         setDichVu(updatedServices);
         setDichVuDangChinhSua(null);
     };
 
-    const handleXoaDichVu = (serviceID) => {
+    const handleXoaDichVu = async (serviceID) => {
+        await deleteService(serviceID);
         const filteredServices = dichVu.filter((dv) => dv.serviceID !== serviceID);
         setDichVu(filteredServices);
     };
@@ -66,12 +67,6 @@ const QuanLyDichVuCaKoi = () => {
             </table>
 
             <h2>Thêm Dịch Vụ Mới</h2>
-            <input
-                type="text"
-                placeholder="ID Dịch Vụ"
-                value={dichVuMoi.serviceID}
-                onChange={(e) => setDichVuMoi({ ...dichVuMoi, name: e.target.value })}
-            />
             <input
                 type="text"
                 placeholder="Tên Dịch Vụ"

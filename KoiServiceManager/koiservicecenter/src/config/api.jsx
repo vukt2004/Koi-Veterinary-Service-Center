@@ -8,6 +8,7 @@ export const fetchUsers = async () => {
         return response.data;
     } catch (error) {
         console.error('Error fetching users:', error);
+        return { error: 'Could not fetch users' };
     }
 };
 
@@ -17,6 +18,7 @@ export const fetchVeterinas = async () => {
         return response.data;
     } catch (error) {
         console.error('Error fetching veterinas:', error);
+        return { error: 'Could not fetch veterinas' };
     }
 };
 
@@ -26,6 +28,7 @@ export const fetchFish = async () => {
         return response.data;
     } catch (error) {
         console.error('Error fetching fish:', error);
+        return { error: 'Could not fetch fish' };
     }
 };
 
@@ -35,6 +38,7 @@ export const fetchServices = async () => {
         return response.data;
     } catch (error) {
         console.error('Error fetching services:', error);
+        return { error: 'Could not fetch services' };
     }
 };
 
@@ -44,6 +48,7 @@ export const fetchOrders = async () => {
         return response.data;
     } catch (error) {
         console.error('Error fetching orders:', error);
+        return { error: 'Could not fetch orders' };
     }
 };
 
@@ -53,6 +58,7 @@ export const fetchInvoices = async () => {
         return response.data;
     } catch (error) {
         console.error('Error fetching invoices:', error);
+        return { error: 'Could not fetch invoices' };
     }
 };
 
@@ -62,24 +68,56 @@ export const fetchFeedback = async () => {
         return response.data;
     } catch (error) {
         console.error('Error fetching feedbacks:', error);
+        return { error: 'Could not fetch feedbacks' };
     }
 };
 
 export const updateOrderStatus = async (orderId, status) => {
-    const response = await fetch(`http://localhost:8080/api/orders/${orderId}/status`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status }),
-    });
-    return response.json();
+    try {
+        const response = await axios.put(`${BASE_URL}/orders/${orderId}/status`, { status });
+        return response.data;
+    } catch (error) {
+        console.error('Error updating order status:', error);
+        return { error: 'Could not update order status' };
+    }
 };
 
 export const addOrderDescription = async (orderId, description) => {
-    const response = await fetch(`http://localhost:8080/api/orders/${orderId}/description`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ description }),
-    });
-    return response.json();
+    try {
+        const response = await axios.put(`${BASE_URL}/orders/${orderId}/description`, { description });
+        return response.data;
+    } catch (error) {
+        console.error('Error adding order description:', error);
+        return { error: 'Could not add order description' };
+    }
 };
 
+export const addServiceToOrder = async (orderId, serviceID, quantity) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/orders/${orderId}/services`, { serviceID, quantity });
+        return response.data;
+    } catch (error) {
+        console.error('Error adding service to order:', error);
+        return { error: 'Could not add service to order' };
+    }
+};
+
+export const removeServiceFromOrder = async (orderId, serviceID) => {
+    try {
+        const response = await axios.delete(`${BASE_URL}/orders/${orderId}/services/${serviceID}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error removing service from order:', error);
+        return { error: 'Could not remove service from order' };
+    }
+};
+
+export const updateTravelExpense = async (expenseId, fee, endLocation) => {
+    try {
+        const response = await axios.put(`${BASE_URL}/expenses/${expenseId}`, { fee, endLocation });
+        return response.data;
+    } catch (error) {
+        console.error('Error updating travel expense:', error);
+        return { error: 'Could not update travel expense' };
+    }
+};
