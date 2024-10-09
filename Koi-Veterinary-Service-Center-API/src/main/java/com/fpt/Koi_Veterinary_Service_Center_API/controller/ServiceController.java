@@ -17,7 +17,7 @@ import java.util.List;
 public class ServiceController {
     @Autowired
     private IServiceService serviceService;
-    @PostMapping("/Service/add")
+    @PostMapping("/service/add")
     public ResponseEntity<?> addService(@Valid @RequestBody createServiceRequest serviceRequest) {
         serviceResponse response = serviceService.createService(serviceRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -29,19 +29,19 @@ public class ServiceController {
         return new ResponseEntity<>(services, HttpStatus.OK);
     }
 
-    @GetMapping("/Service/{serviceID}")
+    @GetMapping("/service/{serviceID}")
     public ResponseEntity<?> getServiceByServiceID(@PathVariable("serviceID") String serviceID) {
         serviceResponse response = serviceService.getServiceByServiceID(serviceID);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("/Service/{serviceID}")
+    @PutMapping("/service/update")
     public ResponseEntity<?> updateService(@Valid @RequestBody serviceRequest serviceRequest) {
         serviceResponse response = serviceService.updateService(serviceRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/Service/{serviceID}")
+    @DeleteMapping("/service/{serviceID}")
     public ResponseEntity<?> deleteService(@PathVariable("serviceID") String serviceID) {
         serviceService.deleteService(serviceID);
         return new ResponseEntity<>("Deleted", HttpStatus.OK);

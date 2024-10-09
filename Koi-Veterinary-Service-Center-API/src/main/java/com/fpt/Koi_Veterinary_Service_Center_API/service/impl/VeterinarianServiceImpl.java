@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
 @Service
@@ -31,17 +32,20 @@ public class VeterinarianServiceImpl implements IVeterinarianService {
 
     @Override
     public veterinarianResponse createVeterinarian(createVeterinarianRequest createVeterinarianRequest) {
-        veterinarianResponse response = new veterinarianResponse();
+        User user = userRepository.findByUserID(createVeterinarianRequest.getUserID()).orElseThrow(()-> new AppException("User not found"));
+        if(user.getRole().getRoleID().equals("V")){
+            throw new AppException("User already veterinarian");
+        }
         Role role = new Role();
         role.setRoleID("V");
         role.setTitle("Veterina");
-        User user = userRepository.findByUserID(createVeterinarianRequest.getUserID()).orElseThrow(()-> new AppException("User not found"));
         user.setRole(role);
         Veterinarian veterinarian = new Veterinarian();
         veterinarian.setUser(user);
         veterinarian.setDescription(createVeterinarianRequest.getDescription());
         veterinarian.setStatus(TRUE);
         Veterinarian savedVeterinarian = veterinarianRepository.save(veterinarian);
+        veterinarianResponse response = new veterinarianResponse();
         response.setDescription(savedVeterinarian.getDescription());
         response.setStatus(savedVeterinarian.getStatus());
         response.setVeterinaID(savedVeterinarian.getVeterinarianID());
@@ -77,14 +81,11 @@ public class VeterinarianServiceImpl implements IVeterinarianService {
 
     @Override
     public veterinarianResponse updateVeterinarian(veterinarianRequest veterinarianRequest) {
-        veterinarianResponse response = new veterinarianResponse();
         Veterinarian veterinarian = veterinarianRepository.findByVeterinarianID(veterinarianRequest.getVeterinaID())
                 .orElseThrow(() -> new AppException("Veterinarian not found"));
-        User user = userRepository.findByUserID(veterinarianRequest.getUserID()).orElseThrow(()-> new AppException("User not found"));
-        veterinarian.setUser(user);
-        veterinarian.setStatus(veterinarianRequest.getStatus());
         veterinarian.setDescription(veterinarianRequest.getDescription());
         Veterinarian savedVeterinarian = veterinarianRepository.save(veterinarian);
+        veterinarianResponse response = new veterinarianResponse();
         response.setUserID(savedVeterinarian.getUser().getUserID());
         response.setDescription(savedVeterinarian.getDescription());
         response.setVeterinaID(savedVeterinarian.getVeterinarianID());
@@ -96,6 +97,7 @@ public class VeterinarianServiceImpl implements IVeterinarianService {
     public void deleteVeterinarian(String veterinarianID) {
         Veterinarian veterinarian = veterinarianRepository.findByVeterinarianID(veterinarianID)
                 .orElseThrow(() -> new AppException("Veterinarian not found"));
-        veterinarianRepository.delete(veterinarian);
+        veterinarian.setStatus(FALSE);
+        veterinarianRepository.save(veterinarian);
     }
 }

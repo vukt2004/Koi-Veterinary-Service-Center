@@ -5,6 +5,7 @@ import com.fpt.Koi_Veterinary_Service_Center_API.entity.TravelExpense;
 import com.fpt.Koi_Veterinary_Service_Center_API.entity.User;
 import com.fpt.Koi_Veterinary_Service_Center_API.entity.Veterinarian;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
@@ -25,6 +26,6 @@ public class orderRequest {
     private TravelExpense travelExpense;
     @NotBlank(message = "Veterinarian cannot be empty")
     private Veterinarian veterinarian;
-    @NotBlank(message = "User cannot be empty")
+    @NotNull(message = "User cannot be empty")
     private User user;
 }

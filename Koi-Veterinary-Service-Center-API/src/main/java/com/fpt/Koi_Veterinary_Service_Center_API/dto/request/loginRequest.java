@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class loginRequest {
     @NotBlank(message = "Empty userid")
-    String userID;
+    private String userID;
     @NotBlank(message = "Empty password")
-    String password;
+    private String password;
 }

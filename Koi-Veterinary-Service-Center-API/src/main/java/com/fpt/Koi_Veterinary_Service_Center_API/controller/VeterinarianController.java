@@ -17,7 +17,7 @@ import java.util.List;
 public class VeterinarianController {
     @Autowired
     private IVeterinarianService veterinarianService;
-    @PostMapping("/Veterinarian/add")
+    @PostMapping("/veterina/add")
     public ResponseEntity<?> createVeterinarian(@Valid @RequestBody createVeterinarianRequest createVeterinarianRequest) {
         veterinarianResponse response = veterinarianService.createVeterinarian(createVeterinarianRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -29,19 +29,19 @@ public class VeterinarianController {
         return new ResponseEntity<>(veterinarianResponses, HttpStatus.OK);
     }
 
-    @GetMapping("/Veterinarian/{veterinarianID}")
+    @GetMapping("/veterina/{veterinarianID}")
     public ResponseEntity<?> getVeterinarianByID(@PathVariable("veterinarianID") String veterinarianID) {
         veterinarianResponse response = veterinarianService.getVeterinarianByID(veterinarianID);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("/Veterinarian/{veterinarianID}")
+    @PutMapping("/veterina/update")
     public ResponseEntity<?> updateVeterinarian(@Valid @RequestBody veterinarianRequest veterinarianRequest) {
         veterinarianResponse response = veterinarianService.updateVeterinarian(veterinarianRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/Veterinarian/{veterinarianID}")
+    @DeleteMapping("/veterina/delete/{veterinarianID}")
     public ResponseEntity<?> deleteVeterinarian(@PathVariable("veterinarianID") String veterinarianID) {
         veterinarianService.deleteVeterinarian(veterinarianID);
         return new ResponseEntity<>("Deleted", HttpStatus.OK);

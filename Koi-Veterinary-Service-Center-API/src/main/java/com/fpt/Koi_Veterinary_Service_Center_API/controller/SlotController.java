@@ -17,19 +17,19 @@ public class SlotController {
     @Autowired
     private ISlotService slotService;
 
-    @GetMapping("/Slot/{slotID}")
+    @GetMapping("/slot/{slotID}")
     public ResponseEntity<?> getSlotByID(@PathVariable("slotID") int slotID) {
         slotResponse response = slotService.getSlotByID(slotID);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/Slot")
+    @GetMapping("/slots")
     public ResponseEntity<?> getAllSlot() {
         List<slotResponse> slots = slotService.getAllSlot();
         return new ResponseEntity<>(slots, HttpStatus.OK);
     }
 
-    @PutMapping("/Slot/update")
+    @PutMapping("/slot/update")
     public ResponseEntity<?> updateSlot(@Valid @RequestBody slotRequest slotRequest) {
         slotResponse response = slotService.updateSlot(slotRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);

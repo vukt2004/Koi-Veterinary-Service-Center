@@ -16,31 +16,31 @@ import java.util.List;
 public class TravelExpenseController {
     @Autowired
     private ITravelExpenseService travelService;
-    @PostMapping("/TravelExpense/add")
+    @PostMapping("/travelExpense/add")
     public ResponseEntity<?> addTravelExpense(@Valid @RequestBody TravelExpenseRequest travelExpenseRequest) {
         travelExpenseResponse response = travelService.createTravelExpense(travelExpenseRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping("/TravelExpense")
+    @GetMapping("/travelExpense")
     public ResponseEntity<?> getAllTravelExpenses() {
         List<travelExpenseResponse> travelExpenses = travelService.getAllTravelExpenses();
         return new ResponseEntity<>(travelExpenses, HttpStatus.OK);
     }
 
-    @GetMapping("/TravelExpense/{travelExpenseID}")
+    @GetMapping("/travelExpense/{travelExpenseID}")
     public ResponseEntity<?> getTravelExpenseByID(@PathVariable("travelExpenseID") String travelExpenseID) {
         travelExpenseResponse response = travelService.getTravelExpenseByID(travelExpenseID);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("/TravelExpense/{travelExpenseID}")
+    @PutMapping("/travelExpense/update")
     public ResponseEntity<?> updateTravelExpense(@Valid @RequestBody TravelExpenseRequest travelExpenseRequest) {
         travelExpenseResponse response = travelService.updateTravelExpense(travelExpenseRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/TravelExpense/{travelExpenseID}")
+    @DeleteMapping("/travelExpense/delete/{travelExpenseID}")
     public ResponseEntity<?> deleteTravelExpense(@PathVariable("travelExpenseID") String travelExpenseID) {
         travelService.deleteTravelExpense(travelExpenseID);
         return new ResponseEntity<>("Deleted", HttpStatus.OK);
