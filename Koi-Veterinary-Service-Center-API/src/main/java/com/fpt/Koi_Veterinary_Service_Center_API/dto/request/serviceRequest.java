@@ -1,6 +1,7 @@
 package com.fpt.Koi_Veterinary_Service_Center_API.dto.request;
 
 import com.fpt.Koi_Veterinary_Service_Center_API.entity.enums.Type;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -17,5 +18,6 @@ public class serviceRequest {
     private String Type;
 
     @NotNull(message = "Price cannot be null")
+    @Min(value = 100000, message = "price must be at least 100000")
     private Float price;
 }

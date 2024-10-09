@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface TravelExpenseRepository extends JpaRepository<TravelExpense, String> {
     Optional<TravelExpense> findByExpenseID(String travelExpenseID);
     Boolean existsByExpenseID(String travelExpenseID);
+    Optional<TravelExpense> findByEndLocation(String endLocation);
+
 }

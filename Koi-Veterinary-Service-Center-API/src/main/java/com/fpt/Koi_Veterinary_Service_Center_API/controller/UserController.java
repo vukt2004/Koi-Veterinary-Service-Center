@@ -32,7 +32,7 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/User/Id/{id}")
+    @GetMapping("/user/Id/{id}")
     @PreAuthorize("hasAuthority('Manager')")
     public ResponseEntity<?> getUserById(@PathVariable("id") String id) {
         userResponse user = userService.getUserByID(id);
@@ -46,28 +46,28 @@ public class UserController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @GetMapping("/User/name/{name}")
+    @GetMapping("/user/name/{name}")
     @PreAuthorize("hasAuthority('Manager')")
     public ResponseEntity<?> getAllUserByName(@PathVariable("name") String name) {
         List<userResponse> users = userService.getAllUserByName(name);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @GetMapping("/User/role/{role}")
+    @GetMapping("/user/role/{role}")
     @PreAuthorize("hasAuthority('Manager')")
     public ResponseEntity<?> getAllUserByRole(@PathVariable("role") String role) {
         List<userResponse> users = userService.getAllUserByRole(role);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @DeleteMapping("/User/delete/{id}")
+    @DeleteMapping("/user/delete/{id}")
     @PreAuthorize("hasAuthority('Manager')")
     public ResponseEntity<?> deleteUserById(@PathVariable("id") String id) {
         userService.deleteUserByID(id);
         return new ResponseEntity<>("Deleted", HttpStatus.OK);
     }
 
-    @PutMapping("/User/update")
+    @PutMapping("/user/update")
     @PreAuthorize("hasAuthority('Manager')")
     public ResponseEntity<?> updateUser(@Valid @RequestBody userRequest userRequest) {
         userResponse response = userService.updateUser(userRequest);

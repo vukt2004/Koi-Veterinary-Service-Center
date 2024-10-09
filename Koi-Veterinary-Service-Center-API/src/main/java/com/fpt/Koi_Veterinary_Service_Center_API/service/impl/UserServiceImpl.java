@@ -7,7 +7,6 @@ import com.fpt.Koi_Veterinary_Service_Center_API.dto.response.userResponse;
 import com.fpt.Koi_Veterinary_Service_Center_API.entity.Role;
 import com.fpt.Koi_Veterinary_Service_Center_API.entity.User;
 import com.fpt.Koi_Veterinary_Service_Center_API.entity.Veterinarian;
-import com.fpt.Koi_Veterinary_Service_Center_API.entity.enums.Status;
 import com.fpt.Koi_Veterinary_Service_Center_API.exception.AppException;
 import com.fpt.Koi_Veterinary_Service_Center_API.repository.RoleRepository;
 import com.fpt.Koi_Veterinary_Service_Center_API.repository.UserRepository;

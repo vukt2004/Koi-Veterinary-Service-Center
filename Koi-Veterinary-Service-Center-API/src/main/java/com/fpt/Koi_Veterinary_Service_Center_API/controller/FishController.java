@@ -18,7 +18,7 @@ public class FishController {
     @Autowired
     private IFishService fishService;
 
-    @GetMapping("/fishes")
+    @GetMapping("/fish")
     public ResponseEntity<?> getAllFish() {
         List<fishResponse> fishes = fishService.getAllFish();
         return new ResponseEntity<>(fishes, HttpStatus.OK);

@@ -25,12 +25,13 @@ public class Order {
     @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "orderID" )
     private String orderID;
     private LocalDate orderDate;
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     private String address;
+    @Column(columnDefinition = "NVARCHAR(255)")
     private String description;
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "slot", nullable = false)
     private Slot slot;
     @ManyToOne
