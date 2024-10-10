@@ -30,6 +30,8 @@ function LoginSignUp() {
       console.log(error.response ? error.response.data.message : 'Sign In failed!');
       setMessage('Fail to log in!')
     } finally {
+      setUserID('')
+      setPassword('')
       setLoading(false);
     }
   };
