@@ -2,6 +2,15 @@
 
 const BASE_URL = 'http://localhost:8080/api';
 
+const config = {
+    baseUrl: BASE_URL,
+};
+
+export const api = axios.create(config);
+
+api.defaults.baseURL = BASE_URL;
+
+
 export const fetchUsers = async () => {
     try {
         const response = await axios.get(`${BASE_URL}/users`);
@@ -121,3 +130,15 @@ export const updateTravelExpense = async (expenseId, fee, endLocation) => {
         return { error: 'Could not update travel expense' };
     }
 };
+
+export const createOrder = async (orderData) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/orders`, orderData);
+        return response.data;
+    } catch (error) {
+        console.error('Error creating order:', error);
+        return { success: false, message: error.message };
+    }
+};
+
+
