@@ -1,182 +1,197 @@
-﻿//import {useState, useEffect}  from 'react';
-//import { useForm, Controller } from 'react-hook-form';
-//import axios from 'axios';
-//import dayjs from 'dayjs';
+﻿import React, { useEffect, useState } from 'react';
+import { fetchSlots, fetchVeterinas, fetchOrders, fetchServices, fetchAddresses, createOrder } from './api';
 
-//const OrderForm = () => {
-//    const { control, handleSubmit, setValue } = useForm();
-//    const [services, setServices] = useState([]); // List các dịch vụ
-//    const [selectedServices, setSelectedServices] = useState([]); // Dịch vụ đã chọn
-//    const [slots, setSlots] = useState([]); // Các slot lịch từ hệ thống
-//    const [veterinas, setVeterinas] = useState([]); // List Veterina từ API
-//    const [currentAddress, setCurrentAddress] = useState(''); // Địa chỉ hiện tại
-//    const [isAddressAutoFilled, setIsAddressAutoFilled] = useState(false); // Tình trạng auto địa chỉ
+const OrdersPage = () => {
+    const [slots, setSlots] = useState([]);
+    const [veterinas, setVeterinas] = useState([]);
+    const [orders, setOrders] = useState([]);
+    const [services, setServices] = useState([]);
+    const [addresses, setAddresses] = useState([]);
+    const [users, setUsers] = useState([]);
 
-//    // Danh sách quận/huyện cố định
-    //const districts = [
-    //    'Quận 1', 'Quận 2', 'Quận 3', 'Quận 4', 'Quận 5', 'Quận 6', 'Quận 7', 'Quận 8', 'Quận 9',
-    //    'Quận 10', 'Quận 11', 'Quận 12', 'Quận Phú Nhuận', 'Quận Bình Thạnh', 'Quận Gò Vấp',
-    //    'Quận Tân Bình', 'Quận Bình Tân', 'Quận Tân Phú', 'Quận Thủ Đức', 'Huyện Bình Chánh',
-    //    'Huyện Hóc Môn', 'Huyện Củ Chi', 'Huyện Cần Giờ', 'Huyện Nhà Bè'
-    //];
+    const [selectedSlot, setSelectedSlot] = useState(null);
+    const [availableVeterinas, setAvailableVeterinas] = useState([]);
+    const [selectedServices, setSelectedServices] = useState([]);
+    const [selectedAddress, setSelectedAddress] = useState('');
+    const [useMyAddress, setUseMyAddress] = useState(false);
+    const [addressDetails, setAddressDetails] = useState(''); // New state for detailed address
+    const [description, setDescription] = useState('');
+    const currentTime = new Date();
 
-//    useEffect(() => {
-//        // Fetch services và Veterina từ API khi component được mount
-//        axios.get('/api/services').then((res) => setServices(res.data));
-//        axios.get('/api/veterinas').then((res) => setVeterinas(res.data));
+    useEffect(() => {
+        const loadData = async () => {
+            const slotsData = await fetchSlots();
+            const veterinasData = await fetchVeterinas();
+            const ordersData = await fetchOrders();
+            const servicesData = await fetchServices();
+            const addressesData = await fetchAddresses();
 
-//        // Lấy địa chỉ từ localStorage nếu có
-//        const storedAddress = localStorage.getItem('userAddress');
-//        if (storedAddress) {
-//            setCurrentAddress(storedAddress);
-//            setIsAddressAutoFilled(true);
-//        }
+            setSlots(slotsData);
+            setVeterinas(veterinasData);
+            setOrders(ordersData);
+            setServices(servicesData);
+            setAddresses(addressesData);
+            setUsers(JSON.parse(localStorage.getItem('user')) || {});
+        };
 
-//        // Generate slots từ ngày hiện tại đến 7 ngày sau
-//        const today = dayjs();
-//        const weekSlots = [];
-//        for (let i = 0; i < 7; i++) {
-//            const day = today.add(i, 'day');
-//            for (let slot = 1; slot <= 8; slot++) {
-//                weekSlots.push({ day: day.format('YYYY-MM-DD'), slot });
-//            }
-//        }
-//        setSlots(weekSlots);
-//    }, []);
+        loadData();
+    }, []);
 
-//    const onSubmit = (data) => {
-//        // Lưu VeterinaId vào localStorage
-//        localStorage.setItem('selectedVeterinaId', data.veterinaId);
+    // Filter available slots
+    const getAvailableSlots = () => {
+        return slots.filter(slot => {
+            const slotStartTime = new Date();
+            const [hours, minutes, seconds] = slot.startTime.split(':');
+            slotStartTime.setHours(hours, minutes, seconds);
+            return slotStartTime > currentTime;
+        });
+    };
 
-//        // Gửi form data về server
-//        axios.post('/api/orders', data)
-//            .then(response => {
-//                console.log('Order success:', response.data);
-//            })
-//            .catch(error => {
-//                console.error('Order failed:', error);
-//            });
-//    };
+    // Handle slot selection
+    const handleSlotChange = (slotId) => {
+        setSelectedSlot(slotId);
 
-//    const handleSelectService = (service) => {
-//        if (!selectedServices.includes(service)) {
-//            setSelectedServices([...selectedServices, service]);
-//        }
-//    };
+        const ordersInSelectedSlot = orders.filter(order => order.slot === slotId);
 
-//    const handleRemoveService = (service) => {
-//        setSelectedServices(selectedServices.filter(s => s !== service));
-//    };
+        const available = veterinas.filter(veterina => {
+            return !ordersInSelectedSlot.some(order => order.veterinaID === veterina.veterinaID);
+        });
 
-//    return (
-//        <form onSubmit={handleSubmit(onSubmit)}>
-//            {/* Select Services */}
-//            <div>
-//                <label>Select Service</label>
-//                <select onChange={(e) => handleSelectService(e.target.value)}>
-//                    <option value="">Select a service</option>
-//                    {services.map((service) => (
-//                        <option key={service.id} value={service.id}>
-//                            {service.name}
-//                        </option>
-//                    ))}
-//                </select>
-//                <ul>
-//                    {selectedServices.map((service) => (
-//                        <li key={service}>
-//                            {services.find(s => s.id === service)?.name}
-//                            <button type="button" onClick={() => handleRemoveService(service)}>
-//                                Remove
-//                            </button>
-//                        </li>
-//                    ))}
-//                </ul>
-//            </div>
+        setAvailableVeterinas(available);
 
-//            {/* Select Slot */}
-//            <div>
-//                <label>Select Slot</label>
-//                <table>
-//                    <thead>
-//                        <tr>
-//                            <th>Date</th>
-//                            <th>Slot</th>
-//                        </tr>
-//                    </thead>
-//                    <tbody>
-//                        {slots.map((slot) => (
-//                            <tr key={`${slot.day}-${slot.slot}`}>
-//                                <td>{slot.day}</td>
-//                                <td>
-//                                    <button
-//                                        type="button"
-//                                        onClick={() => setValue('selectedSlot', slot)}
-//                                    >
-//                                        Slot {slot.slot}
-//                                    </button>
-//                                </td>
-//                            </tr>
-//                        ))}
-//                    </tbody>
-//                </table>
-//            </div>
+        if (available.length === 0) {
+            alert('Không có bác sĩ nào khả dụng cho slot này, vui lòng chọn slot khác.');
+            setSelectedSlot(null);
+        }
+    };
 
-//            {/* Select Veterina */}
-//            <div>
-//                <label>Select Veterina</label>
-//                <Controller
-//                    name="veterinaId"
-//                    control={control}
-//                    render={({ field }) => (
-//                        <select {...field}>
-//                            <option value="">Select a Veterina</option>
-//                            {veterinas.map((veterina) => (
-//                                <option key={veterina.id} value={veterina.id}>
-//                                    {veterina.name}
-//                                </option>
-//                            ))}
-//                        </select>
-//                    )}
-//                />
-//            </div>
+    // Handle multi-service selection
+    const handleServiceSelection = (serviceID) => {
+        setSelectedServices(prevServices =>
+            prevServices.includes(serviceID)
+                ? prevServices.filter(id => id !== serviceID)
+                : [...prevServices, serviceID]
+        );
+    };
 
-//            {/* Select District */}
-//            <div>
-//                <label>Select District</label>
-//                <Controller
-//                    name="district"
-//                    control={control}
-//                    render={({ field }) => (
-//                        <select {...field} disabled={isAddressAutoFilled}>
-//                            <option value="">Select a District</option>
-//                            {districts.map((district, index) => (
-//                                <option key={index} value={district}>
-//                                    {district}
-//                                </option>
-//                            ))}
-//                        </select>
-//                    )}
-//                />
-//            </div>
+    // Handle using user's saved address
+    const handleUseMyAddress = () => {
+        setUseMyAddress(!useMyAddress);
+        if (!useMyAddress && users && users.address) {
+            setSelectedAddress(users.address); // Automatically set user's address
+        } else {
+            setSelectedAddress('');
+        }
+    };
 
-//            {/* Address */}
-//            <div>
-//                <label>Address</label>
-//                <input
-//                    type="text"
-//                    value={currentAddress}
-//                    onChange={(e) => setCurrentAddress(e.target.value)}
-//                    disabled={isAddressAutoFilled}
-//                />
-//                <button type="button" onClick={getCurrentLocation}>
-//                    Lấy địa chỉ của tôi
-//                </button>
-//            </div>
+    // Handle booking (create order)
+    const handleBooking = async () => {
+        if (!selectedSlot) {
+            alert('Vui lòng chọn Slot!');
+            return;
+        }
 
-//            {/* Submit Order */}
-//            <button type="submit">Order</button>
-//        </form>
-//    );
-//};
+        if (selectedServices.length === 0) {
+            alert('Vui lòng chọn ít nhất một dịch vụ!');
+            return;
+        }
 
-//export default OrderForm;
+        if (!selectedAddress) {
+            alert('Vui lòng nhập hoặc chọn địa chỉ!');
+            return;
+        }
+
+        const completeAddress = `${addressDetails}, ${selectedAddress}`; // Combine detailed address with selected district
+
+        const user = users.find(u => u.userID);
+
+        const newOrder = {
+            userID: user ? user.userID : null,
+            veterinaID: null,
+            slot: selectedSlot,
+            services: selectedServices,
+            address: completeAddress, // Use the complete address here
+            description: description,
+            status: 'pending',
+        };
+
+        const result = await createOrder(newOrder);
+        if (result.success) {
+            alert('Đơn hàng của bạn đã được đặt thành công!');
+        } else {
+            alert('Đã có lỗi xảy ra khi đặt đơn hàng.');
+        }
+    };
+
+    return (
+        <div>
+            <h1>Quản lý đơn đặt hàng</h1>
+
+            {/* Slot selection */}
+            <div>
+                <label>Chọn Slot:</label>
+                <select onChange={(e) => handleSlotChange(e.target.value)} value={selectedSlot || ''}>
+                    <option value="" disabled>-- Chọn Slot --</option>
+                    {getAvailableSlots().map(slot => (
+                        <option key={slot.slot} value={slot.slot}>
+                            {slot.startTime} - {slot.endTime}
+                        </option>
+                    ))}
+                </select>
+            </div>
+
+            {/* Service selection */}
+            <div>
+                <label>Chọn Dịch Vụ:</label>
+                {services.map(service => (
+                    <div key={service.serviceID}>
+                        <input
+                            type="checkbox"
+                            checked={selectedServices.includes(service.serviceID)}
+                            onChange={() => handleServiceSelection(service.serviceID)}
+                        />
+                        <span>{service.name}</span>
+                    </div>
+                ))}
+            </div>
+
+            {/* Address selection */}
+            <div>
+                <label>Chọn Địa Chỉ:</label>
+                <input
+                    type="checkbox"
+                    checked={useMyAddress}
+                    onChange={handleUseMyAddress}
+                />
+                <label>Dùng địa chỉ của tôi ({users.address || 'Chưa có địa chỉ'})</label>
+
+                {!useMyAddress && (
+                    <div>
+                        {/* Input for detailed address */}
+                        <input
+                            type="text"
+                            placeholder="Số nhà, tên đường"
+                            value={addressDetails}
+                            onChange={(e) => setAddressDetails(e.target.value)}
+                        />
+
+                        {/* Dropdown for selecting district */}
+                        <select onChange={(e) => setSelectedAddress(e.target.value)} value={selectedAddress || ''}>
+                            <option value="" disabled>-- Chọn Quận/Huyện --</option>
+                            {addresses.map(address => (
+                                <option key={address} value={address}>
+                                    {address}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                )}
+            </div>
+
+            {/* Booking button */}
+            <button onClick={handleBooking}>Đặt hàng</button>
+        </div>
+    );
+};
+
+export default OrdersPage;
