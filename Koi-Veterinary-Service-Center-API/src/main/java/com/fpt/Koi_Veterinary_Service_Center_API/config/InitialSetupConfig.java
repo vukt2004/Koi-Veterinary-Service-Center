@@ -71,21 +71,6 @@ public class InitialSetupConfig {
                 user.setRole(roleRepository.findByTitle("Manager").orElseThrow(() -> new AppException("Role not found")));
                 userRepository.save(user);
             }
-//            if (!userRepository.existsByUserID("veterinarian")) {
-//                User user = new User();
-//                user.setUserID("veterinarian");
-//                user.setEmail("veterinarian@gmail.com");
-//                user.setName("veterinarian");
-//                user.setPhoneNumber("0123456789");
-//                user.setPassword(passwordEncoder.encode("123"));
-//                user.setRole(roleRepository.findByTitle("Veterina").orElseThrow(() -> new AppException("Role not found")));
-//                userRepository.save(user);
-//                Veterinarian veterinarian = new Veterinarian();
-//                veterinarian.setStatus(TRUE);
-//                veterinarian.setUser(user);
-//                veterinarian.setDescription("bác sĩ giỏi");
-//                veterinarianRepository.save(veterinarian);
-//            }
             if (!userRepository.existsByUserID("customer")) {
                 User user = new User();
                 user.setUserID("customer");

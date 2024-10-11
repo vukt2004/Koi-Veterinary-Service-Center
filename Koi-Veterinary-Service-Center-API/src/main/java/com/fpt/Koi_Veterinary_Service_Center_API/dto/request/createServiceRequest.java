@@ -14,6 +14,6 @@ public class createServiceRequest {
     private String Type;
 
     @NotNull(message = "Price cannot be null")
-    @Min(value = 100000, message = "price must be at least 100000")
+    @Min(value = 1, message = "price must be at least 1")
     private Float price;
 }

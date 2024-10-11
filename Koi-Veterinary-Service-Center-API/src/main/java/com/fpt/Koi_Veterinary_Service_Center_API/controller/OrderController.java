@@ -1,7 +1,10 @@
 package com.fpt.Koi_Veterinary_Service_Center_API.controller;
 
 import com.fpt.Koi_Veterinary_Service_Center_API.dto.request.createOrderRequest;
+import com.fpt.Koi_Veterinary_Service_Center_API.dto.request.orderDescriptionRequest;
+import com.fpt.Koi_Veterinary_Service_Center_API.dto.request.orderServiceReqest;
 import com.fpt.Koi_Veterinary_Service_Center_API.dto.response.orderResponse;
+import com.fpt.Koi_Veterinary_Service_Center_API.entity.OrderDetail;
 import com.fpt.Koi_Veterinary_Service_Center_API.entity.enums.OrderStatus;
 import com.fpt.Koi_Veterinary_Service_Center_API.service.IOrderService;
 import jakarta.validation.Valid;
@@ -29,11 +32,11 @@ public class OrderController {
         return new ResponseEntity<>(responses, HttpStatus.OK);
     }
 
-//    @GetMapping("/orders/{orderId}")
-//    public ResponseEntity<?> getOrderByOrderID(@PathVariable("orderId") String orderId) {
-//        orderResponse response = orderService.getOrderByOrderID(orderId);
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-//    }
+    @GetMapping("/orders/{orderId}")
+    public ResponseEntity<?> getOrderByOrderID(@PathVariable("orderId") String orderId) {
+        orderResponse response = orderService.getOrderByOrderID(orderId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
     @PutMapping("/orders/{orderId}/status")
     public ResponseEntity<?> updateOrderStatus(@PathVariable("orderId") String orderId, @RequestBody OrderStatus status) {
@@ -42,14 +45,20 @@ public class OrderController {
     }
 
     @PutMapping("/orders/{orderId}/description")
-    public ResponseEntity<?> addOrderDescription(@PathVariable("orderId") String orderId, String description) {
+    public ResponseEntity<?> addOrderDescription(@PathVariable("orderId") String orderId, @Valid @RequestBody orderDescriptionRequest description) {
         orderResponse response = orderService.addOrderDescription(orderId, description);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-//    @DeleteMapping("/orders/{orderId}")
-//    public ResponseEntity<?> deleteOrder(@PathVariable("orderId") String orderId) {
-//        orderService.deleteOrder(orderId);
-//        return new ResponseEntity<>("Deleted", HttpStatus.OK);
-//    }
+    @PostMapping("/orders/{orderId}/services")
+    public ResponseEntity<?> addServiceToOrder(@PathVariable("orderId") String orderId, @Valid @RequestBody orderServiceReqest orderServiceReq) {
+        orderResponse response = orderService.addServiceToOrder(orderId, orderServiceReq);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/orders/{orderId}/services/{serviceID}")
+    public ResponseEntity<?> removeServiceFromOrder(@PathVariable("orderId") String orderId, @PathVariable("serviceID") String serviceID) {
+        orderResponse response = orderService.removeServiceFromOrder(orderId,serviceID);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

@@ -2,6 +2,9 @@ package com.fpt.Koi_Veterinary_Service_Center_API.service.impl;
 
 import com.fpt.Koi_Veterinary_Service_Center_API.dto.request.createOrderRequest;
 
+import com.fpt.Koi_Veterinary_Service_Center_API.dto.request.orderDescriptionRequest;
+import com.fpt.Koi_Veterinary_Service_Center_API.dto.request.orderServiceReqest;
+import com.fpt.Koi_Veterinary_Service_Center_API.dto.response.OrderDetailResponse;
 import com.fpt.Koi_Veterinary_Service_Center_API.dto.response.orderResponse;
 import com.fpt.Koi_Veterinary_Service_Center_API.entity.*;
 import com.fpt.Koi_Veterinary_Service_Center_API.entity.enums.OrderStatus;
@@ -38,44 +41,35 @@ public class OrderServiceImpl implements IOrderService {
         Veterinarian veterinarian = veterinarianRepository.findByVeterinarianID(createOrderRequest.getVeterinaID()).orElseThrow(()-> new AppException("Veterinarian not found"));
         User user = userRepository.findByUserID(createOrderRequest.getUserID()).orElseThrow(()-> new AppException("User not found"));
         Slot slot = slotRepository.findBySlot(createOrderRequest.getSlot()).orElseThrow(()-> new AppException("Slot not found"));
-        com.fpt.Koi_Veterinary_Service_Center_API.entity.Service service = serviceRepository.findByServiceID(createOrderRequest.getServiceId()).orElseThrow(()-> new AppException("Service not found"));
 
         //check if address in request is valid
         List<TravelExpense> travelExpenses = travelExpenseRepository.findAll();
-        TravelExpense travelExpense = new TravelExpense();
-        boolean t = false;
+        TravelExpense travelExpense = null;
         for(TravelExpense singleTravelExpense : travelExpenses){
             if(createOrderRequest.getAddress().contains(singleTravelExpense.getEndLocation())){
                 travelExpense = singleTravelExpense;
-                t = true;
                 break;
             }
         }
-        if(!t){
+        if(travelExpense == null){
             throw new AppException("Location not registered");
         }
 
+        //save new order
         Order order = new Order();
         order.setVeterinarian(veterinarian);
         order.setUser(user);
-        order.setStatus(createOrderRequest.getStatus());
-        order.setOrderDate(createOrderRequest.getDay());
+        order.setOrderDate(createOrderRequest.getOrderDate());
         order.setSlot(slot);
         order.setAddress(createOrderRequest.getAddress());
         order.setTravelExpense(travelExpense);
         Order savedOrder = orderRepository.save(order);
 
-        OrderDetail orderDetail = new OrderDetail();
-        orderDetail.setOrder(order);
-        orderDetail.setQuantity(createOrderRequest.getQuantity());
-        orderDetail.setService(service);
-        orderDetailRepository.save(orderDetail);
-
+        //create response
         orderResponse response = new orderResponse();
         response.setAddress(savedOrder.getAddress());
         response.setSlot(savedOrder.getSlot().getSlot());
         response.setOrderId(savedOrder.getOrderID());
-        response.setStatus(savedOrder.getStatus());
         response.setOrderDate(savedOrder.getOrderDate());
         response.setVeterinaId(savedOrder.getVeterinarian().getVeterinarianID());
         response.setTravelExpenseId(savedOrder.getTravelExpense().getExpenseID());
@@ -88,6 +82,13 @@ public class OrderServiceImpl implements IOrderService {
         List<orderResponse> orderResponses = new ArrayList<>();
         for (Order order : orders) {
             orderResponse response = new orderResponse();
+            List<OrderDetailResponse> detailResponses = new ArrayList<>();
+            for (OrderDetail orderDetail1 : order.getOrderDetails()){
+                OrderDetailResponse orderDetailResponse = new OrderDetailResponse();
+                orderDetailResponse.setQuantity(orderDetail1.getQuantity());
+                orderDetailResponse.setServiceID(orderDetail1.getService().getServiceID());
+                detailResponses.add(orderDetailResponse);
+            }
             response.setAddress(order.getAddress());
             response.setSlot(order.getSlot().getSlot());
             response.setOrderId(order.getOrderID());
@@ -96,22 +97,49 @@ public class OrderServiceImpl implements IOrderService {
             response.setVeterinaId(order.getVeterinarian().getVeterinarianID());
             response.setTravelExpenseId(order.getTravelExpense().getExpenseID());
             response.setDescription(order.getDescription());
+            response.setServices(detailResponses);
             orderResponses.add(response);
         }
         return orderResponses;
     }
 
-//    @Override
-//    public orderResponse getOrderByOrderID(String orderId) {
-//        return null;
-//    }
+    @Override
+    public orderResponse getOrderByOrderID(String orderId) {
+        Order order = orderRepository.findByOrderID(orderId).orElseThrow(()-> new AppException("Order not found"));
+        orderResponse response = new orderResponse();
+        List<OrderDetailResponse> detailResponses = new ArrayList<>();
+        for (OrderDetail orderDetail1 : order.getOrderDetails()){
+            OrderDetailResponse orderDetailResponse = new OrderDetailResponse();
+            orderDetailResponse.setQuantity(orderDetail1.getQuantity());
+            orderDetailResponse.setServiceID(orderDetail1.getService().getServiceID());
+            detailResponses.add(orderDetailResponse);
+        }
+        response.setAddress(order.getAddress());
+        response.setSlot(order.getSlot().getSlot());
+        response.setOrderId(order.getOrderID());
+        response.setStatus(order.getStatus());
+        response.setOrderDate(order.getOrderDate());
+        response.setVeterinaId(order.getVeterinarian().getVeterinarianID());
+        response.setTravelExpenseId(order.getTravelExpense().getExpenseID());
+        response.setDescription(order.getDescription());
+        response.setServices(detailResponses);
+        return response;
+    }
 
     @Override
     public orderResponse updateOrderStatus(String orderId, OrderStatus status) {
         Order order = orderRepository.findByOrderID(orderId).orElseThrow(()-> new AppException("Order not found"));
         order.setStatus(status);
         Order savedOrder = orderRepository.save(order);
+
         orderResponse response = new orderResponse();
+        List<OrderDetailResponse> detailResponses = new ArrayList<>();
+        for (OrderDetail orderDetail1 : savedOrder.getOrderDetails()){
+            OrderDetailResponse orderDetailResponse = new OrderDetailResponse();
+            orderDetailResponse.setQuantity(orderDetail1.getQuantity());
+            orderDetailResponse.setServiceID(orderDetail1.getService().getServiceID());
+            detailResponses.add(orderDetailResponse);
+        }
         response.setAddress(savedOrder.getAddress());
         response.setSlot(savedOrder.getSlot().getSlot());
         response.setOrderId(savedOrder.getOrderID());
@@ -120,15 +148,24 @@ public class OrderServiceImpl implements IOrderService {
         response.setVeterinaId(savedOrder.getVeterinarian().getVeterinarianID());
         response.setTravelExpenseId(savedOrder.getTravelExpense().getExpenseID());
         response.setDescription(savedOrder.getDescription());
+        response.setServices(detailResponses);
         return response;
     }
 
     @Override
-    public orderResponse addOrderDescription(String orderId, String description) {
+    public orderResponse addOrderDescription(String orderId, orderDescriptionRequest description) {
         Order order = orderRepository.findByOrderID(orderId).orElseThrow(()-> new AppException("Order not found"));
-        order.setDescription(description);
+        order.setDescription(description.getDescription());
         Order savedOrder = orderRepository.save(order);
+
         orderResponse response = new orderResponse();
+        List<OrderDetailResponse> detailResponses = new ArrayList<>();
+        for (OrderDetail orderDetail1 : savedOrder.getOrderDetails()){
+            OrderDetailResponse orderDetailResponse = new OrderDetailResponse();
+            orderDetailResponse.setQuantity(orderDetail1.getQuantity());
+            orderDetailResponse.setServiceID(orderDetail1.getService().getServiceID());
+            detailResponses.add(orderDetailResponse);
+        }
         response.setAddress(savedOrder.getAddress());
         response.setSlot(savedOrder.getSlot().getSlot());
         response.setOrderId(savedOrder.getOrderID());
@@ -137,11 +174,78 @@ public class OrderServiceImpl implements IOrderService {
         response.setVeterinaId(savedOrder.getVeterinarian().getVeterinarianID());
         response.setTravelExpenseId(savedOrder.getTravelExpense().getExpenseID());
         response.setDescription(savedOrder.getDescription());
+        response.setServices(detailResponses);
         return response;
     }
 
-//    @Override
-//    public void deleteOrder(String orderId) {
-//
-//    }
+    @Override
+    public orderResponse addServiceToOrder(String orderId, orderServiceReqest orderServiceReq) {
+
+        Order order = orderRepository.findByOrderID(orderId).orElseThrow(()-> new AppException("Order not found"));
+        com.fpt.Koi_Veterinary_Service_Center_API.entity.Service service = serviceRepository.findByServiceID(orderServiceReq.getServiceID()).orElseThrow(()-> new AppException("Service not found"));
+        isServiceExist(order, service);
+
+        OrderDetail orderDetail = new OrderDetail();
+        orderDetail.setService(service);
+        orderDetail.setQuantity(orderServiceReq.getQuantity());
+        orderDetail.setOrder(order);
+        order.getOrderDetails().add(orderDetail);
+        Order savedOrder = orderRepository.save(order);
+
+        orderResponse response = new orderResponse();
+        List<OrderDetailResponse> detailResponses = new ArrayList<>();
+        for (OrderDetail orderDetail1 : savedOrder.getOrderDetails()){
+            OrderDetailResponse orderDetailResponse = new OrderDetailResponse();
+            orderDetailResponse.setQuantity(orderDetail1.getQuantity());
+            orderDetailResponse.setServiceID(orderDetail1.getService().getServiceID());
+            detailResponses.add(orderDetailResponse);
+        }
+        response.setAddress(savedOrder.getAddress());
+        response.setSlot(savedOrder.getSlot().getSlot());
+        response.setOrderId(savedOrder.getOrderID());
+        response.setStatus(savedOrder.getStatus());
+        response.setOrderDate(savedOrder.getOrderDate());
+        response.setVeterinaId(savedOrder.getVeterinarian().getVeterinarianID());
+        response.setTravelExpenseId(savedOrder.getTravelExpense().getExpenseID());
+        response.setDescription(savedOrder.getDescription());
+        response.setServices(detailResponses);
+        return response;
+    }
+
+    private void isServiceExist(Order order, com.fpt.Koi_Veterinary_Service_Center_API.entity.Service service) {
+        for (OrderDetail orderDetail : order.getOrderDetails()){
+            if(orderDetail.getService().equals(service)){
+                throw new AppException("Service already in order");
+            }
+        }
+    }
+
+    @Override
+    public orderResponse removeServiceFromOrder(String orderId, String serviceID) {
+        Order order = orderRepository.findByOrderID(orderId).orElseThrow(()-> new AppException("Order not found"));
+        com.fpt.Koi_Veterinary_Service_Center_API.entity.Service service = serviceRepository.findByServiceID(serviceID).orElseThrow(()-> new AppException("Service not found"));
+        OrderDetail orderDetail = orderDetailRepository.findByService(service).orElseThrow(()-> new AppException("OrderDetail not found"));
+
+        order.getOrderDetails().remove(orderDetail);
+        Order savedOrder = orderRepository.save(order);
+
+        orderResponse response = new orderResponse();
+        List<OrderDetailResponse> detailResponses = new ArrayList<>();
+        for (OrderDetail orderDetail1 : savedOrder.getOrderDetails()){
+            OrderDetailResponse orderDetailResponse = new OrderDetailResponse();
+            orderDetailResponse.setQuantity(orderDetail1.getQuantity());
+            orderDetailResponse.setServiceID(orderDetail1.getService().getServiceID());
+            detailResponses.add(orderDetailResponse);
+        }
+        response.setAddress(savedOrder.getAddress());
+        response.setSlot(savedOrder.getSlot().getSlot());
+        response.setOrderId(savedOrder.getOrderID());
+        response.setStatus(savedOrder.getStatus());
+        response.setOrderDate(savedOrder.getOrderDate());
+        response.setVeterinaId(savedOrder.getVeterinarian().getVeterinarianID());
+        response.setTravelExpenseId(savedOrder.getTravelExpense().getExpenseID());
+        response.setDescription(savedOrder.getDescription());
+        response.setServices(detailResponses);
+        return response;
+    }
 }

@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table(name = "OrderDetails")
 @Getter
@@ -19,7 +21,7 @@ public class OrderDetail {
     @JoinColumn(name = "serviceID", nullable = false)
     private Service service;
     @Id
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "orderID", nullable = false)
     private Order order;
     private int quantity;
