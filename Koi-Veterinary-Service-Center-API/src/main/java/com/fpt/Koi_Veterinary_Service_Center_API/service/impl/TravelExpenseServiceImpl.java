@@ -18,12 +18,12 @@ public class TravelExpenseServiceImpl implements ITravelExpenseService {
     @Autowired
     private TravelExpenseRepository travelExpenseRepository;
     @Override
-    public travelExpenseResponse createTravelExpense(TravelExpenseRequest travelExpenseRequest) {
+    public travelExpenseResponse createTravelExpense(String expenseId, TravelExpenseRequest travelExpenseRequest) {
         TravelExpense travelExpense = new TravelExpense();
-        if (travelExpenseRepository.existsByExpenseID(travelExpenseRequest.getExpenseID())) {
-            throw new AppException(travelExpenseRequest.getExpenseID() + " already exists");
+        if (travelExpenseRepository.existsByExpenseID(expenseId)) {
+            throw new AppException(expenseId + " already exists");
         } else {
-            travelExpense.setExpenseID(travelExpenseRequest.getExpenseID());
+            travelExpense.setExpenseID(expenseId);
         }
         travelExpense.setFee(travelExpenseRequest.getFee());
         travelExpense.setEndLocation(travelExpenseRequest.getEndLocation());
@@ -60,9 +60,9 @@ public class TravelExpenseServiceImpl implements ITravelExpenseService {
     }
 
     @Override
-    public travelExpenseResponse updateTravelExpense(TravelExpenseRequest travelExpenseRequest) {
+    public travelExpenseResponse updateTravelExpense(String expenseId, TravelExpenseRequest travelExpenseRequest) {
         travelExpenseResponse response = new travelExpenseResponse();
-        TravelExpense travelExpense = travelExpenseRepository.findByExpenseID(travelExpenseRequest.getExpenseID())
+        TravelExpense travelExpense = travelExpenseRepository.findByExpenseID(expenseId)
                 .orElseThrow(() -> new AppException("Expense not found"));
         travelExpense.setEndLocation(travelExpenseRequest.getEndLocation());
         travelExpense.setFee(travelExpenseRequest.getFee());

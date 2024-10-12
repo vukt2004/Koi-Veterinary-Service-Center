@@ -20,8 +20,8 @@ import java.util.List;
 public class OrderController {
     @Autowired
     private IOrderService orderService;
-    @PostMapping("/orders/add")
-    public ResponseEntity<?> addOrder(@Valid @RequestBody createOrderRequest createOrderRequest) {
+    @PostMapping("/orders")
+    public ResponseEntity<?> createOrder(@Valid @RequestBody createOrderRequest createOrderRequest) {
         orderResponse response = orderService.addOrder(createOrderRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }

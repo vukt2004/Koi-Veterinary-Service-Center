@@ -16,31 +16,31 @@ import java.util.List;
 public class TravelExpenseController {
     @Autowired
     private ITravelExpenseService travelService;
-    @PostMapping("/travelExpense/add")
-    public ResponseEntity<?> addTravelExpense(@Valid @RequestBody TravelExpenseRequest travelExpenseRequest) {
-        travelExpenseResponse response = travelService.createTravelExpense(travelExpenseRequest);
+    @PostMapping("/expenses/add")
+    public ResponseEntity<?> addTravelExpense(@PathVariable("expenseId") String expenseId, @Valid @RequestBody TravelExpenseRequest travelExpenseRequest) {
+        travelExpenseResponse response = travelService.createTravelExpense(expenseId, travelExpenseRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping("/travelExpense")
+    @GetMapping("/expenses")
     public ResponseEntity<?> getAllTravelExpenses() {
         List<travelExpenseResponse> travelExpenses = travelService.getAllTravelExpenses();
         return new ResponseEntity<>(travelExpenses, HttpStatus.OK);
     }
 
-    @GetMapping("/travelExpense/{travelExpenseID}")
+    @GetMapping("/expenses/{travelExpenseID}")
     public ResponseEntity<?> getTravelExpenseByID(@PathVariable("travelExpenseID") String travelExpenseID) {
         travelExpenseResponse response = travelService.getTravelExpenseByID(travelExpenseID);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("/travelExpense/update")
-    public ResponseEntity<?> updateTravelExpense(@Valid @RequestBody TravelExpenseRequest travelExpenseRequest) {
-        travelExpenseResponse response = travelService.updateTravelExpense(travelExpenseRequest);
+    @PutMapping("/expenses/{expenseId}")
+    public ResponseEntity<?> updateTravelExpense(@PathVariable("expenseId") String expenseId, @Valid @RequestBody TravelExpenseRequest travelExpenseRequest) {
+        travelExpenseResponse response = travelService.updateTravelExpense(expenseId, travelExpenseRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/travelExpense/delete/{travelExpenseID}")
+    @DeleteMapping("/expenses/delete/{travelExpenseID}")
     public ResponseEntity<?> deleteTravelExpense(@PathVariable("travelExpenseID") String travelExpenseID) {
         travelService.deleteTravelExpense(travelExpenseID);
         return new ResponseEntity<>("Deleted", HttpStatus.OK);

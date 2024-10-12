@@ -7,11 +7,11 @@ import lombok.Data;
 
 @Data
 public class TravelExpenseRequest {
-    @NotBlank(message = "expenseID cannot be empty")
-    private String ExpenseID;
+//    @NotBlank(message = "expenseID cannot be empty")
+//    private String ExpenseID;
     @NotNull(message = "fee cannot be empty")
     @Min(value = 0, message = "Quantity cannot be negative")
-    private int Fee;
+    private int fee;
     @NotBlank(message = "Location cannot be empty")
-    private String EndLocation;
+    private String endLocation;
 }

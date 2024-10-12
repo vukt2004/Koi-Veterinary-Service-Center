@@ -6,13 +6,13 @@ import com.fpt.Koi_Veterinary_Service_Center_API.dto.response.travelExpenseRespo
 import java.util.List;
 
 public interface ITravelExpenseService {
-    travelExpenseResponse createTravelExpense(TravelExpenseRequest travelExpenseRequest);
+    travelExpenseResponse createTravelExpense(String expenseId, TravelExpenseRequest travelExpenseRequest);
 
     travelExpenseResponse getTravelExpenseByID(String travelExpenseID);
 
     List<travelExpenseResponse> getAllTravelExpenses();
 
-    travelExpenseResponse updateTravelExpense(TravelExpenseRequest travelExpenseRequest);
+    travelExpenseResponse updateTravelExpense(String expenseId, TravelExpenseRequest travelExpenseRequest);
 
     void deleteTravelExpense(String travelExpenseID);
 }
