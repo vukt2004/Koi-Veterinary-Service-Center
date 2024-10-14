@@ -22,7 +22,7 @@ public class JWTUtils {
 
 
     public JWTUtils() {
-        String secretString = "843567893696976453275974432697R634976R738467TR678T34865R6834R8763T478378637664538745673865783678548735687R3";
+        String secretString = "3b85c3c16d6d689f170b85fc9e8c3123d3bf3e195bbf700b4eaa3c685edc3e0e";
         byte[] keyBytes = Base64.getDecoder().decode(secretString.getBytes(StandardCharsets.UTF_8));
         this.Key = new SecretKeySpec(keyBytes, "HmacSHA256");
 

@@ -13,11 +13,11 @@ import java.util.List;
         servers = {
                 @Server(
                         description = "Local ENV",
-                        url = "http://localhost:8080"
+                        url = "https://localhost:8080"
                 ),
                 @Server(
                         description = "Prod ENV",
-                        url = "http://3.1.79.51:8080"
+                        url = "https://3.1.79.51:8080"
                 )
         },
         security = {

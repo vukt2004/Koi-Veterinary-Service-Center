@@ -29,9 +29,9 @@ public class SlotController {
         return new ResponseEntity<>(slots, HttpStatus.OK);
     }
 
-//    @PutMapping("/slot/update")
-//    public ResponseEntity<?> updateSlot(@Valid @RequestBody slotRequest slotRequest) {
-//        slotResponse response = slotService.updateSlot(slotRequest);
-//        return new ResponseEntity<>(response, HttpStatus.CREATED);
-//    }
+    @PutMapping("/slot/update")
+    public ResponseEntity<?> updateSlot(@Valid @RequestBody slotRequest slotRequest) {
+        slotResponse response = slotService.updateSlot(slotRequest);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
 }
