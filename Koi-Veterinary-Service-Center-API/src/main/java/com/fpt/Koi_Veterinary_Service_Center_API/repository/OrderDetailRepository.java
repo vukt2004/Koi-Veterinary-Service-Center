@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OrderDetailRepository extends JpaRepository<OrderDetail, OrderDetailId> {
-    Optional<OrderDetail> findByService(Service service);
+    Optional<OrderDetail> findByServiceAndOrder(Service service, Order order);
 
 }

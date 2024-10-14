@@ -7,4 +7,10 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class loginResponse {
     private String token;
+    private String userID;
+    private String name;
+    private String email;
+    private String phoneNumber;
+    private String role;
+    private String address;
 }

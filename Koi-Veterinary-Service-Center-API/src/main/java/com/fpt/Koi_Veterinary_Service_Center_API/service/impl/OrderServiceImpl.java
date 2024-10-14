@@ -3,6 +3,7 @@ package com.fpt.Koi_Veterinary_Service_Center_API.service.impl;
 import com.fpt.Koi_Veterinary_Service_Center_API.dto.request.createOrderRequest;
 
 import com.fpt.Koi_Veterinary_Service_Center_API.dto.request.orderDescriptionRequest;
+import com.fpt.Koi_Veterinary_Service_Center_API.dto.request.orderDetailRequest;
 import com.fpt.Koi_Veterinary_Service_Center_API.dto.request.orderServiceReqest;
 import com.fpt.Koi_Veterinary_Service_Center_API.dto.response.OrderDetailResponse;
 import com.fpt.Koi_Veterinary_Service_Center_API.dto.response.orderResponse;
@@ -55,7 +56,7 @@ public class OrderServiceImpl implements IOrderService {
             throw new AppException("Location not registered");
         }
 
-        //save new order
+        //create new order
         Order order = new Order();
         order.setVeterinarian(veterinarian);
         order.setUser(user);
@@ -63,16 +64,43 @@ public class OrderServiceImpl implements IOrderService {
         order.setSlot(slot);
         order.setAddress(createOrderRequest.getAddress());
         order.setTravelExpense(travelExpense);
-        Order savedOrder = orderRepository.save(order);
+        order.setStatus(OrderStatus.pending);
+        order.setOrderDetails(new ArrayList<>());
+        Order newOrder = orderRepository.save(order);
+
+        //create order details
+        List<OrderDetail> orderDetails = newOrder.getOrderDetails();
+        List<orderDetailRequest> orderDetailRequests = createOrderRequest.getServices();
+        for (orderDetailRequest orderDetailRequest : orderDetailRequests){
+            com.fpt.Koi_Veterinary_Service_Center_API.entity.Service service = serviceRepository.findByServiceID(orderDetailRequest.getServiceID()).orElseThrow(()-> new AppException("Service not found"));
+            isServiceExist(newOrder, service);
+            OrderDetail newOrderDetail = new OrderDetail();
+            newOrderDetail.setOrder(newOrder);
+            newOrderDetail.setQuantity(orderDetailRequest.getQuantity());
+            newOrderDetail.setService(service);
+            orderDetails.add(newOrderDetail);
+        }
+        newOrder.setOrderDetails(orderDetails);
+        Order savedOrder = orderRepository.save(newOrder);
 
         //create response
         orderResponse response = new orderResponse();
+        List<OrderDetailResponse> detailResponses = new ArrayList<>();
+        for (OrderDetail orderDetail1 : savedOrder.getOrderDetails()){
+            OrderDetailResponse orderDetailResponse = new OrderDetailResponse();
+            orderDetailResponse.setQuantity(orderDetail1.getQuantity());
+            orderDetailResponse.setServiceID(orderDetail1.getService().getServiceID());
+            detailResponses.add(orderDetailResponse);
+        }
         response.setAddress(savedOrder.getAddress());
         response.setSlot(savedOrder.getSlot().getSlot());
         response.setOrderId(savedOrder.getOrderID());
+        response.setStatus(savedOrder.getStatus());
         response.setOrderDate(savedOrder.getOrderDate());
         response.setVeterinaId(savedOrder.getVeterinarian().getVeterinarianID());
         response.setTravelExpenseId(savedOrder.getTravelExpense().getExpenseID());
+        response.setDescription(savedOrder.getDescription());
+        response.setServices(detailResponses);
         return response;
     }
 
@@ -224,8 +252,8 @@ public class OrderServiceImpl implements IOrderService {
     public orderResponse removeServiceFromOrder(String orderId, String serviceID) {
         Order order = orderRepository.findByOrderID(orderId).orElseThrow(()-> new AppException("Order not found"));
         com.fpt.Koi_Veterinary_Service_Center_API.entity.Service service = serviceRepository.findByServiceID(serviceID).orElseThrow(()-> new AppException("Service not found"));
-        OrderDetail orderDetail = orderDetailRepository.findByService(service).orElseThrow(()-> new AppException("OrderDetail not found"));
 
+        OrderDetail orderDetail = orderDetailRepository.findByServiceAndOrder(service, order).orElseThrow(()-> new AppException("OrderDetail not found"));
         order.getOrderDetails().remove(orderDetail);
         Order savedOrder = orderRepository.save(order);
 

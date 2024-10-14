@@ -68,7 +68,6 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public loginResponse login(loginRequest loginRequest) {
-        loginResponse response = new loginResponse();
         var user = userRepository.findByUserID(loginRequest.getUserID()).orElseThrow(() -> new AppException("User Not found"));
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUserID(), loginRequest.getPassword()));
@@ -76,7 +75,15 @@ public class UserServiceImpl implements IUserService {
             throw new AppException("Wrong Password");
         }
         var token = jwtUtils.generateToken(user);
+
+        loginResponse response = new loginResponse();
         response.setToken(token);
+        response.setUserID(user.getUserID());
+        response.setRole(user.getRole().getRoleID());
+        response.setAddress(user.getAddress());
+        response.setName(user.getName());
+        response.setPhoneNumber(user.getPhoneNumber());
+        response.setEmail(user.getEmail());
         return response;
     }
 
