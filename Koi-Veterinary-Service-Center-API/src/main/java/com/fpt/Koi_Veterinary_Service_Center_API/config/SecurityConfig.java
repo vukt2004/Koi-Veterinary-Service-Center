@@ -33,7 +33,18 @@ public class SecurityConfig {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/api/login/**","/api/register/**","/swagger-ui/**", "/v3/api-docs/**", "/api/payment-success/**").permitAll()
+                        .requestMatchers("/api/login/**",
+                                "/api/register/**",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/api/payment-success/**",
+                                "/api/veterina/**",
+                                "/api/veterinas/**",
+                                "/api/service/**",
+                                "/api/services/**",
+                                "/api/slot/**",
+                                "/api/slots/**")
+                        .permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())

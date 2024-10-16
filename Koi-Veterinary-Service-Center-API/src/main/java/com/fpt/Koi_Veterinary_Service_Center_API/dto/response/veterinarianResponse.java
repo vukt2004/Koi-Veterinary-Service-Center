@@ -12,4 +12,5 @@ public class veterinarianResponse {
     private String Description;
     private Boolean Status;
     private String UserID;
+    private String name;
 }

@@ -50,6 +50,7 @@ public class VeterinarianServiceImpl implements IVeterinarianService {
         response.setStatus(savedVeterinarian.getStatus());
         response.setVeterinaID(savedVeterinarian.getVeterinarianID());
         response.setUserID(savedVeterinarian.getUser().getUserID());
+        response.setName(userRepository.findByUserID(savedVeterinarian.getUser().getUserID()).orElseThrow(()-> new AppException("User not found")).getName());
         return response;
     }
 
@@ -61,6 +62,7 @@ public class VeterinarianServiceImpl implements IVeterinarianService {
         response.setStatus(veterinarian.getStatus());
         response.setDescription(veterinarian.getDescription());
         response.setVeterinaID(veterinarian.getVeterinarianID());
+        response.setName(userRepository.findByUserID(veterinarian.getUser().getUserID()).orElseThrow(()-> new AppException("User not found")).getName());
         return response;
     }
 
@@ -74,6 +76,7 @@ public class VeterinarianServiceImpl implements IVeterinarianService {
             response.setStatus(veterinarian.getStatus());
             response.setDescription(veterinarian.getDescription());
             response.setUserID(veterinarian.getUser().getUserID());
+            response.setName(userRepository.findByUserID(veterinarian.getUser().getUserID()).orElseThrow(()-> new AppException("User not found")).getName());
             veterinarianResponses.add(response);
         }
         return veterinarianResponses;
@@ -90,6 +93,7 @@ public class VeterinarianServiceImpl implements IVeterinarianService {
         response.setDescription(savedVeterinarian.getDescription());
         response.setVeterinaID(savedVeterinarian.getVeterinarianID());
         response.setStatus(savedVeterinarian.getStatus());
+        response.setName(userRepository.findByUserID(savedVeterinarian.getUser().getUserID()).orElseThrow(()-> new AppException("User not found")).getName());
         return response;
     }
 

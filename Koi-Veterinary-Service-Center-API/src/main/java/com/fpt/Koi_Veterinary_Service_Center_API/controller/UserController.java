@@ -39,6 +39,13 @@ public class UserController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
+    @GetMapping("/user/loginUser")
+    @PreAuthorize("hasAuthority('Manager')")
+    public ResponseEntity<?> getLoginUser(@RequestHeader("Authorization") String token) {
+        userResponse user = userService.getLoginUser(token);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
     @GetMapping("/users")
     @PreAuthorize("hasAuthority('Manager')")
     public ResponseEntity<?> getAllUser() {

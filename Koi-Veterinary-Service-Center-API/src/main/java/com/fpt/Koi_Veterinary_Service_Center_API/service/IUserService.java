@@ -25,4 +25,6 @@ public interface IUserService {
     void deleteUserByID(String id);
 
     userResponse updateUser(@Valid userRequest userRequest);
+
+    userResponse getLoginUser(String token);
 }

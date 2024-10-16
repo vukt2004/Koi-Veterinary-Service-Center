@@ -16,6 +16,7 @@ import com.fpt.Koi_Veterinary_Service_Center_API.utils.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -188,6 +189,21 @@ public class UserServiceImpl implements IUserService {
         response.setName(savedUser.getName());
         response.setPhoneNumber(savedUser.getPhoneNumber());
         response.setEmail(savedUser.getEmail());
+        return response;
+    }
+
+    @Override
+    public userResponse getLoginUser(String token) {
+        String userID = token.substring(7);
+        User user = userRepository.findByUserID(jwtUtils.extractUsername(userID)).orElseThrow(() -> new AppException("User Not Found"));
+        userResponse response = new userResponse();
+        response.setUserID(user.getUserID());
+        response.setRole(user.getRole().getRoleID());
+        response.setPassword(user.getPassword());
+        response.setAddress(user.getAddress());
+        response.setName(user.getName());
+        response.setPhoneNumber(user.getPhoneNumber());
+        response.setEmail(user.getEmail());
         return response;
     }
 }
