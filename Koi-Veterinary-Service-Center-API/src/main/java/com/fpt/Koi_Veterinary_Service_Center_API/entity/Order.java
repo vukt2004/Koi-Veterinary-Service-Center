@@ -39,7 +39,7 @@ public class Order {
     @JoinColumn(name = "expenseID", nullable = false)
     private TravelExpense travelExpense;
     @ManyToOne
-    @JoinColumn(name = "veterinarianID", nullable = false)
+    @JoinColumn(name = "veterinarianID")
     private Veterinarian veterinarian;
     @ManyToOne
     @JoinColumn(name = "UserID", nullable = false)

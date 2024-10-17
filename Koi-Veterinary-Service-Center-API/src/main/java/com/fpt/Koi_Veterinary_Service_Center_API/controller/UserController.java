@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @GetMapping("/user/Id/{id}")
-    @PreAuthorize("hasAuthority('Manager')")
+//    @PreAuthorize("hasAuthority('Manager')")
     public ResponseEntity<?> getUserById(@PathVariable("id") String id) {
         userResponse user = userService.getUserByID(id);
         return new ResponseEntity<>(user, HttpStatus.OK);

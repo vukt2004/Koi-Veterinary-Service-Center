@@ -20,4 +20,8 @@ public class serviceRequest {
     @NotNull(message = "Price cannot be null")
     @Min(value = 1, message = "price must be at least 100000")
     private Float price;
+
+    @NotNull(message = "maxQuantity cannot be null")
+    @Min(value = 1, message = "maxQuantity must be at least 1")
+    private int maxQuantity;
 }

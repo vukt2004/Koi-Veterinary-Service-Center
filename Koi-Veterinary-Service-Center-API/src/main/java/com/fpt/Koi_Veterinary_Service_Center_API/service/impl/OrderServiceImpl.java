@@ -39,7 +39,6 @@ public class OrderServiceImpl implements IOrderService {
     @Override
     public orderResponse addOrder(createOrderRequest createOrderRequest) {
 
-        Veterinarian veterinarian = veterinarianRepository.findByVeterinarianID(createOrderRequest.getVeterinaID()).orElseThrow(()-> new AppException("Veterinarian not found"));
         User user = userRepository.findByUserID(createOrderRequest.getUserID()).orElseThrow(()-> new AppException("User not found"));
         Slot slot = slotRepository.findBySlot(createOrderRequest.getSlot()).orElseThrow(()-> new AppException("Slot not found"));
 
@@ -58,9 +57,12 @@ public class OrderServiceImpl implements IOrderService {
 
         //create new order
         Order order = new Order();
-        order.setVeterinarian(veterinarian);
+        if(createOrderRequest.getVeterinaID()!=null){
+            Veterinarian veterinarian = veterinarianRepository.findByVeterinarianID(createOrderRequest.getVeterinaID()).orElseThrow(()-> new AppException("Veterinarian not found"));
+            order.setVeterinarian(veterinarian);
+        }
         order.setUser(user);
-        order.setOrderDate(createOrderRequest.getOrderDate());
+        order.setOrderDate(createOrderRequest.getDate());
         order.setSlot(slot);
         order.setAddress(createOrderRequest.getAddress());
         order.setTravelExpense(travelExpense);
@@ -97,7 +99,9 @@ public class OrderServiceImpl implements IOrderService {
         response.setOrderId(savedOrder.getOrderID());
         response.setStatus(savedOrder.getStatus());
         response.setOrderDate(savedOrder.getOrderDate());
-        response.setVeterinaId(savedOrder.getVeterinarian().getVeterinarianID());
+        if(savedOrder.getVeterinarian()!=null){
+            response.setVeterinaId(savedOrder.getVeterinarian().getVeterinarianID());
+        }
         response.setTravelExpenseId(savedOrder.getTravelExpense().getExpenseID());
         response.setDescription(savedOrder.getDescription());
         response.setServices(detailResponses);
@@ -122,7 +126,9 @@ public class OrderServiceImpl implements IOrderService {
             response.setOrderId(order.getOrderID());
             response.setStatus(order.getStatus());
             response.setOrderDate(order.getOrderDate());
-            response.setVeterinaId(order.getVeterinarian().getVeterinarianID());
+            if(order.getVeterinarian()!=null){
+                response.setVeterinaId(order.getVeterinarian().getVeterinarianID());
+            }
             response.setTravelExpenseId(order.getTravelExpense().getExpenseID());
             response.setDescription(order.getDescription());
             response.setServices(detailResponses);
@@ -147,7 +153,9 @@ public class OrderServiceImpl implements IOrderService {
         response.setOrderId(order.getOrderID());
         response.setStatus(order.getStatus());
         response.setOrderDate(order.getOrderDate());
-        response.setVeterinaId(order.getVeterinarian().getVeterinarianID());
+        if(order.getVeterinarian()!=null){
+            response.setVeterinaId(order.getVeterinarian().getVeterinarianID());
+        }
         response.setTravelExpenseId(order.getTravelExpense().getExpenseID());
         response.setDescription(order.getDescription());
         response.setServices(detailResponses);
@@ -173,7 +181,9 @@ public class OrderServiceImpl implements IOrderService {
         response.setOrderId(savedOrder.getOrderID());
         response.setStatus(savedOrder.getStatus());
         response.setOrderDate(savedOrder.getOrderDate());
-        response.setVeterinaId(savedOrder.getVeterinarian().getVeterinarianID());
+        if(savedOrder.getVeterinarian()!=null){
+            response.setVeterinaId(savedOrder.getVeterinarian().getVeterinarianID());
+        }
         response.setTravelExpenseId(savedOrder.getTravelExpense().getExpenseID());
         response.setDescription(savedOrder.getDescription());
         response.setServices(detailResponses);
@@ -199,7 +209,9 @@ public class OrderServiceImpl implements IOrderService {
         response.setOrderId(savedOrder.getOrderID());
         response.setStatus(savedOrder.getStatus());
         response.setOrderDate(savedOrder.getOrderDate());
-        response.setVeterinaId(savedOrder.getVeterinarian().getVeterinarianID());
+        if(savedOrder.getVeterinarian()!=null){
+            response.setVeterinaId(savedOrder.getVeterinarian().getVeterinarianID());
+        }
         response.setTravelExpenseId(savedOrder.getTravelExpense().getExpenseID());
         response.setDescription(savedOrder.getDescription());
         response.setServices(detailResponses);
@@ -233,7 +245,9 @@ public class OrderServiceImpl implements IOrderService {
         response.setOrderId(savedOrder.getOrderID());
         response.setStatus(savedOrder.getStatus());
         response.setOrderDate(savedOrder.getOrderDate());
-        response.setVeterinaId(savedOrder.getVeterinarian().getVeterinarianID());
+        if(savedOrder.getVeterinarian()!=null){
+            response.setVeterinaId(savedOrder.getVeterinarian().getVeterinarianID());
+        }
         response.setTravelExpenseId(savedOrder.getTravelExpense().getExpenseID());
         response.setDescription(savedOrder.getDescription());
         response.setServices(detailResponses);
@@ -270,7 +284,9 @@ public class OrderServiceImpl implements IOrderService {
         response.setOrderId(savedOrder.getOrderID());
         response.setStatus(savedOrder.getStatus());
         response.setOrderDate(savedOrder.getOrderDate());
-        response.setVeterinaId(savedOrder.getVeterinarian().getVeterinarianID());
+        if(savedOrder.getVeterinarian()!=null){
+            response.setVeterinaId(savedOrder.getVeterinarian().getVeterinarianID());
+        }
         response.setTravelExpenseId(savedOrder.getTravelExpense().getExpenseID());
         response.setDescription(savedOrder.getDescription());
         response.setServices(detailResponses);

@@ -30,4 +30,5 @@ public class Service {
     private Float price;
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderDetail> orderDetails;
+    private int maxQuantity;
 }

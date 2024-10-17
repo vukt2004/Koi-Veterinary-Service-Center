@@ -26,12 +26,13 @@ public class ServiceServiceImpl implements IServiceService {
         service.setName(serviceRequest.getName());
         service.setType(serviceRequest.getType());
         service.setPrice(serviceRequest.getPrice());
+        service.setMaxQuantity(serviceRequest.getMaxQuantity());
         Service savedService = serviceRepository.save(service);
         response.setServiceID(savedService.getServiceID());
         response.setName(savedService.getName());
         response.setType(savedService.getType());
         response.setPrice(savedService.getPrice());
-
+        response.setMaxQuantity(savedService.getMaxQuantity());
         return response;
     }
 
@@ -43,6 +44,7 @@ public class ServiceServiceImpl implements IServiceService {
         response.setName(service.getName());
         response.setType(service.getType());
         response.setPrice(service.getPrice());
+        response.setMaxQuantity(service.getMaxQuantity());
         return response;
     }
 
@@ -56,6 +58,7 @@ public class ServiceServiceImpl implements IServiceService {
             response.setName(service.getName());
             response.setType(service.getType());
             response.setPrice(service.getPrice());
+            response.setMaxQuantity(service.getMaxQuantity());
             serviceResponses.add(response);
         }
         return serviceResponses;
@@ -69,11 +72,13 @@ public class ServiceServiceImpl implements IServiceService {
         service.setName(serviceRequest.getName());
         service.setType(serviceRequest.getType());
         service.setPrice(serviceRequest.getPrice());
+        service.setMaxQuantity(serviceRequest.getMaxQuantity());
         Service savedService = serviceRepository.save(service);
         response.setServiceID(savedService.getServiceID());
         response.setName(savedService.getName());
         response.setType(savedService.getType());
         response.setPrice(savedService.getPrice());
+        response.setMaxQuantity(savedService.getMaxQuantity());
         return response;
     }
 

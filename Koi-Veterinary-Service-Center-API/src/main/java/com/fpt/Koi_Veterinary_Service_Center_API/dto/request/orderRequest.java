@@ -26,7 +26,7 @@ public class orderRequest {
     private String status;
     @NotNull(message = "TravelExpense cannot be empty")
     private TravelExpense travelExpense;
-    @NotNull(message = "Veterinarian cannot be empty")
+//    @NotNull(message = "Veterinarian cannot be empty")
     private Veterinarian veterinarian;
     @NotNull(message = "User cannot be empty")
     private User user;
