@@ -1,20 +1,24 @@
 ﻿import React, { useEffect, useState } from 'react';
-import { fetchServices} from '../config/api.jsx';
+import { fetchServices } from '../config/api.jsx';
 
-const QuanLyDichVuCaKoi = () => {
+const CustomerServices = () => {
     const [dichVu, setDichVu] = useState([]);
 
     useEffect(() => {
         const loadServices = async () => {
-            const services = await fetchServices();
-            setDichVu(services);
+            try {
+                const services = await fetchServices();
+                setDichVu(services);
+            } catch (error) {
+                console.error("Error fetching services:", error);
+            }
         };
         loadServices();
     }, []);
 
     return (
         <div>
-            <h1>Quản Lý Dịch Vụ Cá Koi</h1>
+            <h1>Dịch Vụ Cá Koi</h1>
 
             <table border="1" style={{ marginTop: '20px', width: '100%', textAlign: 'left' }}>
                 <thead>
@@ -25,17 +29,23 @@ const QuanLyDichVuCaKoi = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {dichVu.map((dv) => (
-                        <tr key={dv.serviceID}>
-                            <td>{dv.name}</td>
-                            <td>{dv.type}</td>
-                            <td>{dv.price.toLocaleString('vi-VN')} VND</td>
+                    {dichVu.length > 0 ? (
+                        dichVu.map((dv) => (
+                            <tr key={dv.serviceID}>
+                                <td>{dv.name}</td>
+                                <td>{dv.type}</td>
+                                <td>{dv.price.toLocaleString('vi-VN')} VND</td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="3">Không có dịch vụ nào.</td>
                         </tr>
-                    ))}
+                    )}
                 </tbody>
             </table>
         </div>
     );
 };
 
-export default QuanLyDichVuCaKoi;
+export default CustomerServices;

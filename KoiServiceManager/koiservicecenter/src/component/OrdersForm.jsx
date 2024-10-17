@@ -1,90 +1,109 @@
 ﻿import React, { useEffect, useState } from 'react';
-import { fetchSlots, fetchVeterinas, fetchOrders, fetchServices, fetchAddresses, createOrder } from './api';
+import { jwtDecode } from 'jwt-decode';
+import { fetchSlots, fetchVeterinas, fetchOrders, fetchServices, createOrder, fetchUserID } from '../config/api.jsx';
+import './OrdersForm.css'; // Importing the CSS file
 
-const OrdersPage = () => {
+const OrdersForm = () => {
     const [slots, setSlots] = useState([]);
     const [veterinas, setVeterinas] = useState([]);
     const [orders, setOrders] = useState([]);
     const [services, setServices] = useState([]);
-    const [addresses, setAddresses] = useState([]);
-    const [users, setUsers] = useState([]);
+    const [user, setUser] = useState(null);
 
     const [selectedSlot, setSelectedSlot] = useState(null);
+    const [selectedDate, setSelectedDate] = useState(null);
     const [availableVeterinas, setAvailableVeterinas] = useState([]);
+    const [selectedVeterina, setSelectedVeterina] = useState(null);
     const [selectedServices, setSelectedServices] = useState([]);
+    const [serviceQuantities, setServiceQuantities] = useState({});
     const [selectedAddress, setSelectedAddress] = useState('');
     const [useMyAddress, setUseMyAddress] = useState(false);
-    const [addressDetails, setAddressDetails] = useState(''); // New state for detailed address
-    const [description, setDescription] = useState('');
-    const currentTime = new Date();
+    const [addressDetails, setAddressDetails] = useState('');
 
     useEffect(() => {
         const loadData = async () => {
+            const userId = jwtDecode(sessionStorage.getItem('user')).sub;
+            console.log(jwtDecode(sessionStorage.getItem('user')));
+            console.log(userId);
+            const userData = await fetchUserID(userId);
             const slotsData = await fetchSlots();
             const veterinasData = await fetchVeterinas();
             const ordersData = await fetchOrders();
             const servicesData = await fetchServices();
-            const addressesData = await fetchAddresses();
 
+            console.log(userData);
+            setUser(userData);
             setSlots(slotsData);
             setVeterinas(veterinasData);
             setOrders(ordersData);
             setServices(servicesData);
-            setAddresses(addressesData);
-            setUsers(JSON.parse(localStorage.getItem('user')) || {});
         };
 
         loadData();
     }, []);
 
-    // Filter available slots
-    const getAvailableSlots = () => {
-        return slots.filter(slot => {
-            const slotStartTime = new Date();
-            const [hours, minutes, seconds] = slot.startTime.split(':');
-            slotStartTime.setHours(hours, minutes, seconds);
-            return slotStartTime > currentTime;
-        });
+    const addresses = [
+        'Quận 1', 'Quận 3', 'Quận 4', 'Quận 5', 'Quận 6', 'Quận 7', 'Quận 8',
+        'Quận 10', 'Quận 11', 'Quận 12', 'Quận Tân Bình', 'Quận Bình Tân',
+        'Quận Bình Thạnh', 'Quận Tân Phú', 'Quận Gò Vấp', 'Quận Phú Nhuận',
+        'Huyện Bình Chánh', 'Huyện Hóc Môn', 'Huyện Cần Giờ', 'Huyện Củ Chi',
+        'Huyện Nhà Bè'
+    ];
+
+    const getNext7Days = () => {
+        const days = [];
+        const today = new Date();
+        for (let i = 0; i < 7; i++) {
+            const day = new Date(today);
+            day.setDate(today.getDate() + i);
+            days.push(day);
+        }
+        return days;
     };
 
-    // Handle slot selection
-    const handleSlotChange = (slotId) => {
-        setSelectedSlot(slotId);
+    const handleSlotSelection = (date, slot) => {
+        setSelectedDate(date);
+        setSelectedSlot(slot);
 
-        const ordersInSelectedSlot = orders.filter(order => order.slot === slotId);
-
+        const ordersInSelectedSlot = orders.filter(order => order.slot === slot.slot && order.date === date.toISOString().split('T')[0]);
         const available = veterinas.filter(veterina => {
             return !ordersInSelectedSlot.some(order => order.veterinaID === veterina.veterinaID);
         });
 
         setAvailableVeterinas(available);
+        setSelectedVeterina(null);
 
-        if (available.length === 0) {
-            alert('Không có bác sĩ nào khả dụng cho slot này, vui lòng chọn slot khác.');
-            setSelectedSlot(null);
-        }
+        alert(`Bạn đã chọn Slot: ${slot.startTime} - ${slot.endTime} vào ngày ${date.toLocaleDateString()}`);
     };
 
-    // Handle multi-service selection
     const handleServiceSelection = (serviceID) => {
-        setSelectedServices(prevServices =>
-            prevServices.includes(serviceID)
-                ? prevServices.filter(id => id !== serviceID)
-                : [...prevServices, serviceID]
-        );
+        if (selectedServices.includes(serviceID)) {
+            return; // Prevent duplicate selections
+        }
+
+        setSelectedServices(prevServices => [...prevServices, serviceID]);
+        setServiceQuantities(prevQuantities => ({
+            ...prevQuantities,
+            [serviceID]: 1, // Default quantity is 1
+        }));
     };
 
-    // Handle using user's saved address
+    const handleQuantityChange = (serviceID, quantity) => {
+        setServiceQuantities(prevQuantities => ({
+            ...prevQuantities,
+            [serviceID]: quantity,
+        }));
+    };
+
     const handleUseMyAddress = () => {
         setUseMyAddress(!useMyAddress);
-        if (!useMyAddress && users && users.address) {
-            setSelectedAddress(users.address); // Automatically set user's address
+        if (!useMyAddress && user && user.address) {
+            setSelectedAddress(user.address);
         } else {
             setSelectedAddress('');
         }
     };
 
-    // Handle booking (create order)
     const handleBooking = async () => {
         if (!selectedSlot) {
             alert('Vui lòng chọn Slot!');
@@ -101,20 +120,22 @@ const OrdersPage = () => {
             return;
         }
 
-        const completeAddress = `${addressDetails}, ${selectedAddress}`; // Combine detailed address with selected district
-
-        const user = users.find(u => u.userID);
+        const completeAddress = `${addressDetails}, ${selectedAddress}`;
+        const servicesWithQuantities = selectedServices.map(serviceID => ({
+            serviceID,
+            quantity: serviceQuantities[serviceID] || 1
+        }));
 
         const newOrder = {
-            userID: user ? user.userID : null,
-            veterinaID: null,
-            slot: selectedSlot,
-            services: selectedServices,
-            address: completeAddress, // Use the complete address here
-            description: description,
-            status: 'pending',
+            userID: user.userID,
+            veterinaID: selectedVeterina || null,
+            slot: selectedSlot.slot,
+            date: selectedDate.toISOString().split('T')[0],
+            services: servicesWithQuantities,
+            address: completeAddress,
         };
 
+        console.log(newOrder);
         const result = await createOrder(newOrder);
         if (result.success) {
             alert('Đơn hàng của bạn đã được đặt thành công!');
@@ -124,74 +145,143 @@ const OrdersPage = () => {
     };
 
     return (
-        <div>
+        <div className="orders-form">
             <h1>Quản lý đơn đặt hàng</h1>
 
-            {/* Slot selection */}
+            {/* Render bảng slot */}
             <div>
-                <label>Chọn Slot:</label>
-                <select onChange={(e) => handleSlotChange(e.target.value)} value={selectedSlot || ''}>
-                    <option value="" disabled>-- Chọn Slot --</option>
-                    {getAvailableSlots().map(slot => (
-                        <option key={slot.slot} value={slot.slot}>
-                            {slot.startTime} - {slot.endTime}
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>Slot</th>
+                            {getNext7Days().map(day => (
+                                <th key={day}>
+                                    {day.toLocaleDateString('vi-VN', { weekday: 'short', day: 'numeric', month: 'numeric' })}
+                                </th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {slots.map(slot => (
+                            <tr key={slot.slot}>
+                                <td>{slot.startTime} - {slot.endTime}</td>
+                                {getNext7Days().map(day => (
+                                    <td key={day}>
+                                        <button onClick={() => handleSlotSelection(day, slot)}>
+                                            Chọn
+                                        </button>
+                                    </td>
+                                ))}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Hiển thị thông tin slot và ngày đã chọn */}
+            {selectedSlot && selectedDate && (
+                <div>
+                    <p>Slot đã chọn: {selectedSlot.startTime} - {selectedSlot.endTime}</p>
+                    <p>Ngày đã chọn: {selectedDate.toLocaleDateString()}</p>
+                </div>
+            )}
+
+            {/* Chọn bác sĩ */}
+            {selectedSlot && (
+                <div>
+                    <label>Chọn Bác Sĩ:</label>
+                    <select onChange={(e) => setSelectedVeterina(e.target.value)} value={selectedVeterina || ''}>
+                        <option value="">-- Chọn Bác Sĩ --</option>
+                        {availableVeterinas.map(veterina => (
+                            <option key={veterina.veterinaID} value={veterina.veterinaID}>
+                                {veterina.userID} - {veterina.description}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            )}
+
+            {/* Chọn dịch vụ */}
+            <div>
+                <label>Chọn Dịch Vụ:</label>
+                <select onChange={(e) => handleServiceSelection(e.target.value)} value="">
+                    <option value="">-- Chọn Dịch Vụ --</option>
+                    {services.map(service => (
+                        <option key={service.serviceID} value={service.serviceID}>
+                            {service.name} (Giá: {service.price} VND)
                         </option>
                     ))}
                 </select>
             </div>
 
-            {/* Service selection */}
-            <div>
-                <label>Chọn Dịch Vụ:</label>
-                {services.map(service => (
-                    <div key={service.serviceID}>
-                        <input
-                            type="checkbox"
-                            checked={selectedServices.includes(service.serviceID)}
-                            onChange={() => handleServiceSelection(service.serviceID)}
-                        />
-                        <span>{service.name}</span>
-                    </div>
-                ))}
-            </div>
+            {/* Hiển thị dịch vụ đã chọn */}
+            {selectedServices.length > 0 && (
+                <div className="selected-services">
+                    <h2>Dịch vụ đã chọn:</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tên Dịch Vụ</th>
+                                <th>Số Lượng</th>
+                                <th>Giá</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {selectedServices.map(serviceID => {
+                                const service = services.find(s => s.serviceID === serviceID);
+                                return (
+                                    <tr key={serviceID}>
+                                        <td>{service.name}</td>
+                                        <td>
+                                            <input
+                                                type="number"
+                                                min="1"
+                                                max="10"
+                                                value={serviceQuantities[serviceID] || 1}
+                                                onChange={(e) => handleQuantityChange(serviceID, parseInt(e.target.value))}
+                                            />
+                                        </td>
+                                        <td>{service.price * (serviceQuantities[serviceID] || 1)} VND</td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+            )}
 
-            {/* Address selection */}
+            {/* Địa chỉ */}
             <div>
-                <label>Chọn Địa Chỉ:</label>
-                <input
-                    type="checkbox"
-                    checked={useMyAddress}
-                    onChange={handleUseMyAddress}
-                />
-                <label>Dùng địa chỉ của tôi ({users.address || 'Chưa có địa chỉ'})</label>
-
-                {!useMyAddress && (
+                <h2>Địa chỉ:</h2>
+                <label>
+                    <input type="checkbox" checked={useMyAddress} onChange={handleUseMyAddress} />
+                    Sử dụng địa chỉ của tôi
+                </label>
+                {useMyAddress ? (
+                    <p>{user ? user.address : 'Không có địa chỉ đã lưu'}</p>
+                ) : (
                     <div>
-                        {/* Input for detailed address */}
+                        <select value={selectedAddress} onChange={(e) => setSelectedAddress(e.target.value)}>
+                            <option value="">-- Chọn Quận/Huyện --</option>
+                            {addresses.map((address, index) => (
+                                <option key={index} value={address}>{address}</option>
+                            ))}
+                        </select>
+
                         <input
                             type="text"
-                            placeholder="Số nhà, tên đường"
+                            placeholder="Nhập chi tiết địa chỉ"
                             value={addressDetails}
                             onChange={(e) => setAddressDetails(e.target.value)}
                         />
-
-                        {/* Dropdown for selecting district */}
-                        <select onChange={(e) => setSelectedAddress(e.target.value)} value={selectedAddress || ''}>
-                            <option value="" disabled>-- Chọn Quận/Huyện --</option>
-                            {addresses.map(address => (
-                                <option key={address} value={address}>
-                                    {address}
-                                </option>
-                            ))}
-                        </select>
                     </div>
                 )}
             </div>
 
-            {/* Booking button */}
-            <button onClick={handleBooking}>Đặt hàng</button>
+            {/* Đặt hàng */}
+            <button onClick={handleBooking}>Đặt lịch</button>
         </div>
     );
 };
 
-export default OrdersPage;
+export default OrdersForm;

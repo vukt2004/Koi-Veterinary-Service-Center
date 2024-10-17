@@ -2,20 +2,22 @@
 import clock_icon from '../assets/clock_icon.png';
 import logo from '../assets/fpt_university_logo.jpg';
 import mail_icon from '../assets/mail_icon.png';
+import { jwtDecode } from "jwt-decode";
+import { fetchUserID } from "../config/api.jsx"
 
 const Header = () => {
     const [user, setUser] = useState(null);
 
     // Fetch user from localStorage on component mount
     useEffect(() => {
-        const userData = JSON.parse(localStorage.getItem('user'));
-        if (userData) {
-            setUser(userData);
+        const token = sessionStorage.getItem('user');
+        if (token) {
+            setUser(fetchUserID(jwtDecode(token).sub));
         }
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem('user');
+        sessionStorage.removeItem('user');
         setUser(null);
         window.location.href = '/';
     };
@@ -38,28 +40,18 @@ const Header = () => {
                         color: 'black'
                     }} href="https://maps.app.goo.gl/pHN7n6czhj67Y3UdA" target="_blank">📍 Address: Lot E2a-7, Street D1, D. D1, Long Thanh My, Thu Duc City, Ho Chi Minh 700000</a>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
                     {user ? (
-                        <div style={{ position: 'relative' }}>
-                            <span style={{ cursor: 'pointer', fontWeight: 'bold' }}>Welcome, {user.name} ⬇</span>
-                            <div style={{
-                                display: 'none',
-                                position: 'absolute',
-                                top: '100%',
-                                right: 0,
-                                backgroundColor: 'white',
-                                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-                                borderRadius: '5px',
-                                zIndex: 1000
-                            }}
-                                className="user-dropdown">
+                        <div className="user-dropdown-container">
+                            <span style={{ cursor: 'pointer', fontWeight: 'bold' }}>Welcome, {jwtDecode(sessionStorage.getItem('user')).sub}</span>
+                            <div className="user-dropdown">
                                 <a href="/profile" style={{ display: 'block', padding: '10px', textDecoration: 'none', color: 'black' }}>Profile</a>
                                 <a href="/orders" style={{ display: 'block', padding: '10px', textDecoration: 'none', color: 'black' }}>Orders Service</a>
                                 <span onClick={handleLogout} style={{ display: 'block', padding: '10px', textDecoration: 'none', color: 'black', cursor: 'pointer' }}>Logout</span>
                             </div>
                         </div>
                     ) : (
-                        <a href="/login.html" style={{ textDecoration: 'none' }}>Login or Register</a>
+                        <a href="/login" style={{ textDecoration: 'none' }}>Login or Register</a>
                     )}
                 </div>
             </div>
@@ -81,16 +73,16 @@ const Header = () => {
                     marginLeft: '5px'
                 }}>
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
-                        <img src={mail_icon} style={{ height: '75px', width: 'auto' }}></img>
-                        <p style={{ width: '150px', lineHeight: '1.5', marginLeft: '10px' }}> 24/7 Support <br></br>
-                            Hotline: <br></br>
+                        <img src={mail_icon} style={{ height: '75px', width: 'auto' }} alt="Mail Icon"></img>
+                        <p style={{ width: '150px', lineHeight: '1.5', marginLeft: '10px' }}> 24/7 Support <br />
+                            Hotline: <br />
                             028 7300 5588
                         </p>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
-                        <img src={clock_icon} style={{ height: '75px', width: 'auto' }}></img>
-                        <p style={{ width: '150px', lineHeight: '1.5', marginLeft: '10px' }}> Working hours <br></br>
-                            Monday - Saturday<br></br>
+                        <img src={clock_icon} style={{ height: '75px', width: 'auto' }} alt="Clock Icon"></img>
+                        <p style={{ width: '150px', lineHeight: '1.5', marginLeft: '10px' }}> Working hours <br />
+                            Monday - Saturday<br />
                             7:30am to 8:00pm
                         </p>
                     </div>
@@ -117,13 +109,23 @@ const Header = () => {
 
             <style>
                 {`
-                    .user-dropdown:hover {
+                    .user-dropdown {
+                        display: none;
+                        position: absolute;
+                        top: 100%;
+                        right: 0;
+                        background-color: white;
+                        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+                        border-radius: 5px;
+                        z-index: 1000;
+                    }
+                    .user-dropdown-container:hover .user-dropdown {
                         display: block;
                     }
                 `}
             </style>
         </>
     );
-}
+};
 
 export default Header;
