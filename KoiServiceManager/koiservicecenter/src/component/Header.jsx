@@ -8,12 +8,17 @@ import { fetchUserID } from "../config/api.jsx"
 const Header = () => {
     const [user, setUser] = useState(null);
 
+
     // Fetch user from localStorage on component mount
     useEffect(() => {
-        const token = sessionStorage.getItem('user');
-        if (token) {
-            setUser(fetchUserID(jwtDecode(token).sub));
+        const loadUser = async () => {
+            const token = sessionStorage.getItem('user');
+            if (token) {
+                setUser(await fetchUserID(jwtDecode(token).sub));
+                console.log(user);
+            }
         }
+        loadUser();
     }, []);
 
     const handleLogout = () => {
@@ -43,7 +48,7 @@ const Header = () => {
                 <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
                     {user ? (
                         <div className="user-dropdown-container">
-                            <span style={{ cursor: 'pointer', fontWeight: 'bold' }}>Welcome, {jwtDecode(sessionStorage.getItem('user')).sub}</span>
+                            <span style={{ cursor: 'pointer', fontWeight: 'bold' }}>Welcome, {user.name}</span>
                             <div className="user-dropdown">
                                 <a href="/profile" style={{ display: 'block', padding: '10px', textDecoration: 'none', color: 'black' }}>Profile</a>
                                 <a href="/orders" style={{ display: 'block', padding: '10px', textDecoration: 'none', color: 'black' }}>Orders Service</a>

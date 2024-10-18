@@ -1,18 +1,17 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import { fetchSlots, fetchVeterinas, fetchOrders, fetchServices, createOrder, fetchUserID } from '../config/api.jsx';
+import { fetchSlots, fetchVeterinas, fetchOrdersInSelectedSlot, fetchServices, createOrder, fetchUserID } from '../config/api.jsx';
 import './OrdersForm.css'; // Importing the CSS file
 
 const OrdersForm = () => {
     const [slots, setSlots] = useState([]);
     const [veterinas, setVeterinas] = useState([]);
-    const [orders, setOrders] = useState([]);
     const [services, setServices] = useState([]);
     const [user, setUser] = useState(null);
 
     const [selectedSlot, setSelectedSlot] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null);
-    const [availableVeterinas, setAvailableVeterinas] = useState([]);
+    const [ordersInSelectedSlot, setOrdersInSelectedSlot] = useState([]);
     const [selectedVeterina, setSelectedVeterina] = useState(null);
     const [selectedServices, setSelectedServices] = useState([]);
     const [serviceQuantities, setServiceQuantities] = useState({});
@@ -23,19 +22,14 @@ const OrdersForm = () => {
     useEffect(() => {
         const loadData = async () => {
             const userId = jwtDecode(sessionStorage.getItem('user')).sub;
-            console.log(jwtDecode(sessionStorage.getItem('user')));
-            console.log(userId);
             const userData = await fetchUserID(userId);
             const slotsData = await fetchSlots();
             const veterinasData = await fetchVeterinas();
-            const ordersData = await fetchOrders();
             const servicesData = await fetchServices();
 
-            console.log(userData);
             setUser(userData);
             setSlots(slotsData);
-            setVeterinas(veterinasData);
-            setOrders(ordersData);
+            setVeterinas(veterinasData.filter(veterina => veterina.status === true));
             setServices(servicesData);
         };
 
@@ -64,14 +58,16 @@ const OrdersForm = () => {
     const handleSlotSelection = (date, slot) => {
         setSelectedDate(date);
         setSelectedSlot(slot);
+        console.log(slot);
 
-        const ordersInSelectedSlot = orders.filter(order => order.slot === slot.slot && order.date === date.toISOString().split('T')[0]);
-        const available = veterinas.filter(veterina => {
-            return !ordersInSelectedSlot.some(order => order.veterinaID === veterina.veterinaID);
-        });
+        const formattedDate = date.toISOString().split('T')[0];
+        console.log(formattedDate);
+        const loadOrder = async () => {
+            setOrdersInSelectedSlot(await fetchOrdersInSelectedSlot(formattedDate, slot.slot))
+        }
+        loadOrder();
 
-        setAvailableVeterinas(available);
-        setSelectedVeterina(null);
+        setSelectedVeterina(null); // Reset the selected veterinarian
 
         alert(`Bạn đã chọn Slot: ${slot.startTime} - ${slot.endTime} vào ngày ${date.toLocaleDateString()}`);
     };
@@ -89,10 +85,32 @@ const OrdersForm = () => {
     };
 
     const handleQuantityChange = (serviceID, quantity) => {
+        const service = services.find(s => s.serviceID === serviceID);
+        const maxQuantity = service.maxQuantity;
+
+        const validQuantity = quantity > maxQuantity ? maxQuantity : quantity < 1 ? 1 : quantity;
+
         setServiceQuantities(prevQuantities => ({
             ...prevQuantities,
-            [serviceID]: quantity,
+            [serviceID]: validQuantity,
         }));
+    };
+
+    const handleRemoveService = (serviceID) => {
+        setSelectedServices(prevServices => prevServices.filter(id => id !== serviceID));
+        setServiceQuantities(prevQuantities => {
+            const newQuantities = { ...prevQuantities };
+            delete newQuantities[serviceID];
+            return newQuantities;
+        });
+    };
+
+    const calculateTotal = () => {
+        return selectedServices.reduce((total, serviceID) => {
+            const service = services.find(s => s.serviceID === serviceID);
+            const quantity = serviceQuantities[serviceID] || 1;
+            return total + service.price * quantity;
+        }, 0);
     };
 
     const handleUseMyAddress = () => {
@@ -103,6 +121,11 @@ const OrdersForm = () => {
             setSelectedAddress('');
         }
     };
+
+    const isVeterinaAvailable = (veterinaID) => {
+        return ordersInSelectedSlot.filter(order => order.veterinaId === veterinaID).length === 0;
+    };
+
 
     const handleBooking = async () => {
         if (!selectedSlot) {
@@ -135,12 +158,17 @@ const OrdersForm = () => {
             address: completeAddress,
         };
 
-        console.log(newOrder);
-        const result = await createOrder(newOrder);
-        if (result.success) {
-            alert('Đơn hàng của bạn đã được đặt thành công!');
-        } else {
-            alert('Đã có lỗi xảy ra khi đặt đơn hàng.');
+        try {
+            const result = await createOrder(newOrder);
+            if (result) {
+                const { orderId, orderDate, address, status } = result;
+                alert(`Đơn hàng của bạn đã được đặt thành công!\nMã đơn: ${orderId}\nNgày đặt: ${orderDate}\nĐịa chỉ: ${address}\nTrạng thái: ${status}`);
+            } else {
+                alert('Đã có lỗi xảy ra khi đặt đơn hàng.');
+            }
+        } catch (error) {
+            alert('Lỗi kết nối! Vui lòng thử lại.');
+            console.error(error);
         }
     };
 
@@ -165,13 +193,23 @@ const OrdersForm = () => {
                         {slots.map(slot => (
                             <tr key={slot.slot}>
                                 <td>{slot.startTime} - {slot.endTime}</td>
-                                {getNext7Days().map(day => (
-                                    <td key={day}>
-                                        <button onClick={() => handleSlotSelection(day, slot)}>
-                                            Chọn
-                                        </button>
-                                    </td>
-                                ))}
+                                {getNext7Days().map(day => {
+                                    const slotDateTime = new Date(day);
+                                    slotDateTime.setHours(slot.startTime.split(':')[0], slot.startTime.split(':')[1]);
+
+                                    // Use the current date and time
+                                    const currentDateTime = new Date();
+
+                                    return (
+                                        <td key={day}>
+                                            {slotDateTime > currentDateTime && (
+                                                <button onClick={() => handleSlotSelection(day, slot)}>
+                                                    Chọn
+                                                </button>
+                                            )}
+                                        </td>
+                                    );
+                                })}
                             </tr>
                         ))}
                     </tbody>
@@ -191,12 +229,14 @@ const OrdersForm = () => {
                 <div>
                     <label>Chọn Bác Sĩ:</label>
                     <select onChange={(e) => setSelectedVeterina(e.target.value)} value={selectedVeterina || ''}>
-                        <option value="">-- Chọn Bác Sĩ --</option>
-                        {availableVeterinas.map(veterina => (
-                            <option key={veterina.veterinaID} value={veterina.veterinaID}>
-                                {veterina.userID} - {veterina.description}
-                            </option>
-                        ))}
+                        <option value="">Chọn bác sĩ</option>
+                        {veterinas
+                            .filter((vet) => isVeterinaAvailable(vet.veterinaID))
+                            .map((vet) => (
+                                <option key={vet.veterinaID} value={vet.veterinaID}>
+                                    {vet.name} - {vet.description}
+                                </option>
+                            ))}
                     </select>
                 </div>
             )}
@@ -208,7 +248,7 @@ const OrdersForm = () => {
                     <option value="">-- Chọn Dịch Vụ --</option>
                     {services.map(service => (
                         <option key={service.serviceID} value={service.serviceID}>
-                            {service.name} (Giá: {service.price} VND)
+                            {service.name} - {service.price} đ
                         </option>
                     ))}
                 </select>
@@ -216,70 +256,60 @@ const OrdersForm = () => {
 
             {/* Hiển thị dịch vụ đã chọn */}
             {selectedServices.length > 0 && (
-                <div className="selected-services">
-                    <h2>Dịch vụ đã chọn:</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Tên Dịch Vụ</th>
-                                <th>Số Lượng</th>
-                                <th>Giá</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {selectedServices.map(serviceID => {
-                                const service = services.find(s => s.serviceID === serviceID);
-                                return (
-                                    <tr key={serviceID}>
-                                        <td>{service.name}</td>
-                                        <td>
-                                            <input
-                                                type="number"
-                                                min="1"
-                                                max="10"
-                                                value={serviceQuantities[serviceID] || 1}
-                                                onChange={(e) => handleQuantityChange(serviceID, parseInt(e.target.value))}
-                                            />
-                                        </td>
-                                        <td>{service.price * (serviceQuantities[serviceID] || 1)} VND</td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
+                <div>
+                    <h3>Dịch Vụ Đã Chọn:</h3>
+                    <ul>
+                        {selectedServices.map(serviceID => {
+                            const service = services.find(s => s.serviceID === serviceID);
+                            const quantity = serviceQuantities[serviceID] || 1;
+                            return (
+                                <li key={serviceID}>
+                                    {service.name} - Số lượng:
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        max={service.maxQuantity}
+                                        value={quantity}
+                                        onChange={(e) => handleQuantityChange(serviceID, parseInt(e.target.value))}
+                                    />
+                                    <button onClick={() => handleRemoveService(serviceID)}>Xóa</button>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                    <p>Tổng tiền: {calculateTotal()} đ</p>
                 </div>
             )}
 
-            {/* Địa chỉ */}
+            {/* Chọn địa chỉ */}
             <div>
-                <h2>Địa chỉ:</h2>
-                <label>
-                    <input type="checkbox" checked={useMyAddress} onChange={handleUseMyAddress} />
-                    Sử dụng địa chỉ của tôi
-                </label>
-                {useMyAddress ? (
-                    <p>{user ? user.address : 'Không có địa chỉ đã lưu'}</p>
-                ) : (
+                <h3>Chọn Địa Chỉ:</h3>
+                <input
+                    type="checkbox"
+                    checked={useMyAddress}
+                    onChange={handleUseMyAddress}
+                />
+                <label>Sử dụng địa chỉ của tôi: {user?.address || 'Chưa có địa chỉ'}</label>
+                {!useMyAddress && (
                     <div>
-                        <select value={selectedAddress} onChange={(e) => setSelectedAddress(e.target.value)}>
+                        <select onChange={(e) => setSelectedAddress(e.target.value)} value={selectedAddress}>
                             <option value="">-- Chọn Quận/Huyện --</option>
-                            {addresses.map((address, index) => (
-                                <option key={index} value={address}>{address}</option>
+                            {addresses.map(address => (
+                                <option key={address} value={address}>{address}</option>
                             ))}
                         </select>
-
                         <input
-                            type="text"
-                            placeholder="Nhập chi tiết địa chỉ"
                             value={addressDetails}
                             onChange={(e) => setAddressDetails(e.target.value)}
+                            placeholder="Nhập thêm chi tiết địa chỉ nếu cần"
                         />
                     </div>
+                    
                 )}
+                
             </div>
 
-            {/* Đặt hàng */}
-            <button onClick={handleBooking}>Đặt lịch</button>
+            <button onClick={handleBooking}>Đặt Lịch</button>
         </div>
     );
 };
