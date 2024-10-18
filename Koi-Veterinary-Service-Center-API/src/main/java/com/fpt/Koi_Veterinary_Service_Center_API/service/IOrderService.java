@@ -5,9 +5,11 @@ import com.fpt.Koi_Veterinary_Service_Center_API.dto.request.orderDescriptionReq
 import com.fpt.Koi_Veterinary_Service_Center_API.dto.request.orderServiceReqest;
 import com.fpt.Koi_Veterinary_Service_Center_API.dto.response.orderResponse;
 import com.fpt.Koi_Veterinary_Service_Center_API.entity.OrderDetail;
+import com.fpt.Koi_Veterinary_Service_Center_API.entity.Slot;
 import com.fpt.Koi_Veterinary_Service_Center_API.entity.enums.OrderStatus;
 import jakarta.validation.Valid;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface IOrderService {
@@ -25,4 +27,12 @@ public interface IOrderService {
     orderResponse addServiceToOrder(String orderId, @Valid orderServiceReqest orderServiceReq);
 
     orderResponse removeServiceFromOrder(String orderId, String serviceID);
+
+    List<orderResponse> getOrderByOrderDateAndSlot(LocalDate orderDate, int slot);
+
+    List<orderResponse> getOrderByVeterinaID(String veterinaId);
+
+    List<orderResponse> getOrderByUserId(String userId);
+
+    orderResponse updateVeterinaInOrder(String orderId,String veterinaId);
 }
