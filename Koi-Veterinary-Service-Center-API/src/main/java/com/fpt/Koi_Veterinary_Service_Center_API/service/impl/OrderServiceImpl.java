@@ -1,10 +1,7 @@
 package com.fpt.Koi_Veterinary_Service_Center_API.service.impl;
 
-import com.fpt.Koi_Veterinary_Service_Center_API.dto.request.createOrderRequest;
+import com.fpt.Koi_Veterinary_Service_Center_API.dto.request.*;
 
-import com.fpt.Koi_Veterinary_Service_Center_API.dto.request.orderDescriptionRequest;
-import com.fpt.Koi_Veterinary_Service_Center_API.dto.request.orderDetailRequest;
-import com.fpt.Koi_Veterinary_Service_Center_API.dto.request.orderServiceReqest;
 import com.fpt.Koi_Veterinary_Service_Center_API.dto.response.OrderDetailResponse;
 import com.fpt.Koi_Veterinary_Service_Center_API.dto.response.orderResponse;
 import com.fpt.Koi_Veterinary_Service_Center_API.entity.*;
@@ -164,9 +161,9 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
-    public orderResponse updateOrderStatus(String orderId, OrderStatus status) {
+    public orderResponse updateOrderStatus(String orderId, orderStatusRequest status) {
         Order order = orderRepository.findByOrderID(orderId).orElseThrow(()-> new AppException("Order not found"));
-        order.setStatus(status);
+        order.setStatus(status.getStatus());
         Order savedOrder = orderRepository.save(order);
 
         orderResponse response = new orderResponse();

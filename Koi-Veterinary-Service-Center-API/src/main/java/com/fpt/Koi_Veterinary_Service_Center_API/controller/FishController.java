@@ -26,9 +26,27 @@ public class FishController {
         return new ResponseEntity<>(fishes, HttpStatus.OK);
     }
 
+    @GetMapping("/fish/{userId}")
+    public ResponseEntity<?> getFishByUserId(@PathVariable("userId") String userId) {
+        List<fishResponse> fishes = fishService.getFishByUserId(userId);
+        return new ResponseEntity<>(fishes, HttpStatus.OK);
+    }
+
     @PostMapping("/fish")
     public ResponseEntity<?> createFish(@Valid @RequestBody fishRequest fishRequest) {
         fishResponse response = fishService.createFish(fishRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/fish/{fishId}")
+    public ResponseEntity<?> updateFish(@PathVariable("fishId") String fishId, @Valid @RequestBody fishRequest fishRequest) {
+        fishResponse response = fishService.updateFish(fishId, fishRequest);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/fish/{fishId}")
+    public ResponseEntity<?> deleteFish(@PathVariable("fishId") String fishId) {
+        fishService.deleteFish(fishId);
+        return new ResponseEntity<>("Deleted", HttpStatus.CREATED);
     }
 }

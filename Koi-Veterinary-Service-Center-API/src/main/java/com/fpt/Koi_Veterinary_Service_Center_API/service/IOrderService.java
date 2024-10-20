@@ -3,6 +3,7 @@ package com.fpt.Koi_Veterinary_Service_Center_API.service;
 import com.fpt.Koi_Veterinary_Service_Center_API.dto.request.createOrderRequest;
 import com.fpt.Koi_Veterinary_Service_Center_API.dto.request.orderDescriptionRequest;
 import com.fpt.Koi_Veterinary_Service_Center_API.dto.request.orderServiceReqest;
+import com.fpt.Koi_Veterinary_Service_Center_API.dto.request.orderStatusRequest;
 import com.fpt.Koi_Veterinary_Service_Center_API.dto.response.orderResponse;
 import com.fpt.Koi_Veterinary_Service_Center_API.entity.OrderDetail;
 import com.fpt.Koi_Veterinary_Service_Center_API.entity.Slot;
@@ -20,7 +21,7 @@ public interface IOrderService {
 
     orderResponse getOrderByOrderID(String orderId);
 
-    orderResponse updateOrderStatus(String orderId, OrderStatus status);
+    orderResponse updateOrderStatus(String orderId, orderStatusRequest status);
 
     orderResponse addOrderDescription(String orderId, orderDescriptionRequest description);
 

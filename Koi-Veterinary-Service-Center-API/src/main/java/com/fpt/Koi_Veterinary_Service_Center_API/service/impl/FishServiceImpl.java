@@ -59,4 +59,49 @@ public class FishServiceImpl implements IFishService {
         response.setUserID(savedFish.getUser().getUserID());
         return response;
     }
+
+    @Override
+    public List<fishResponse> getFishByUserId(String userId) {
+        User user = userRepository.findByUserID(userId).orElseThrow(()-> new AppException("User not found"));
+        List<Fish> fishes = user.getFish();
+        List<fishResponse> fishResponses = new ArrayList<>();
+        for (Fish fish : fishes) {
+            fishResponse response = new fishResponse();
+            response.setDescribe(fish.getDescribe());
+            response.setWeight(fish.getWeight());
+            response.setLength(fish.getLength());
+            response.setFishID(fish.getFishID());
+            response.setMonth(fish.getMonth());
+            response.setUserID(fish.getUser().getUserID());
+            fishResponses.add(response);
+        }
+        return fishResponses;
+    }
+
+    @Override
+    public fishResponse updateFish(String fishId, fishRequest fishRequest) {
+        User user = userRepository.findByUserID(fishRequest.getUserID()).orElseThrow(()-> new AppException("User not found"));
+        Fish fish = fishRepository.findByFishID(fishId).orElseThrow(()-> new AppException("Fish not found"));
+        fish.setDescribe(fishRequest.getDescribe());
+        fish.setUser(user);
+        fish.setWeight(fishRequest.getWeight());
+        fish.setLength(fishRequest.getLength());
+        fish.setMonth(fishRequest.getMonth());
+        Fish savedFish = fishRepository.save(fish);
+
+        fishResponse response = new fishResponse();
+        response.setDescribe(savedFish.getDescribe());
+        response.setWeight(savedFish.getWeight());
+        response.setLength(savedFish.getLength());
+        response.setFishID(savedFish.getFishID());
+        response.setMonth(savedFish.getMonth());
+        response.setUserID(savedFish.getUser().getUserID());
+        return response;
+    }
+
+    @Override
+    public void deleteFish(String fishId) {
+        Fish fish = fishRepository.findByFishID(fishId).orElseThrow(()-> new AppException("Fish not found"));
+        fishRepository.delete(fish);
+    }
 }

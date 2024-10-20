@@ -10,4 +10,10 @@ public interface IFishService {
     List<fishResponse> getAllFish();
 
     fishResponse createFish(@Valid fishRequest fishRequest);
+
+    List<fishResponse> getFishByUserId(String userId);
+
+    fishResponse updateFish(String fishId, @Valid fishRequest fishRequest);
+
+    void deleteFish(String fishId);
 }
