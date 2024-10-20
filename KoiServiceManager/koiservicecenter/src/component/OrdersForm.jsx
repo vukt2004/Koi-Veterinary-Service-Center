@@ -1,20 +1,26 @@
-﻿import React, { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import { fetchSlots, fetchVeterinas, fetchOrdersInSelectedSlot, fetchServices, createOrder, fetchUserID } from '../config/api.jsx';
-import './OrdersForm.css'; // Importing the CSS file
+import { fetchSlots, fetchVeterinas, fetchOrdersInSelectedSlot, fetchServices, createOrder, fetchUserID, fetchTravelExpense } from '../config/api.jsx';
+import { ToastContainer, toast } from 'react-toastify'; // Importing react-toastify
+import 'react-toastify/dist/ReactToastify.css'; // npm install react-toastify
+import { useNavigate } from 'react-router-dom';
 
 const OrdersForm = () => {
     const [slots, setSlots] = useState([]);
     const [veterinas, setVeterinas] = useState([]);
     const [services, setServices] = useState([]);
     const [user, setUser] = useState(null);
+    const [travelExpenses, setTravelExpenses] = useState([]);
+    const navigate = useNavigate();
 
     const [selectedSlot, setSelectedSlot] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null);
     const [ordersInSelectedSlot, setOrdersInSelectedSlot] = useState([]);
     const [selectedVeterina, setSelectedVeterina] = useState(null);
+
     const [selectedServices, setSelectedServices] = useState([]);
     const [serviceQuantities, setServiceQuantities] = useState({});
+
     const [selectedAddress, setSelectedAddress] = useState('');
     const [useMyAddress, setUseMyAddress] = useState(false);
     const [addressDetails, setAddressDetails] = useState('');
@@ -26,7 +32,9 @@ const OrdersForm = () => {
             const slotsData = await fetchSlots();
             const veterinasData = await fetchVeterinas();
             const servicesData = await fetchServices();
+            const travelExpensesData = await fetchTravelExpense();
 
+            setTravelExpenses(travelExpensesData);
             setUser(userData);
             setSlots(slotsData);
             setVeterinas(veterinasData.filter(veterina => veterina.status === true));
@@ -35,14 +43,6 @@ const OrdersForm = () => {
 
         loadData();
     }, []);
-
-    const addresses = [
-        'Quận 1', 'Quận 3', 'Quận 4', 'Quận 5', 'Quận 6', 'Quận 7', 'Quận 8',
-        'Quận 10', 'Quận 11', 'Quận 12', 'Quận Tân Bình', 'Quận Bình Tân',
-        'Quận Bình Thạnh', 'Quận Tân Phú', 'Quận Gò Vấp', 'Quận Phú Nhuận',
-        'Huyện Bình Chánh', 'Huyện Hóc Môn', 'Huyện Cần Giờ', 'Huyện Củ Chi',
-        'Huyện Nhà Bè'
-    ];
 
     const getNext7Days = () => {
         const days = [];
@@ -69,7 +69,7 @@ const OrdersForm = () => {
 
         setSelectedVeterina(null); // Reset the selected veterinarian
 
-        alert(`Bạn đã chọn Slot: ${slot.startTime} - ${slot.endTime} vào ngày ${date.toLocaleDateString()}`);
+        toast.success(`Bạn đã chọn Slot: ${slot.startTime} - ${slot.endTime} vào ngày ${date.toLocaleDateString()}`);
     };
 
     const handleServiceSelection = (serviceID) => {
@@ -94,6 +94,7 @@ const OrdersForm = () => {
             ...prevQuantities,
             [serviceID]: validQuantity,
         }));
+        calculateTotal();
     };
 
     const handleRemoveService = (serviceID) => {
@@ -105,18 +106,38 @@ const OrdersForm = () => {
         });
     };
 
+    const getDistrict = (address) => {
+        // Match "Quận" or "Huyện" followed by spaces and any characters until a comma or the end
+        const districtMatch = address.match(/(Quận|Huyện)\s+\S+(\s+\S+)?/);
+        console.log('District Match:', districtMatch); // Debug log to check the match
+        return districtMatch ? districtMatch[0] : null;
+    };
+
+
     const calculateTotal = () => {
-        return selectedServices.reduce((total, serviceID) => {
+        const district = getDistrict(selectedAddress);
+
+        const travelExpense = travelExpenses.find(expense => expense.endLocation === district);
+
+        const travelFee = travelExpense ? travelExpense.fee : 0;
+
+        const total = selectedServices.reduce((total, serviceID) => {
             const service = services.find(s => s.serviceID === serviceID);
             const quantity = serviceQuantities[serviceID] || 1;
-            return total + service.price * quantity;
-        }, 0);
+            return total + (service ? service.price * quantity : 0);
+        }, 0) + travelFee;
+
+        console.log("Total Cost:", total);
+        return total;
     };
+
+
 
     const handleUseMyAddress = () => {
         setUseMyAddress(!useMyAddress);
         if (!useMyAddress && user && user.address) {
             setSelectedAddress(user.address);
+            calculateTotal();
         } else {
             setSelectedAddress('');
         }
@@ -143,11 +164,28 @@ const OrdersForm = () => {
             return;
         }
 
+        console.log(selectedAddress);
         const completeAddress = `${addressDetails}, ${selectedAddress}`;
         const servicesWithQuantities = selectedServices.map(serviceID => ({
             serviceID,
             quantity: serviceQuantities[serviceID] || 1
         }));
+
+        // Check if selectedAddress is 'online'
+        if (selectedAddress === 'Online') {
+            console.log(selectedAddress);
+            // Check if all selected services are of type 'Tư vấn'
+            const allConsultation = selectedServices.every(serviceID => {
+                const service = services.find(s => s.serviceID === serviceID);
+                console.log(service);
+                return service.type === 'Tư vấn';
+            });
+            console.log(allConsultation);
+            if (!allConsultation) {
+                alert('Tất cả dịch vụ phải là Tư vấn khi chọn "Online". Vui lòng chọn lại.');
+                return;
+            }
+        }
 
         const newOrder = {
             userID: user.userID,
@@ -162,19 +200,30 @@ const OrdersForm = () => {
             const result = await createOrder(newOrder);
             if (result) {
                 const { orderId, orderDate, address, status } = result;
-                alert(`Đơn hàng của bạn đã được đặt thành công!\nMã đơn: ${orderId}\nNgày đặt: ${orderDate}\nĐịa chỉ: ${address}\nTrạng thái: ${status}`);
+                
+                    toast.success(`Đơn hàng của bạn đã được đặt thành công!\nMã đơn: ${orderId}\nNgày đặt: ${orderDate}\nĐịa chỉ: ${address}\nTrạng thái: ${status}`);
+                setTimeout(() => {
+                    if (selectedAddress === 'Online') {
+                        navigate('/payment');
+                    } else {
+                        navigate('/');
+                    }
+                }, 5000);
             } else {
-                alert('Đã có lỗi xảy ra khi đặt đơn hàng.');
+                toast.error('Đã có lỗi xảy ra khi đặt đơn hàng.');
             }
         } catch (error) {
-            alert('Lỗi kết nối! Vui lòng thử lại.');
+            toast.error('Lỗi kết nối! Vui lòng thử lại.');
             console.error(error);
         }
+
+        
     };
 
     return (
-        <div className="orders-form">
+        <div>
             <h1>Quản lý đơn đặt hàng</h1>
+            <ToastContainer />
 
             {/* Render bảng slot */}
             <div>
@@ -246,7 +295,7 @@ const OrdersForm = () => {
                 <label>Chọn Dịch Vụ:</label>
                 <select onChange={(e) => handleServiceSelection(e.target.value)} value="">
                     <option value="">-- Chọn Dịch Vụ --</option>
-                    {services.map(service => (
+                    {services.filter(service => service.type !== 'Thuốc').map(service => (
                         <option key={service.serviceID} value={service.serviceID}>
                             {service.name} - {service.price} đ
                         </option>
@@ -277,7 +326,6 @@ const OrdersForm = () => {
                             );
                         })}
                     </ul>
-                    <p>Tổng tiền: {calculateTotal()} đ</p>
                 </div>
             )}
 
@@ -294,20 +342,24 @@ const OrdersForm = () => {
                     <div>
                         <select onChange={(e) => setSelectedAddress(e.target.value)} value={selectedAddress}>
                             <option value="">-- Chọn Quận/Huyện --</option>
-                            {addresses.map(address => (
-                                <option key={address} value={address}>{address}</option>
+                            {travelExpenses.map(address => (
+                                <option key={address.expenseID} value={address.endLocation}>{address.endLocation} - {address.fee}VND</option>
                             ))}
                         </select>
-                        <input
-                            value={addressDetails}
-                            onChange={(e) => setAddressDetails(e.target.value)}
-                            placeholder="Nhập thêm chi tiết địa chỉ nếu cần"
-                        />
+                        {(selectedAddress !== 'Online' && selectedAddress !== '') && (
+                            <input
+                                value={addressDetails}
+                                onChange={(e) => setAddressDetails(e.target.value)}
+                                placeholder="Nhập thêm chi tiết địa chỉ nếu cần"
+                            />
+
+                        )}
+
                     </div>
-                    
                 )}
-                
+
             </div>
+            <p>Tổng tiền: {calculateTotal().toLocaleString('vi-VN')} đ</p>
 
             <button onClick={handleBooking}>Đặt Lịch</button>
         </div>
