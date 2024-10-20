@@ -4,7 +4,7 @@ const BASE_URL = 'https://localhost:8080/api';
 
 export const fetchUsers = async () => {
     try {
-        const response = await axios.get(`${BASE_URL}/users`, getAuthHeaders);
+        const response = await axios.get(`${BASE_URL}/users`, getAuthHeaders());
         return response.data;
     } catch (error) {
         console.error('Error fetching users:', error);
@@ -13,7 +13,7 @@ export const fetchUsers = async () => {
 };
 export const fetchUserID = async (userID) => {
     try {
-        const response = await axios.get(`${BASE_URL}/user/Id/${userID}`, getAuthHeaders);
+        const response = await axios.get(`${BASE_URL}/user/Id/${userID}`, getAuthHeaders());
         return response.data;
     } catch (error) {
         console.error('Error fetching users:', error);
@@ -87,6 +87,16 @@ export const fetchOrders = async () => {
     }
 };
 
+export const fetchOrdersInSelectedSlot = async (date, slot) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/orders/OrderAndSlot/${date}/${slot}`, getAuthHeaders());
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        return { error: 'Could not fetch orders' };
+    }
+};
+
 export const fetchInvoices = async () => {
     try {
         const response = await axios.get(`${BASE_URL}/invoices`, getAuthHeaders());
@@ -127,6 +137,17 @@ export const addOrderDescription = async (orderId, description) => {
     }
 };
 
+export const addOrderVeterina = async (orderId, veterinaID) => {
+    try {
+        const response = await axios.put(`${BASE_URL}/orders/${orderId}/veterina/${veterinaID}`, getAuthHeaders());
+        return response.data;
+    } catch (error) {
+        console.error('Error adding order veterina:', error);
+        return { error: 'Could not add order veterina' };
+    }
+};
+
+
 export const addServiceToOrder = async (orderId, serviceID, quantity) => {
     try {
         const response = await axios.post(`${BASE_URL}/orders/${orderId}/services`, { serviceID, quantity });
@@ -159,7 +180,7 @@ export const updateTravelExpense = async (expenseId, fee, endLocation) => {
 
 export const createOrder = async (orderData) => {
     try {
-        const response = await axios.post(`${BASE_URL}/orders`, orderData, getAuthHeaders);
+        const response = await axios.post(`${BASE_URL}/orders`, orderData, getAuthHeaders());
         return response.data;
     } catch (error) {
         console.error('Error creating order:', error);
@@ -169,7 +190,7 @@ export const createOrder = async (orderData) => {
 
 export const addService = async (serviceData) => {
     try {
-        const response = await axios.post(`${BASE_URL}/services/add`, serviceData);
+        const response = await axios.post(`${BASE_URL}/services/add`, serviceData, getAuthHeaders());
         return response.data;
     } catch (error) {
         console.error('Error creating order:', error);
