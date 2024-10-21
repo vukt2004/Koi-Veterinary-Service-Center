@@ -24,15 +24,15 @@ const Veterina = () => {
             <table border="1" style={{ marginTop: '20px', width: '100%', textAlign: 'left' }}>
                 <thead>
                     <tr>
-                        <th>Mã bác sĩ</th>
+                        <th>Tên bác sĩ</th>
                         <th>Mô Tả</th>
                     </tr>
                 </thead>
                 <tbody>
                     {veterinas.length > 0 ? (
-                        veterinas.map((veterina) => (
+                        veterinas.filter(vet => vet.status).map((veterina) => (
                             <tr key={veterina.veterinaID}>
-                                <td>{veterina.veterinaID}</td>
+                                <td>{veterina.name}</td>
                                 <td>{veterina.description}</td>
                             </tr>
                         ))

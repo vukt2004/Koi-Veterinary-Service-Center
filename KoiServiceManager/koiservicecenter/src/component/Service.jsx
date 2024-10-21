@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { fetchServices } from '../config/api.jsx';
 
 const CustomerServices = () => {
@@ -30,7 +30,7 @@ const CustomerServices = () => {
                 </thead>
                 <tbody>
                     {dichVu.length > 0 ? (
-                        dichVu.map((dv) => (
+                        dichVu.sort((dv)=>(dv.name)).filter(dv => dv.type !== 'Thuốc').map((dv) => (
                             <tr key={dv.serviceID}>
                                 <td>{dv.name}</td>
                                 <td>{dv.type}</td>
