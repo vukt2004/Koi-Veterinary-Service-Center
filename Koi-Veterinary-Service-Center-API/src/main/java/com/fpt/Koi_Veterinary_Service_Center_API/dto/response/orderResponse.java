@@ -12,6 +12,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class orderResponse {
     private String orderId;
+    private String userId;
     private String veterinaId;
     private LocalDate orderDate;
     private int slot;

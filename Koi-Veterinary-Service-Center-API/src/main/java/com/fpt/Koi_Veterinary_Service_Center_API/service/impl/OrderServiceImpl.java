@@ -103,6 +103,7 @@ public class OrderServiceImpl implements IOrderService {
         response.setTravelExpenseId(savedOrder.getTravelExpense().getExpenseID());
         response.setDescription(savedOrder.getDescription());
         response.setServices(detailResponses);
+        response.setUserId(savedOrder.getUser().getUserID());
         return response;
     }
 
@@ -130,6 +131,7 @@ public class OrderServiceImpl implements IOrderService {
             response.setTravelExpenseId(order.getTravelExpense().getExpenseID());
             response.setDescription(order.getDescription());
             response.setServices(detailResponses);
+            response.setUserId(order.getUser().getUserID());
             orderResponses.add(response);
         }
         return orderResponses;
@@ -157,6 +159,7 @@ public class OrderServiceImpl implements IOrderService {
         response.setTravelExpenseId(order.getTravelExpense().getExpenseID());
         response.setDescription(order.getDescription());
         response.setServices(detailResponses);
+        response.setUserId(order.getUser().getUserID());
         return response;
     }
 
@@ -185,6 +188,7 @@ public class OrderServiceImpl implements IOrderService {
         response.setTravelExpenseId(savedOrder.getTravelExpense().getExpenseID());
         response.setDescription(savedOrder.getDescription());
         response.setServices(detailResponses);
+        response.setUserId(savedOrder.getUser().getUserID());
         return response;
     }
 
@@ -213,6 +217,7 @@ public class OrderServiceImpl implements IOrderService {
         response.setTravelExpenseId(savedOrder.getTravelExpense().getExpenseID());
         response.setDescription(savedOrder.getDescription());
         response.setServices(detailResponses);
+        response.setUserId(savedOrder.getUser().getUserID());
         return response;
     }
 
@@ -249,6 +254,7 @@ public class OrderServiceImpl implements IOrderService {
         response.setTravelExpenseId(savedOrder.getTravelExpense().getExpenseID());
         response.setDescription(savedOrder.getDescription());
         response.setServices(detailResponses);
+        response.setUserId(savedOrder.getUser().getUserID());
         return response;
     }
 
@@ -288,6 +294,7 @@ public class OrderServiceImpl implements IOrderService {
         response.setTravelExpenseId(savedOrder.getTravelExpense().getExpenseID());
         response.setDescription(savedOrder.getDescription());
         response.setServices(detailResponses);
+        response.setUserId(savedOrder.getUser().getUserID());
         return response;
     }
 
@@ -316,6 +323,7 @@ public class OrderServiceImpl implements IOrderService {
             response.setTravelExpenseId(order.getTravelExpense().getExpenseID());
             response.setDescription(order.getDescription());
             response.setServices(detailResponses);
+            response.setUserId(order.getUser().getUserID());
             orderResponses.add(response);
         }
         return orderResponses;
@@ -346,6 +354,7 @@ public class OrderServiceImpl implements IOrderService {
             response.setTravelExpenseId(order.getTravelExpense().getExpenseID());
             response.setDescription(order.getDescription());
             response.setServices(detailResponses);
+            response.setUserId(order.getUser().getUserID());
             orderResponses.add(response);
         }
         return orderResponses;
@@ -376,6 +385,7 @@ public class OrderServiceImpl implements IOrderService {
             response.setTravelExpenseId(order.getTravelExpense().getExpenseID());
             response.setDescription(order.getDescription());
             response.setServices(detailResponses);
+            response.setUserId(order.getUser().getUserID());
             orderResponses.add(response);
         }
         return orderResponses;
@@ -407,6 +417,7 @@ public class OrderServiceImpl implements IOrderService {
         response.setTravelExpenseId(savedOrder.getTravelExpense().getExpenseID());
         response.setDescription(savedOrder.getDescription());
         response.setServices(detailResponses);
+        response.setUserId(savedOrder.getUser().getUserID());
         return response;
     }
 }

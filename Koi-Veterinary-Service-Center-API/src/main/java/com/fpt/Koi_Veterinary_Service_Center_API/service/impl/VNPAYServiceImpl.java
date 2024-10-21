@@ -1,7 +1,16 @@
 package com.fpt.Koi_Veterinary_Service_Center_API.service.impl;
 
+import com.fpt.Koi_Veterinary_Service_Center_API.dto.response.invoiceResponse;
+import com.fpt.Koi_Veterinary_Service_Center_API.entity.Invoice;
+import com.fpt.Koi_Veterinary_Service_Center_API.entity.Order;
+import com.fpt.Koi_Veterinary_Service_Center_API.entity.OrderDetail;
+import com.fpt.Koi_Veterinary_Service_Center_API.entity.enums.OrderStatus;
 import com.fpt.Koi_Veterinary_Service_Center_API.exception.AppException;
+import com.fpt.Koi_Veterinary_Service_Center_API.repository.InvoiceRepository;
+import com.fpt.Koi_Veterinary_Service_Center_API.repository.OrderRepository;
+import com.fpt.Koi_Veterinary_Service_Center_API.service.IInvoiceService;
 import com.fpt.Koi_Veterinary_Service_Center_API.service.IVNPAYService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -13,15 +22,32 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 
 @Service
 public class VNPAYServiceImpl implements IVNPAYService {
-    @Override
-    public ResponseEntity<String> payment(int price) {
 
+    @Autowired
+    private OrderRepository orderRepository;
+    @Autowired
+    private IInvoiceService invoiceService;
+    @Autowired
+    private InvoiceRepository invoiceRepository;
+
+    @Override
+    public ResponseEntity<String> payment(String orderId) {
+        Order order = orderRepository.findByOrderID(orderId).orElseThrow(()-> new AppException("Order not found"));
+        if(order.getStatus()==OrderStatus.done || order.getStatus()==OrderStatus.cancel){
+            throw new AppException("Order must be pending or accept");
+        }
+        int total = order.getTravelExpense().getFee();
+        List<OrderDetail> orderDetails = order.getOrderDetails();
+        for(OrderDetail orderDetail : orderDetails){
+            total += orderDetail.getService().getPrice() * orderDetail.getQuantity();
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         LocalDateTime createDate = LocalDateTime.now();
         String formattedCreateDate = createDate.format(formatter);
@@ -33,9 +59,9 @@ public class VNPAYServiceImpl implements IVNPAYService {
         vnpParams.put("vnp_Locale", "vn");
         vnpParams.put("vnp_CurrCode", "VND");
         vnpParams.put("vnp_TxnRef", UUID.randomUUID().toString());
-        vnpParams.put("vnp_OrderInfo", "Veterinarian Payment" );
+        vnpParams.put("vnp_OrderInfo", order.getOrderID() );
         vnpParams.put("vnp_OrderType", "other");
-        vnpParams.put("vnp_Amount", String.valueOf(price));
+        vnpParams.put("vnp_Amount", String.valueOf(total));
         vnpParams.put("vnp_ReturnUrl", "https://localhost:8080/api/payment-success");
         vnpParams.put("vnp_CreateDate", formattedCreateDate);
         vnpParams.put("vnp_ExpireDate", vnp_ExpireDate);
@@ -84,11 +110,24 @@ public class VNPAYServiceImpl implements IVNPAYService {
         return result.toString();
     }
 
-    public String paymentSuccess(String responseCode) {
-
+    public invoiceResponse paymentSuccess(String responseCode, String Total, String orderId) {
         if (!responseCode.equals("00")) {
             throw new AppException("Payment fail");
         }
-        return "success";
+        Order order = orderRepository.findByOrderID(orderId).orElseThrow(()-> new AppException("Order not found"));
+        order.setStatus(OrderStatus.done);
+        orderRepository.save(order);
+        Invoice invoice = new Invoice();
+        invoice.setInvDate(LocalDateTime.now());
+        invoice.setTotal(Integer.parseInt(Total));
+        invoice.setOrder(order);
+        Invoice savedInvoice = invoiceRepository.save(invoice);
+
+        invoiceResponse response = new invoiceResponse();
+        response.setInvDate(savedInvoice.getInvDate());
+        response.setOrderId(savedInvoice.getOrder().getOrderID());
+        response.setTotal(savedInvoice.getTotal());
+        response.setInvoiceId(savedInvoice.getInvoiceID());
+        return response;
     }
 }

@@ -18,15 +18,16 @@ public class InvoiceController {
     @Autowired
     private IInvoiceService invoiceService;
 
-    @PostMapping("/invoices")
-    public ResponseEntity<?> createInvoice(@Valid @RequestBody invoiceRequest invoiceRequest) {
-        invoiceResponse response = invoiceService.createInvoice(invoiceRequest);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
+//    @PostMapping("/invoices")
+//    public ResponseEntity<?> createInvoice(@Valid @RequestBody invoiceRequest invoiceRequest) {
+//        invoiceResponse response = invoiceService.createInvoice(invoiceRequest);
+//        return new ResponseEntity<>(response, HttpStatus.CREATED);
+//    }
 
     @GetMapping("/invoices")
     public ResponseEntity<?> getAllOrder() {
         List<invoiceResponse> responses = invoiceService.getAllInvoice();
         return new ResponseEntity<>(responses, HttpStatus.OK);
     }
+
 }
