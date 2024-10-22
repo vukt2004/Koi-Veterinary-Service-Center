@@ -21,10 +21,10 @@ public class VNPAYController {
         return new ResponseEntity<>(ivnpayService.payment(orderId), HttpStatus.OK);
     }
 
-    @GetMapping("/payment-success")
-    public ResponseEntity<?> paymentSuccess(@RequestParam("vnp_OrderInfo") String orderId, @RequestParam("vnp_Amount") String Total, @RequestParam("vnp_ResponseCode") String responseCode) {
-        invoiceResponse response = ivnpayService.paymentSuccess(responseCode, Total, orderId);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+//    @GetMapping("/payment-success")
+//    public ResponseEntity<?> paymentSuccess(@RequestParam("vnp_OrderInfo") String orderId, @RequestParam("vnp_Amount") String Total, @RequestParam("vnp_ResponseCode") String responseCode) {
+//        invoiceResponse response = ivnpayService.paymentSuccess(responseCode, Total, orderId);
+//        return new ResponseEntity<>(response, HttpStatus.OK);
+//    }
 
 }

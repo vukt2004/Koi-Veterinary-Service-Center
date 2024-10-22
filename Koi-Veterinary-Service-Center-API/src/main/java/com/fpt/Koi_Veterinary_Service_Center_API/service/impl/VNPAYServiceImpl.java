@@ -61,7 +61,7 @@ public class VNPAYServiceImpl implements IVNPAYService {
         vnpParams.put("vnp_TxnRef", UUID.randomUUID().toString());
         vnpParams.put("vnp_OrderInfo", order.getOrderID() );
         vnpParams.put("vnp_OrderType", "other");
-        vnpParams.put("vnp_Amount", String.valueOf(total));
+        vnpParams.put("vnp_Amount", String.valueOf(total*100));
         vnpParams.put("vnp_ReturnUrl", "https://localhost:8080/api/payment-success");
         vnpParams.put("vnp_CreateDate", formattedCreateDate);
         vnpParams.put("vnp_ExpireDate", vnp_ExpireDate);
@@ -119,7 +119,7 @@ public class VNPAYServiceImpl implements IVNPAYService {
         orderRepository.save(order);
         Invoice invoice = new Invoice();
         invoice.setInvDate(LocalDateTime.now());
-        invoice.setTotal(Integer.parseInt(Total));
+        invoice.setTotal(Integer.parseInt(Total)/100);
         invoice.setOrder(order);
         Invoice savedInvoice = invoiceRepository.save(invoice);
 
