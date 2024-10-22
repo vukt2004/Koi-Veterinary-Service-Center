@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState } from 'react';
-import { jwtDecode } from 'jwt-decode';
-import { fetchSlots, fetchVeterinas, fetchOrdersInSelectedSlot, fetchServices, createOrder, fetchUserID, fetchTravelExpense } from '../config/api.jsx';
+import { getUserId } from '../utils.jsx'
+import { fetchSlots, fetchVeterinas, fetchOrdersInSelectedSlot, fetchServices, createOrder, fetchUserID, fetchTravelExpense, initiatePayment, updateOrderStatus } from '../config/api.jsx';
 import { ToastContainer, toast } from 'react-toastify'; // Importing react-toastify
 import 'react-toastify/dist/ReactToastify.css'; // npm install react-toastify
 import { useNavigate } from 'react-router-dom';
@@ -25,10 +25,11 @@ const OrdersForm = () => {
     const [useMyAddress, setUseMyAddress] = useState(false);
     const [addressDetails, setAddressDetails] = useState('');
 
+    const [pay, setPay] = useState('false');
+
     useEffect(() => {
         const loadData = async () => {
-            const userId = jwtDecode(sessionStorage.getItem('user')).sub;
-            const userData = await fetchUserID(userId);
+            const userData = await fetchUserID(getUserId());
             const slotsData = await fetchSlots();
             const veterinasData = await fetchVeterinas();
             const servicesData = await fetchServices();
@@ -173,14 +174,10 @@ const OrdersForm = () => {
 
         // Check if selectedAddress is 'online'
         if (selectedAddress === 'Online') {
-            console.log(selectedAddress);
-            // Check if all selected services are of type 'Tư vấn'
             const allConsultation = selectedServices.every(serviceID => {
                 const service = services.find(s => s.serviceID === serviceID);
-                console.log(service);
                 return service.type === 'Tư vấn';
             });
-            console.log(allConsultation);
             if (!allConsultation) {
                 alert('Tất cả dịch vụ phải là Tư vấn khi chọn "Online". Vui lòng chọn lại.');
                 return;
@@ -200,15 +197,23 @@ const OrdersForm = () => {
             const result = await createOrder(newOrder);
             if (result) {
                 const { orderId, orderDate, address, status } = result;
-                
-                    toast.success(`Đơn hàng của bạn đã được đặt thành công!\nMã đơn: ${orderId}\nNgày đặt: ${orderDate}\nĐịa chỉ: ${address}\nTrạng thái: ${status}`);
-                setTimeout(() => {
-                    if (selectedAddress === 'Online') {
-                        navigate('/payment');
+
+                toast.success(`Đơn hàng của bạn đã được đặt thành công!\nMã đơn: ${orderId}\nNgày đặt: ${orderDate}\nĐịa chỉ: ${address}\nTrạng thái: ${status}`);
+
+                if (selectedAddress === 'Online' || pay) {
+                    const payment = await initiatePayment(orderId);
+                    if (payment) {
+                        window.location.href = payment;
                     } else {
-                        navigate('/');
+                        toast.error('Đã xảy ra lỗi khi xử lý thanh toán.');
+                        await updateOrderStatus(orderId, 'cancel');
+
                     }
-                }, 5000);
+                } else {
+                    setTimeout(() => {
+                        navigate('/');
+                    }, 5000);
+                }
             } else {
                 toast.error('Đã có lỗi xảy ra khi đặt đơn hàng.');
             }
@@ -216,8 +221,6 @@ const OrdersForm = () => {
             toast.error('Lỗi kết nối! Vui lòng thử lại.');
             console.error(error);
         }
-
-        
     };
 
     return (
@@ -360,6 +363,19 @@ const OrdersForm = () => {
 
             </div>
             <p>Tổng tiền: {calculateTotal().toLocaleString('vi-VN')} đ</p>
+
+            {(selectedAddress === 'Online') ? (
+                <p>Dịch vụ online yêu cầu thanh toán trước</p>
+            ) : (
+                <div>
+                    <input
+                        type="checkbox"
+                        checked={pay}
+                        onChange={() => setPay(!pay)}
+                    />
+                    <label>Thanh toán trước</label>
+                </div>
+            )}
 
             <button onClick={handleBooking}>Đặt Lịch</button>
         </div>
