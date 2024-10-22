@@ -25,27 +25,28 @@ public class OrderController {
     @Autowired
     private IOrderService orderService;
     @PostMapping("/orders")
-    @PreAuthorize("hasAuthority('Manager') or hasAuthority('Staff')")
+    @PreAuthorize("hasAuthority('Manager') or hasAuthority('Staff') or hasAuthority('Customer')")
     public ResponseEntity<?> createOrder(@Valid @RequestBody createOrderRequest createOrderRequest) {
         orderResponse response = orderService.addOrder(createOrderRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping("/orders")
+    @PreAuthorize("hasAuthority('Manager') or hasAuthority('Staff')")
     public ResponseEntity<?> getAllOrder() {
         List<orderResponse> responses = orderService.getAllOrder();
         return new ResponseEntity<>(responses, HttpStatus.OK);
     }
 
     @GetMapping("/orders/{orderId}")
-    @PreAuthorize("hasAuthority('Manager') or hasAuthority('Staff') or hasAuthority('Veterina')")
+    @PreAuthorize("hasAuthority('Manager') or hasAuthority('Staff') or hasAuthority('Veterina') or hasAuthority('Customer')")
     public ResponseEntity<?> getOrderByOrderID(@PathVariable("orderId") String orderId) {
         orderResponse response = orderService.getOrderByOrderID(orderId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/orders/OrderAndSlot/{orderDate}/{slot}")
-    @PreAuthorize("hasAuthority('Manager') or hasAuthority('Staff')")
+    @PreAuthorize("hasAuthority('Manager') or hasAuthority('Staff') or hasAuthority('Customer')")
     public ResponseEntity<?> getOrderByOrderDateAndSlot(@PathVariable("orderDate") LocalDate orderDate, @PathVariable("slot") int slot) {
         List<orderResponse> responses = orderService.getOrderByOrderDateAndSlot(orderDate, slot);
         return new ResponseEntity<>(responses, HttpStatus.OK);
@@ -66,13 +67,14 @@ public class OrderController {
     }
 
     @PutMapping("/orders/{orderId}/veterina/{veterinaId}")
+    @PreAuthorize("hasAuthority('Manager') or hasAuthority('Staff')")
     public ResponseEntity<?> updateVeterinaInOrder(@PathVariable("orderId") String orderId,@PathVariable("veterinaId") String veterinaId) {
         orderResponse response = orderService.updateVeterinaInOrder(orderId,veterinaId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PutMapping("/orders/{orderId}/status")
-    @PreAuthorize("hasAuthority('Manager') or hasAuthority('Staff') or hasAuthority('Veterina')")
+    @PreAuthorize("hasAuthority('Manager') or hasAuthority('Staff') or hasAuthority('Veterina') or hasAuthority('Customer')")
     public ResponseEntity<?> updateOrderStatus(@PathVariable("orderId") String orderId, @Valid @RequestBody orderStatusRequest status) {
         orderResponse response = orderService.updateOrderStatus(orderId, status);
         return new ResponseEntity<>(response, HttpStatus.OK);
