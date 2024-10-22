@@ -62,4 +62,27 @@ public class InvoiceServiceImpl implements IInvoiceService {
         }
         return responses;
     }
+
+    @Override
+    public invoiceResponse getInvoiceById(String invoiceId) {
+        Invoice invoice = invoiceRepository.findByInvoiceID(invoiceId).orElseThrow(()-> new AppException("Invoice not found"));
+        invoiceResponse response = new invoiceResponse();
+        response.setInvoiceId(invoice.getInvoiceID());
+        response.setInvDate(invoice.getInvDate());
+        response.setOrderId(invoice.getOrder().getOrderID());
+        response.setTotal(invoice.getTotal());
+        return response;
+    }
+
+    @Override
+    public invoiceResponse getInvoiceByOrderId(String orderId) {
+        Order order = orderRepository.findByOrderID(orderId).orElseThrow(()-> new AppException("Order not found"));
+        Invoice invoice = invoiceRepository.findByOrder(order).orElseThrow(()-> new AppException("Invoice not found"));
+        invoiceResponse response = new invoiceResponse();
+        response.setInvoiceId(invoice.getInvoiceID());
+        response.setInvDate(invoice.getInvDate());
+        response.setOrderId(invoice.getOrder().getOrderID());
+        response.setTotal(invoice.getTotal());
+        return response;
+    }
 }

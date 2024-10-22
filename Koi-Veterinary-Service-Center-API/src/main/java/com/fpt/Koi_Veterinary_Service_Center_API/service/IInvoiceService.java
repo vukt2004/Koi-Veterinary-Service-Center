@@ -10,4 +10,8 @@ public interface IInvoiceService {
     invoiceResponse createInvoice(invoiceRequest invoiceRequest);
 
     List<invoiceResponse> getAllInvoice();
+
+    invoiceResponse getInvoiceById(String invoiceId);
+
+    invoiceResponse getInvoiceByOrderId(String orderId);
 }

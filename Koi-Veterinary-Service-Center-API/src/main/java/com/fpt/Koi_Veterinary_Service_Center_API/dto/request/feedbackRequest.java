@@ -17,7 +17,4 @@ public class feedbackRequest {
     @Min(value = 0, message = "rating from 0-5")
     @Max(value = 5, message = "rating from 0-5")
     private Float rating;
-    @NotBlank(message = "invoiceId cannot be empty")
-    private String invoiceId;
-
 }

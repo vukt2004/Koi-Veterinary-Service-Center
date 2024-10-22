@@ -4,9 +4,13 @@ import com.fpt.Koi_Veterinary_Service_Center_API.dto.request.feedbackRequest;
 import com.fpt.Koi_Veterinary_Service_Center_API.dto.response.feedbackResponse;
 import com.fpt.Koi_Veterinary_Service_Center_API.entity.Feedback;
 import com.fpt.Koi_Veterinary_Service_Center_API.entity.Invoice;
+import com.fpt.Koi_Veterinary_Service_Center_API.entity.Order;
+import com.fpt.Koi_Veterinary_Service_Center_API.entity.Veterinarian;
 import com.fpt.Koi_Veterinary_Service_Center_API.exception.AppException;
 import com.fpt.Koi_Veterinary_Service_Center_API.repository.FeedbackRepository;
 import com.fpt.Koi_Veterinary_Service_Center_API.repository.InvoiceRepository;
+import com.fpt.Koi_Veterinary_Service_Center_API.repository.OrderRepository;
+import com.fpt.Koi_Veterinary_Service_Center_API.repository.VeterinarianRepository;
 import com.fpt.Koi_Veterinary_Service_Center_API.service.IFeedbackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,10 +26,14 @@ public class FeedbackServiceImpl implements IFeedbackService {
     private FeedbackRepository feedbackRepository;
     @Autowired
     private InvoiceRepository invoiceRepository;
+    @Autowired
+    private VeterinarianRepository veterinarianRepository;
+    @Autowired
+    private OrderRepository orderRepository;
 
     @Override
-    public feedbackResponse createFeedback(feedbackRequest feedbackRequest) {
-        Invoice invoice = invoiceRepository.findByInvoiceID(feedbackRequest.getInvoiceId()).orElseThrow(()-> new AppException("Invoice not found"));
+    public feedbackResponse createFeedback(feedbackRequest feedbackRequest, String invoiceId) {
+        Invoice invoice = invoiceRepository.findByInvoiceID(invoiceId).orElseThrow(()-> new AppException("Invoice not found"));
         Feedback feedback = new Feedback();
         feedback.setComment(feedbackRequest.getComment());
         feedback.setFeedbackDateTime(LocalDateTime.now());
@@ -46,6 +54,34 @@ public class FeedbackServiceImpl implements IFeedbackService {
     public List<feedbackResponse> getAllFeedback() {
         List<feedbackResponse> responses = new ArrayList<>();
         List<Feedback> feedbacks = feedbackRepository.findAll();
+        for (Feedback feedback : feedbacks){
+            feedbackResponse response = new feedbackResponse();
+            response.setFeedbackId(feedback.getFeedbackId());
+            response.setComment(feedback.getComment());
+            response.setRating(feedback.getRating());
+            response.setFeedbackDateTime(feedback.getFeedbackDateTime());
+            response.setInvoiceId(feedback.getInvoice().getInvoiceID());
+            responses.add(response);
+        }
+        return responses;
+    }
+
+    @Override
+    public List<feedbackResponse> getVeterinaFeedback(String veterinaId) {
+        Veterinarian veterinarian = veterinarianRepository.findByVeterinarianID(veterinaId).orElseThrow(()-> new AppException("Veterina not found"));
+        List<Order> orders = orderRepository.findByVeterinarian(veterinarian);
+        List<Invoice> invoices = new ArrayList<>();
+        for (Order order : orders) {
+            Invoice invoice = invoiceRepository.findByOrder(order).orElseThrow(()-> new AppException("Invoice not found"));
+            invoices.add(invoice);
+        }
+        List<Feedback> feedbacks = new ArrayList<>();
+        for (Invoice invoice : invoices) {
+            Feedback feedback = feedbackRepository.findByInvoice(invoice).orElseThrow(()-> new AppException("Feedback not found"));
+            feedbacks.add(feedback);
+        }
+
+        List<feedbackResponse> responses = new ArrayList<>();
         for (Feedback feedback : feedbacks){
             feedbackResponse response = new feedbackResponse();
             response.setFeedbackId(feedback.getFeedbackId());

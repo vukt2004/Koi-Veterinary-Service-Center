@@ -8,6 +8,6 @@ import lombok.Data;
 public class reportResponse {
     private int totalOrders;
     private int totalCustomers;
-    private float totalPayments;
+    private long totalPayments;
     private String bestService;
 }

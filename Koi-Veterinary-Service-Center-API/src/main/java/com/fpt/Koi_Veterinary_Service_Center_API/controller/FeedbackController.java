@@ -20,15 +20,21 @@ public class FeedbackController {
     @Autowired
     private IFeedbackService feedbackService;
 
-    @PostMapping("/feedbacks")
-    public ResponseEntity<?> createFeedback(@Valid @RequestBody feedbackRequest feedbackRequest) {
-        feedbackResponse response = feedbackService.createFeedback(feedbackRequest);
+    @PostMapping("/feedbacks/{invoiceId}")
+    public ResponseEntity<?> createFeedback(@PathVariable("invoiceId") String invoiceId, @Valid @RequestBody feedbackRequest feedbackRequest) {
+        feedbackResponse response = feedbackService.createFeedback(feedbackRequest, invoiceId);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping("/feedbacks")
     public ResponseEntity<?> getAllFeedback() {
         List<feedbackResponse> responses = feedbackService.getAllFeedback();
+        return new ResponseEntity<>(responses, HttpStatus.OK);
+    }
+
+    @GetMapping("/feedbacks/{veterinaId}")
+    public ResponseEntity<?> getVeterinaFeedback(@PathVariable("veterinaId") String veterinaId) {
+        List<feedbackResponse> responses = feedbackService.getVeterinaFeedback(veterinaId);
         return new ResponseEntity<>(responses, HttpStatus.OK);
     }
 }

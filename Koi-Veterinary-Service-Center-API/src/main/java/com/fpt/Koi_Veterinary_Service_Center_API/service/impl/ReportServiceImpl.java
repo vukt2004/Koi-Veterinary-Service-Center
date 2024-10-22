@@ -43,7 +43,7 @@ public class ReportServiceImpl implements IReportService {
         }
 
         //get all invoices total
-        float total = 0;
+        long total = 0;
         for(Invoice invoice: invoices){
             total += invoice.getTotal();
         }
