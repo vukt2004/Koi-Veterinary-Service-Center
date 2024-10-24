@@ -10,6 +10,7 @@ import com.fpt.Koi_Veterinary_Service_Center_API.repository.InvoiceRepository;
 import com.fpt.Koi_Veterinary_Service_Center_API.repository.OrderRepository;
 import com.fpt.Koi_Veterinary_Service_Center_API.service.IInvoiceService;
 import com.fpt.Koi_Veterinary_Service_Center_API.service.IVNPAYService;
+import jakarta.persistence.EnumType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,7 @@ public class VNPAYServiceImpl implements IVNPAYService {
     private InvoiceRepository invoiceRepository;
 
     @Override
-    public ResponseEntity<String> payment(String orderId) {
+    public ResponseEntity<String> payment(String orderId, OrderStatus status) {
         Order order = orderRepository.findByOrderID(orderId).orElseThrow(()-> new AppException("Order not found"));
         if(order.getStatus()==OrderStatus.done || order.getStatus()==OrderStatus.cancel){
             throw new AppException("Order must be pending or accept");
@@ -59,7 +60,7 @@ public class VNPAYServiceImpl implements IVNPAYService {
         vnpParams.put("vnp_Locale", "vn");
         vnpParams.put("vnp_CurrCode", "VND");
         vnpParams.put("vnp_TxnRef", UUID.randomUUID().toString());
-        vnpParams.put("vnp_OrderInfo", order.getOrderID() );
+        vnpParams.put("vnp_OrderInfo", order.getOrderID() + "-" + status);
         vnpParams.put("vnp_OrderType", "other");
         vnpParams.put("vnp_Amount", String.valueOf(total*100));
         vnpParams.put("vnp_ReturnUrl", "https://localhost:8080/api/payment-success");
@@ -110,12 +111,25 @@ public class VNPAYServiceImpl implements IVNPAYService {
         return result.toString();
     }
 
-    public invoiceResponse paymentSuccess(String responseCode, String Total, String orderId) {
+    public invoiceResponse paymentSuccess(String responseCode, String Total, String orderInfo) {
         if (!responseCode.equals("00")) {
             throw new AppException("Payment fail");
         }
+        String[] parts = orderInfo.split("-");
+        String orderId = parts[0];
+        String status = parts[1];
+        OrderStatus orderStatus = null;
+        if (status.equals("pending")) {
+            orderStatus = OrderStatus.accept;
+        }
+        else if (status.equals("accept")) {
+            orderStatus = OrderStatus.done;
+        }
+        else{
+            throw new AppException("Order Status Update Error");
+        }
         Order order = orderRepository.findByOrderID(orderId).orElseThrow(()-> new AppException("Order not found"));
-        order.setStatus(OrderStatus.done);
+        order.setStatus(orderStatus);
         orderRepository.save(order);
         Invoice invoice = new Invoice();
         invoice.setInvDate(LocalDateTime.now());

@@ -15,8 +15,8 @@ public class VNPaySuccess {
     private IVNPAYService ivnpayService;
 
     @GetMapping("/payment-success")
-    public String paymentSuccess(@RequestParam("vnp_OrderInfo") String orderId, @RequestParam("vnp_Amount") String Total, @RequestParam("vnp_ResponseCode") String responseCode) {
-        invoiceResponse response = ivnpayService.paymentSuccess(responseCode, Total, orderId);
+    public String paymentSuccess(@RequestParam("vnp_OrderInfo") String orderInfo, @RequestParam("vnp_Amount") String Total, @RequestParam("vnp_ResponseCode") String responseCode) {
+        invoiceResponse response = ivnpayService.paymentSuccess(responseCode, Total, orderInfo);
         String url = String.format("https://localhost:5173/invoice?invoiceId=%s&total=%s&invDate=%s&orderId=%s",
                 response.getInvoiceId(),response.getTotal(),response.getInvDate(),response.getOrderId());
         return "redirect:" + url;
