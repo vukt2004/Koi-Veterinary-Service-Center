@@ -1,26 +1,7 @@
-﻿import axios from 'axios';
+﻿/* eslint-disable react-refresh/only-export-components */
+import axios from 'axios';
 
 const BASE_URL = 'https://localhost:8080/api';
-
-export const fetchUsers = async () => {
-    try {
-        const response = await axios.get(`${BASE_URL}/users`, getAuthHeaders());
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching users:', error);
-        return { error: 'Could not fetch users' };
-    }
-};
-export const fetchUserID = async (userID) => {
-    try {
-        const response = await axios.get(`${BASE_URL}/user/Id/${userID}`, getAuthHeaders());
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching users:', error);
-        return { error: 'Could not fetch users' };
-    }
-};
-
 
 const getAuthHeaders = () => {
     const token = sessionStorage.getItem('user'); // Fetch the token from sessionStorage
@@ -32,6 +13,67 @@ const getAuthHeaders = () => {
         },
     };
 };
+
+export const fetchUsers = async () => {
+    try {
+        const response = await axios.get(`${BASE_URL}/users`, getAuthHeaders());
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        return { error: 'Could not fetch users' };
+    }
+};
+
+export const fetchUserID = async (userID) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/user/Id/${userID}`, getAuthHeaders());
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        return { error: 'Could not fetch users' };
+    }
+};
+
+export const fetchFish = async (userID) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/fish/${userID}`, getAuthHeaders());
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        return { error: 'Could not fetch users' };
+    }
+};
+
+export const addFish = async (fishData) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/fish`, fishData, getAuthHeaders());
+        return response.data;
+    } catch (error) {
+        console.error('Error adding fish:', error);
+        return { error: 'Could not add fish' };
+    }
+};
+
+export const updateFish = async (fishId, fishData) => {
+    try {
+        const response = await axios.put(`${BASE_URL}/fish/${fishId}`, fishData, getAuthHeaders());
+        return response.data;
+    } catch (error) {
+        console.error('Error updating fish:', error);
+        return { error: 'Could not update fish' };
+    }
+};
+
+export const deleteFish = async (fishId) => {
+    try {
+        const response = await axios.delete(`${BASE_URL}/fish/${fishId}`, {}, getAuthHeaders());
+        return response.data;
+    } catch (error) {
+        console.error('Error deleting fish:', error);
+        return { error: 'Could not delete fish' };
+    }
+};
+
 
 export const fetchSlots = async () => {
     try {
@@ -53,29 +95,25 @@ export const fetchVeterinas = async () => {
     }
 };
 
-export const fetchFish = async () => {
-    try {
-        const response = await axios.get(`${BASE_URL}/fish`, getAuthHeaders());
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching fish:', error);
-        return { error: 'Could not fetch fish' };
-    }
-};
-
 export const fetchServices = async () => {
     try {
-        const response = await axios.get(`${BASE_URL}/services`, {
-            header: {
-                'Content-Type': 'application/json',
-            }
-        });
+        const response = await axios.get(`${BASE_URL}/services`);
         return response.data;
     } catch (error) {
         console.error('Error fetching services:', error);
         return { error: 'Could not fetch services' };
     }
 };
+export const fetchTravelExpense = async () => {
+    try {
+        const response = await axios.get(`${BASE_URL}/expenses`, getAuthHeaders());
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching services:', error);
+        return { error: 'Could not fetch services' };
+    }
+};
+
 
 export const fetchOrders = async () => {
     try {
@@ -87,6 +125,64 @@ export const fetchOrders = async () => {
     }
 };
 
+export const initiatePayment = async (orderId) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/payment/${orderId}`, {}, getAuthHeaders());
+
+        const paymentUrl = response.data.body;
+
+        return paymentUrl;
+    } catch (error) {
+        console.error('Payment initiation failed:', error);
+        return null;
+    }
+};
+
+export const fetchOrdersByVeterina = async (veterinaID) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/orders/veterina/${veterinaID}`, getAuthHeaders());
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        return { error: 'Could not fetch orders' };
+    }
+};
+
+export const fetchOrdersByUser = async (userID) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/orders/user/${userID}`, getAuthHeaders());
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        return { error: 'Could not fetch orders' };
+    }
+};
+
+export const fetchInvoiceByOrderId = async (orderId) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/invoices/orders/${orderId}`, getAuthHeaders());
+        console.log(response.data)
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching invoice:', error);
+        return { error: 'Could not fetch invoice' };
+    }
+};
+
+export const createFeedBack = async ({ comment, rating, invoiceId }) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/feedbacks/${invoiceId}`, {
+            comment,
+            rating,
+        }, getAuthHeaders());
+        return response.data;
+    } catch (error) {
+        console.error('Error creating feedback:', error);
+        return { error: 'Could not submit feedback' };
+    }
+};
+
+
 export const fetchOrdersInSelectedSlot = async (date, slot) => {
     try {
         const response = await axios.get(`${BASE_URL}/orders/OrderAndSlot/${date}/${slot}`, getAuthHeaders());
@@ -96,6 +192,17 @@ export const fetchOrdersInSelectedSlot = async (date, slot) => {
         return { error: 'Could not fetch orders' };
     }
 };
+
+export const fetchOrderById = async (orderId) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/orders/${orderId}`, getAuthHeaders());
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        return { error: 'Could not fetch orders' };
+    }
+};
+
 
 export const fetchInvoices = async () => {
     try {
@@ -119,7 +226,7 @@ export const fetchFeedback = async () => {
 
 export const updateOrderStatus = async (orderId, status) => {
     try {
-        const response = await axios.put(`${BASE_URL}/orders/${orderId}/status`, { status });
+        const response = await axios.put(`${BASE_URL}/orders/${orderId}/status`, { status }, getAuthHeaders());
         return response.data;
     } catch (error) {
         console.error('Error updating order status:', error);
@@ -129,7 +236,7 @@ export const updateOrderStatus = async (orderId, status) => {
 
 export const addOrderDescription = async (orderId, description) => {
     try {
-        const response = await axios.put(`${BASE_URL}/orders/${orderId}/description`, { description });
+        const response = await axios.put(`${BASE_URL}/orders/${orderId}/description`, { description }, getAuthHeaders());
         return response.data;
     } catch (error) {
         console.error('Error adding order description:', error);
@@ -139,7 +246,7 @@ export const addOrderDescription = async (orderId, description) => {
 
 export const addOrderVeterina = async (orderId, veterinaID) => {
     try {
-        const response = await axios.put(`${BASE_URL}/orders/${orderId}/veterina/${veterinaID}`, getAuthHeaders());
+        const response = await axios.put(`${BASE_URL}/orders/${orderId}/veterina/${veterinaID}`, {}, getAuthHeaders());
         return response.data;
     } catch (error) {
         console.error('Error adding order veterina:', error);
@@ -150,7 +257,7 @@ export const addOrderVeterina = async (orderId, veterinaID) => {
 
 export const addServiceToOrder = async (orderId, serviceID, quantity) => {
     try {
-        const response = await axios.post(`${BASE_URL}/orders/${orderId}/services`, { serviceID, quantity });
+        const response = await axios.post(`${BASE_URL}/orders/${orderId}/services`, { serviceID, quantity }, getAuthHeaders());
         return response.data;
     } catch (error) {
         console.error('Error adding service to order:', error);
@@ -188,6 +295,16 @@ export const createOrder = async (orderData) => {
     }
 };
 
+export const DeleteServiceInOrder = async (orderID, serviceID) => {
+    try {
+        const response = await axios.delete(`${BASE_URL}/orders/${orderID}/services/${serviceID}`, getAuthHeaders());
+        return response.data;
+    } catch (error) {
+        console.error('Error delete service in', { orderID }, ':', error);
+        return { error: 'Could not delete service' };
+    }
+};
+
 export const addService = async (serviceData) => {
     try {
         const response = await axios.post(`${BASE_URL}/services/add`, serviceData, getAuthHeaders());
@@ -197,6 +314,17 @@ export const addService = async (serviceData) => {
         return { success: false, message: error.message };
     }
 };
+
+export const updateService = async (serviceData) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/services/add`, serviceData, getAuthHeaders());
+        return response.data;
+    } catch (error) {
+        console.error('Error creating order:', error);
+        return { success: false, message: error.message };
+    }
+};
+
 
 export const deleteService = async (serviceID) => {
     try {
