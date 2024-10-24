@@ -41,8 +41,8 @@ public class VNPAYServiceImpl implements IVNPAYService {
     @Override
     public ResponseEntity<String> payment(String orderId, OrderStatus status) {
         Order order = orderRepository.findByOrderID(orderId).orElseThrow(()-> new AppException("Order not found"));
-        if(order.getStatus()==OrderStatus.done || order.getStatus()==OrderStatus.cancel){
-            throw new AppException("Order must be pending or accept");
+        if(order.getStatus()==OrderStatus.done || order.getStatus()==OrderStatus.cancel || status==OrderStatus.done || status==OrderStatus.cancel){
+            throw new AppException("OrderStatus and Status must be pending or accept");
         }
         int total = order.getTravelExpense().getFee();
         List<OrderDetail> orderDetails = order.getOrderDetails();
