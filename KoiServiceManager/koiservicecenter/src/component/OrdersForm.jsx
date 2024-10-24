@@ -108,9 +108,7 @@ const OrdersForm = () => {
     };
 
     const getDistrict = (address) => {
-        // Match "Quận" or "Huyện" followed by spaces and any characters until a comma or the end
         const districtMatch = address.match(/(Quận|Huyện)\s+\S+(\s+\S+)?/);
-        console.log('District Match:', districtMatch); // Debug log to check the match
         return districtMatch ? districtMatch[0] : null;
     };
 
@@ -128,7 +126,6 @@ const OrdersForm = () => {
             return total + (service ? service.price * quantity : 0);
         }, 0) + travelFee;
 
-        console.log("Total Cost:", total);
         return total;
     };
 
@@ -199,7 +196,7 @@ const OrdersForm = () => {
                 const { orderId, orderDate, address, status } = result;
 
                 toast.success(`Đơn hàng của bạn đã được đặt thành công!\nMã đơn: ${orderId}\nNgày đặt: ${orderDate}\nĐịa chỉ: ${address}\nTrạng thái: ${status}`);
-
+                
                 if (selectedAddress === 'Online' || pay) {
                     const payment = await initiatePayment(orderId);
                     if (payment) {
@@ -207,7 +204,6 @@ const OrdersForm = () => {
                     } else {
                         toast.error('Đã xảy ra lỗi khi xử lý thanh toán.');
                         await updateOrderStatus(orderId, 'cancel');
-
                     }
                 } else {
                     setTimeout(() => {
@@ -367,14 +363,15 @@ const OrdersForm = () => {
             {(selectedAddress === 'Online') ? (
                 <p>Dịch vụ online yêu cầu thanh toán trước</p>
             ) : (
-                <div>
-                    <input
-                        type="checkbox"
-                        checked={pay}
-                        onChange={() => setPay(!pay)}
-                    />
-                    <label>Thanh toán trước</label>
-                </div>
+                    <div>
+                        <input
+                            id="payCheckbox"
+                            type="checkbox"
+                            checked={pay}
+                            onChange={() => setPay(!pay)}
+                        />
+                        <label htmlFor="payCheckbox">Thanh toán trước</label>
+                    </div>
             )}
 
             <button onClick={handleBooking}>Đặt Lịch</button>
