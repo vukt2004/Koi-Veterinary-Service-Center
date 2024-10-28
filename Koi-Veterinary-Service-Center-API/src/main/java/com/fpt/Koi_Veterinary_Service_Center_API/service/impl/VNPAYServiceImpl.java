@@ -1,6 +1,7 @@
 package com.fpt.Koi_Veterinary_Service_Center_API.service.impl;
 
 import com.fpt.Koi_Veterinary_Service_Center_API.dto.response.invoiceResponse;
+import com.fpt.Koi_Veterinary_Service_Center_API.dto.response.paymentResponse;
 import com.fpt.Koi_Veterinary_Service_Center_API.entity.Invoice;
 import com.fpt.Koi_Veterinary_Service_Center_API.entity.Order;
 import com.fpt.Koi_Veterinary_Service_Center_API.entity.OrderDetail;
@@ -111,9 +112,15 @@ public class VNPAYServiceImpl implements IVNPAYService {
         return result.toString();
     }
 
-    public invoiceResponse paymentSuccess(String responseCode, String Total, String orderInfo) {
-        if (!responseCode.equals("00")) {
-            throw new AppException("Payment fail");
+    public paymentResponse paymentSuccess(String responseCode, String Total, String orderInfo) {
+        String url = null;
+        if (responseCode.equals("00")) {
+            url = "http://localhost:5173/invoice";
+        }
+        else{
+            paymentResponse response = new paymentResponse();
+            response.setUrl("http://localhost:5173/payment-fail");
+            return response;
         }
         String[] parts = orderInfo.split("-");
         String orderId = parts[0];
@@ -137,11 +144,12 @@ public class VNPAYServiceImpl implements IVNPAYService {
         invoice.setOrder(order);
         Invoice savedInvoice = invoiceRepository.save(invoice);
 
-        invoiceResponse response = new invoiceResponse();
+        paymentResponse response = new paymentResponse();
         response.setInvDate(savedInvoice.getInvDate());
         response.setOrderId(savedInvoice.getOrder().getOrderID());
         response.setTotal(savedInvoice.getTotal());
         response.setInvoiceId(savedInvoice.getInvoiceID());
+        response.setUrl(url);
         return response;
     }
 }
