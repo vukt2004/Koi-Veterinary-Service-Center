@@ -16,8 +16,7 @@ public class fishRequest {
     @Min(value = 1, message = "lenght must be more than 0")
     private Float length;
     @NotNull(message = "month is Empty")
-    @Min(value = 1, message = "month form 1-12")
-    @Max(value = 12, message = "month form 1-12")
+    @Min(value = 1, message = "minimum month 1")
     private int month;
     @NotBlank(message = "describe is Empty")
     private String describe;
