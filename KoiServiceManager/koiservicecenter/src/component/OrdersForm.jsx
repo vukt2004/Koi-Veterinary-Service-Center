@@ -25,7 +25,7 @@ const OrdersForm = () => {
     const [useMyAddress, setUseMyAddress] = useState(false);
     const [addressDetails, setAddressDetails] = useState('');
 
-    const [pay, setPay] = useState('false');
+    const [pay, setPay] = useState(false);
 
     useEffect(() => {
         const loadData = async () => {
@@ -141,6 +141,10 @@ const OrdersForm = () => {
         }
     };
 
+    const handleChangePayStatus = () => {
+        setPay(prevPay => !prevPay);
+    };
+
     const isVeterinaAvailable = (veterinaID) => {
         return ordersInSelectedSlot.filter(order => order.veterinaId === veterinaID).length === 0;
     };
@@ -162,14 +166,12 @@ const OrdersForm = () => {
             return;
         }
 
-        console.log(selectedAddress);
-        const completeAddress = `${addressDetails}, ${selectedAddress}`;
+        const completeAddress = selectedAddress === 'Online' ? 'Online' : `${addressDetails}, ${selectedAddress}`;
         const servicesWithQuantities = selectedServices.map(serviceID => ({
             serviceID,
             quantity: serviceQuantities[serviceID] || 1
         }));
 
-        // Check if selectedAddress is 'online'
         if (selectedAddress === 'Online') {
             const allConsultation = selectedServices.every(serviceID => {
                 const service = services.find(s => s.serviceID === serviceID);
@@ -195,14 +197,13 @@ const OrdersForm = () => {
             if (result) {
                 const { orderId, orderDate, address, status } = result;
 
-                toast.success(`Đơn hàng của bạn đã được đặt thành công!\nMã đơn: ${orderId}\nNgày đặt: ${orderDate}\nĐịa chỉ: ${address}\nTrạng thái: ${status}`);
-                
                 if (selectedAddress === 'Online' || pay) {
-                    const payment = await initiatePayment(orderId);
+                    const payment = await initiatePayment(orderId, 'accept');
                     if (payment) {
+                        toast.success(`Đơn hàng của bạn đã được đặt thành công!\nMã đơn: ${orderId}\nNgày đặt: ${orderDate}\nĐịa chỉ: ${address}\nTrạng thái: ${status}`);
                         window.location.href = payment;
                     } else {
-                        toast.error('Đã xảy ra lỗi khi xử lý thanh toán.');
+                        toast.error('Đã xảy ra lỗi khi xử lý thanh toán. Đơn đã bị hủy, vui lòng tạo lại');
                         await updateOrderStatus(orderId, 'cancel');
                     }
                 } else {
@@ -306,25 +307,32 @@ const OrdersForm = () => {
             {selectedServices.length > 0 && (
                 <div>
                     <h3>Dịch Vụ Đã Chọn:</h3>
-                    <ul>
+                    <table border="1">
+                        <thead>
+                            <th>Dịch vụ</th>
+                            <th>Chọn sỗ lượng</th>
+                            <th>Xóa</th>
+                        </thead>
                         {selectedServices.map(serviceID => {
                             const service = services.find(s => s.serviceID === serviceID);
                             const quantity = serviceQuantities[serviceID] || 1;
                             return (
-                                <li key={serviceID}>
-                                    {service.name} - Số lượng:
-                                    <input
+
+                                <tbody key={serviceID}>
+                                    <td>{service.name}</td>
+                                    <td><input
                                         type="number"
                                         min="1"
                                         max={service.maxQuantity}
                                         value={quantity}
                                         onChange={(e) => handleQuantityChange(serviceID, parseInt(e.target.value))}
                                     />
-                                    <button onClick={() => handleRemoveService(serviceID)}>Xóa</button>
-                                </li>
+                                    </td>
+                                    <td><button onClick={() => handleRemoveService(serviceID)}>Xóa</button></td>
+                                </tbody>
                             );
                         })}
-                    </ul>
+                    </table>
                 </div>
             )}
 
@@ -363,15 +371,15 @@ const OrdersForm = () => {
             {(selectedAddress === 'Online') ? (
                 <p>Dịch vụ online yêu cầu thanh toán trước</p>
             ) : (
-                    <div>
-                        <input
-                            id="payCheckbox"
-                            type="checkbox"
-                            checked={pay}
-                            onChange={() => setPay(!pay)}
-                        />
-                        <label htmlFor="payCheckbox">Thanh toán trước</label>
-                    </div>
+                <div>
+                    <input
+                        id="payCheckbox"
+                        type="checkbox"
+                        checked={!pay}
+                        onChange={() => handleChangePayStatus()}
+                    />
+                    <label htmlFor="payCheckbox">Thanh toán trước</label>
+                </div>
             )}
 
             <button onClick={handleBooking}>Đặt Lịch</button>
