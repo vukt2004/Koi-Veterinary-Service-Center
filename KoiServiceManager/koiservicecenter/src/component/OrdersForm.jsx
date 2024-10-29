@@ -15,7 +15,7 @@ const OrdersForm = () => {
 
     const [selectedSlot, setSelectedSlot] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null);
-    const [ordersInSelectedSlot, setOrdersInSelectedSlot] = useState([]);
+    const [veterinasInSelectedSlot, setVeterinasInSelectedSlot] = useState([]);
     const [selectedVeterina, setSelectedVeterina] = useState(null);
 
     const [selectedServices, setSelectedServices] = useState([]);
@@ -25,7 +25,7 @@ const OrdersForm = () => {
     const [useMyAddress, setUseMyAddress] = useState(false);
     const [addressDetails, setAddressDetails] = useState('');
 
-    const [pay, setPay] = useState(false);
+    const [pay, setPay] = useState(true);
 
     useEffect(() => {
         const loadData = async () => {
@@ -56,26 +56,44 @@ const OrdersForm = () => {
         return days;
     };
 
-    const handleSlotSelection = (date, slot) => {
+    const handleSlotSelection = async (date, slot) => {
         setSelectedDate(date);
         setSelectedSlot(slot);
-        console.log(slot);
+        try {
+            // Lấy danh sách đơn hàng trong slot đã chọn
+            const formattedDate = date.toISOString().split('T')[0];
+            const orders = await fetchOrdersInSelectedSlot(formattedDate, slot.slot);
+            const activeOrders = orders.filter(order => order.status !== 'cancel');
 
-        const formattedDate = date.toISOString().split('T')[0];
-        console.log(formattedDate);
-        const loadOrder = async () => {
-            setOrdersInSelectedSlot(await fetchOrdersInSelectedSlot(formattedDate, slot.slot))
+            // Lọc danh sách bác sĩ trống trong slot
+            const availableVeterinas = veterinas.filter(vet =>
+                !activeOrders.some(order => order.veterinaId === vet.veterinaID)
+            );
+            setVeterinasInSelectedSlot(availableVeterinas);
+
+
+            // Kiểm tra nếu selectedVeterina không có trong danh sách bác sĩ khả dụng mới
+            if (!availableVeterinas.some(vet => vet.veterinaID === selectedVeterina?.veterinaID) && (selectedVeterina !== null)) {
+                toast.error('Bác sĩ đã chọn không khả dụng trong slot mới, vui lòng chọn lại.');
+                setSelectedVeterina(null); // Reset selectedVeterina
+            }
+
+            // Thông báo thành công nếu có bác sĩ khả dụng
+            if (availableVeterinas.length > 0) {
+                toast.success(`Bạn đã chọn Slot: ${slot.startTime} - ${slot.endTime} vào ngày ${date.toLocaleDateString()}`);
+            } else {
+                toast.error('Không còn Bác sĩ nào trong slot này');
+                setSelectedDate(null);
+                setSelectedSlot(null);
+            }
+        } catch (e) {
+            toast.error('Lỗi khi tải đơn hàng trong slot đã chọn.');
         }
-        loadOrder();
-
-        setSelectedVeterina(null); // Reset the selected veterinarian
-
-        toast.success(`Bạn đã chọn Slot: ${slot.startTime} - ${slot.endTime} vào ngày ${date.toLocaleDateString()}`);
     };
 
     const handleServiceSelection = (serviceID) => {
         if (selectedServices.includes(serviceID)) {
-            return; // Prevent duplicate selections
+            return;
         }
 
         setSelectedServices(prevServices => [...prevServices, serviceID]);
@@ -143,21 +161,23 @@ const OrdersForm = () => {
 
     const handleChangePayStatus = () => {
         setPay(prevPay => !prevPay);
+        console.log(pay);
     };
-
-    const isVeterinaAvailable = (veterinaID) => {
-        return ordersInSelectedSlot.filter(order => order.veterinaId === veterinaID).length === 0;
-    };
-
 
     const handleBooking = async () => {
-        if (!selectedSlot) {
-            alert('Vui lòng chọn Slot!');
+        if (!selectedDate || !selectedSlot) {
+            alert('Vui lòng chọn Ngày và Slot!');
             return;
         }
 
         if (selectedServices.length === 0) {
             alert('Vui lòng chọn ít nhất một dịch vụ!');
+            return;
+        }
+
+        if (selectedDate < new Date().setHours(0, 0, 0, 0) ||
+            (selectedDate.toDateString() === new Date().toDateString() && selectedSlot.endTime <= new Date().toLocaleTimeString('vi-VN'))) {
+            alert('Không thể đặt lịch vào slot trước thời gian hiện tại!');
             return;
         }
 
@@ -197,6 +217,7 @@ const OrdersForm = () => {
             if (result) {
                 const { orderId, orderDate, address, status } = result;
 
+                console.log(pay);
                 if (selectedAddress === 'Online' || pay) {
                     const payment = await initiatePayment(orderId, 'accept');
                     if (payment) {
@@ -207,6 +228,7 @@ const OrdersForm = () => {
                         await updateOrderStatus(orderId, 'cancel');
                     }
                 } else {
+                    toast.success(`Đơn hàng của bạn đã được đặt thành công!\nMã đơn: ${orderId}\nNgày đặt: ${orderDate}\nĐịa chỉ: ${address}\nTrạng thái: ${status}`);
                     setTimeout(() => {
                         navigate('/');
                     }, 5000);
@@ -252,7 +274,7 @@ const OrdersForm = () => {
                                     return (
                                         <td key={day}>
                                             {slotDateTime > currentDateTime && (
-                                                <button onClick={() => handleSlotSelection(day, slot)}>
+                                                <button onClick={() => handleSlotSelection(day, slot)} style={{ width: "100px" }}>
                                                     Chọn
                                                 </button>
                                             )}
@@ -279,8 +301,7 @@ const OrdersForm = () => {
                     <label>Chọn Bác Sĩ:</label>
                     <select onChange={(e) => setSelectedVeterina(e.target.value)} value={selectedVeterina || ''}>
                         <option value="">Chọn bác sĩ</option>
-                        {veterinas
-                            .filter((vet) => isVeterinaAvailable(vet.veterinaID))
+                        {veterinasInSelectedSlot
                             .map((vet) => (
                                 <option key={vet.veterinaID} value={vet.veterinaID}>
                                     {vet.name} - {vet.description}
@@ -372,13 +393,12 @@ const OrdersForm = () => {
                 <p>Dịch vụ online yêu cầu thanh toán trước</p>
             ) : (
                 <div>
+                    <label>Thanh toán trước:</label>
                     <input
-                        id="payCheckbox"
                         type="checkbox"
-                        checked={!pay}
-                        onChange={() => handleChangePayStatus()}
+                        checked={pay}
+                        onChange={handleChangePayStatus}
                     />
-                    <label htmlFor="payCheckbox">Thanh toán trước</label>
                 </div>
             )}
 
