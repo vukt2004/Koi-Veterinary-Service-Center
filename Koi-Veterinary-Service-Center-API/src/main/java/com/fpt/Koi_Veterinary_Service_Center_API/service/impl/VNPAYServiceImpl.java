@@ -42,9 +42,6 @@ public class VNPAYServiceImpl implements IVNPAYService {
     @Override
     public ResponseEntity<String> payment(String orderId, OrderStatus status) {
         Order order = orderRepository.findByOrderID(orderId).orElseThrow(()-> new AppException("Order not found"));
-        if(order.getStatus()==OrderStatus.done || order.getStatus()==OrderStatus.cancel || status==OrderStatus.done || status==OrderStatus.cancel){
-            throw new AppException("OrderStatus and Status must be pending or accept");
-        }
         int total = order.getTravelExpense().getFee();
         List<OrderDetail> orderDetails = order.getOrderDetails();
         for(OrderDetail orderDetail : orderDetails){
@@ -127,10 +124,16 @@ public class VNPAYServiceImpl implements IVNPAYService {
         String status = parts[1];
         OrderStatus orderStatus = null;
         if (status.equals("pending")) {
-            orderStatus = OrderStatus.accept;
+            orderStatus = OrderStatus.pending;
         }
         else if (status.equals("accept")) {
+            orderStatus = OrderStatus.accept;
+        }
+        else if(status.equals("done")){
             orderStatus = OrderStatus.done;
+        }
+        else if(status.equals("cancel")){
+            orderStatus = OrderStatus.cancel;
         }
         else{
             throw new AppException("Order Status Update Error");
@@ -142,6 +145,7 @@ public class VNPAYServiceImpl implements IVNPAYService {
         invoice.setInvDate(LocalDateTime.now());
         invoice.setTotal(Integer.parseInt(Total)/100);
         invoice.setOrder(order);
+        invoice.setMethod("online");
         Invoice savedInvoice = invoiceRepository.save(invoice);
 
         paymentResponse response = new paymentResponse();
@@ -149,6 +153,7 @@ public class VNPAYServiceImpl implements IVNPAYService {
         response.setOrderId(savedInvoice.getOrder().getOrderID());
         response.setTotal(savedInvoice.getTotal());
         response.setInvoiceId(savedInvoice.getInvoiceID());
+        response.setMethod(savedInvoice.getMethod());
         response.setUrl(url);
         return response;
     }

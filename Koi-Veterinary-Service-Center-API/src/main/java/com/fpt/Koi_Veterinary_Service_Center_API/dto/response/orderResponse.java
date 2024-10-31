@@ -6,6 +6,7 @@ import com.fpt.Koi_Veterinary_Service_Center_API.entity.enums.OrderStatus;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -21,4 +22,8 @@ public class orderResponse {
     private String travelExpenseId;
     private List<OrderDetailResponse> services;
     private OrderStatus status;
+    private String invoiceId;
+    private int total;
+    private LocalDateTime invDate;
+    private String method;
 }

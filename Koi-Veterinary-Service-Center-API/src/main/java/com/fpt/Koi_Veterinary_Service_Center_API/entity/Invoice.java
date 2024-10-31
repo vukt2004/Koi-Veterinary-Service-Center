@@ -25,6 +25,7 @@ public class Invoice {
     private String invoiceID;
     private int total;
     private LocalDateTime invDate;
+    private String method;
     @OneToOne
     @JoinColumn(name = "orderID", nullable = false)
     private Order order;

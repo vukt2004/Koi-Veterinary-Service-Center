@@ -24,4 +24,7 @@ public class serviceRequest {
     @NotNull(message = "maxQuantity cannot be null")
     @Min(value = 1, message = "maxQuantity must be at least 1")
     private int maxQuantity;
+
+    @NotNull(message = "isService cannot be null")
+    private boolean isService;
 }

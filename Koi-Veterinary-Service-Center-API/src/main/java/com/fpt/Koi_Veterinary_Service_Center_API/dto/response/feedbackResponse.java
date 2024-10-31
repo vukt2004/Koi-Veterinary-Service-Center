@@ -15,5 +15,5 @@ public class feedbackResponse {
     private String comment;
     private Float rating;
     private LocalDateTime feedbackDateTime;
-    private String invoiceId;
+    private String orderId;
 }

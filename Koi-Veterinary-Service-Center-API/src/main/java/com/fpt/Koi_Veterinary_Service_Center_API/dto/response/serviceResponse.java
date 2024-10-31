@@ -11,4 +11,5 @@ public class serviceResponse {
     private String Type;
     private Float price;
     private int maxQuantity;
+    private boolean isService;
 }

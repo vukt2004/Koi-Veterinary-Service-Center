@@ -27,12 +27,14 @@ public class ServiceServiceImpl implements IServiceService {
         service.setType(serviceRequest.getType());
         service.setPrice(serviceRequest.getPrice());
         service.setMaxQuantity(serviceRequest.getMaxQuantity());
+        service.setService(serviceRequest.isService());
         Service savedService = serviceRepository.save(service);
         response.setServiceID(savedService.getServiceID());
         response.setName(savedService.getName());
         response.setType(savedService.getType());
         response.setPrice(savedService.getPrice());
         response.setMaxQuantity(savedService.getMaxQuantity());
+        response.setService(savedService.isService());
         return response;
     }
 
@@ -45,6 +47,7 @@ public class ServiceServiceImpl implements IServiceService {
         response.setType(service.getType());
         response.setPrice(service.getPrice());
         response.setMaxQuantity(service.getMaxQuantity());
+        response.setService(service.isService());
         return response;
     }
 
@@ -59,6 +62,7 @@ public class ServiceServiceImpl implements IServiceService {
             response.setType(service.getType());
             response.setPrice(service.getPrice());
             response.setMaxQuantity(service.getMaxQuantity());
+            response.setService(service.isService());
             serviceResponses.add(response);
         }
         return serviceResponses;
@@ -73,12 +77,14 @@ public class ServiceServiceImpl implements IServiceService {
         service.setType(serviceRequest.getType());
         service.setPrice(serviceRequest.getPrice());
         service.setMaxQuantity(serviceRequest.getMaxQuantity());
+        service.setService(serviceRequest.isService());
         Service savedService = serviceRepository.save(service);
         response.setServiceID(savedService.getServiceID());
         response.setName(savedService.getName());
         response.setType(savedService.getType());
         response.setPrice(savedService.getPrice());
         response.setMaxQuantity(savedService.getMaxQuantity());
+        response.setService(savedService.isService());
         return response;
     }
 

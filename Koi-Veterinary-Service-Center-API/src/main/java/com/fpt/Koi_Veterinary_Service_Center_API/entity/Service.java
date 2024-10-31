@@ -28,6 +28,7 @@ public class Service {
     @Column(columnDefinition = "NVARCHAR(255)")
     private String type;
     private Float price;
+    private boolean isService;
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderDetail> orderDetails;
     private int maxQuantity;

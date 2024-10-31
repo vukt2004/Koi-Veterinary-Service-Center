@@ -37,6 +37,7 @@ public class InvoiceServiceImpl implements IInvoiceService {
         invoice.setInvDate(LocalDateTime.now());
         invoice.setTotal(total);
         invoice.setOrder(order);
+        invoice.setMethod("cash");
         Invoice savedInvoice = invoiceRepository.save(invoice);
 
         invoiceResponse response = new invoiceResponse();
@@ -44,6 +45,7 @@ public class InvoiceServiceImpl implements IInvoiceService {
         response.setOrderId(savedInvoice.getOrder().getOrderID());
         response.setTotal(savedInvoice.getTotal());
         response.setInvoiceId(savedInvoice.getInvoiceID());
+        response.setMethod(savedInvoice.getMethod());
         return response;
     }
 
@@ -58,6 +60,7 @@ public class InvoiceServiceImpl implements IInvoiceService {
             response.setInvDate(invoice.getInvDate());
             response.setOrderId(invoice.getOrder().getOrderID());
             response.setTotal(invoice.getTotal());
+            response.setMethod(invoice.getMethod());
             responses.add(response);
         }
         return responses;
@@ -71,6 +74,7 @@ public class InvoiceServiceImpl implements IInvoiceService {
         response.setInvDate(invoice.getInvDate());
         response.setOrderId(invoice.getOrder().getOrderID());
         response.setTotal(invoice.getTotal());
+        response.setMethod(invoice.getMethod());
         return response;
     }
 
@@ -83,6 +87,7 @@ public class InvoiceServiceImpl implements IInvoiceService {
         response.setInvDate(invoice.getInvDate());
         response.setOrderId(invoice.getOrder().getOrderID());
         response.setTotal(invoice.getTotal());
+        response.setMethod(invoice.getMethod());
         return response;
     }
 }

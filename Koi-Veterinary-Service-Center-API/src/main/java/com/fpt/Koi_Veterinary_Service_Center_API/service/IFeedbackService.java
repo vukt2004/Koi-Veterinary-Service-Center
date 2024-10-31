@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface IFeedbackService {
 
-    feedbackResponse createFeedback(@Valid feedbackRequest feedbackRequest, String invoiceId);
+    feedbackResponse createFeedback(@Valid feedbackRequest feedbackRequest, String orderId);
 
     List<feedbackResponse> getAllFeedback();
 

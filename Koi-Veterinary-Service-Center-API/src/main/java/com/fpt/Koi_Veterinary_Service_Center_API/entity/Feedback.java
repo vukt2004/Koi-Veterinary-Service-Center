@@ -26,6 +26,6 @@ public class Feedback {
     private Float rating;
     private LocalDateTime feedbackDateTime;
     @OneToOne
-    @JoinColumn(name = "invoiceID", nullable = false)
-    private Invoice invoice;
+    @JoinColumn(name = "orderID", nullable = false)
+    private Order order;
 }

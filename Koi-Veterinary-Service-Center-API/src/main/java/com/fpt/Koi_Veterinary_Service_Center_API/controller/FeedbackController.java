@@ -20,9 +20,9 @@ public class FeedbackController {
     @Autowired
     private IFeedbackService feedbackService;
 
-    @PostMapping("/feedbacks/{invoiceId}")
-    public ResponseEntity<?> createFeedback(@PathVariable("invoiceId") String invoiceId, @Valid @RequestBody feedbackRequest feedbackRequest) {
-        feedbackResponse response = feedbackService.createFeedback(feedbackRequest, invoiceId);
+    @PostMapping("/feedbacks/{orderId}")
+    public ResponseEntity<?> createFeedback(@PathVariable("orderId") String orderId, @Valid @RequestBody feedbackRequest feedbackRequest) {
+        feedbackResponse response = feedbackService.createFeedback(feedbackRequest, orderId);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 

@@ -12,5 +12,6 @@ public class paymentResponse {
     private int total;
     private LocalDateTime invDate;
     private String orderId;
+    private String method;
     private String url;
 }

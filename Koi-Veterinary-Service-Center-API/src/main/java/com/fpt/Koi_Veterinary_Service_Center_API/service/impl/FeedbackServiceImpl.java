@@ -32,13 +32,13 @@ public class FeedbackServiceImpl implements IFeedbackService {
     private OrderRepository orderRepository;
 
     @Override
-    public feedbackResponse createFeedback(feedbackRequest feedbackRequest, String invoiceId) {
-        Invoice invoice = invoiceRepository.findByInvoiceID(invoiceId).orElseThrow(()-> new AppException("Invoice not found"));
+    public feedbackResponse createFeedback(feedbackRequest feedbackRequest, String orderId) {
+        Order order = orderRepository.findByOrderID(orderId).orElseThrow(()-> new AppException("Order not found"));
         Feedback feedback = new Feedback();
         feedback.setComment(feedbackRequest.getComment());
         feedback.setFeedbackDateTime(LocalDateTime.now());
         feedback.setRating(feedbackRequest.getRating());
-        feedback.setInvoice(invoice);
+        feedback.setOrder(order);
         Feedback savedFeedback = feedbackRepository.save(feedback);
 
         feedbackResponse response = new feedbackResponse();
@@ -46,7 +46,7 @@ public class FeedbackServiceImpl implements IFeedbackService {
         response.setComment(savedFeedback.getComment());
         response.setRating(savedFeedback.getRating());
         response.setFeedbackDateTime(savedFeedback.getFeedbackDateTime());
-        response.setInvoiceId(savedFeedback.getInvoice().getInvoiceID());
+        response.setOrderId(savedFeedback.getOrder().getOrderID());
         return response;
     }
 
@@ -60,7 +60,7 @@ public class FeedbackServiceImpl implements IFeedbackService {
             response.setComment(feedback.getComment());
             response.setRating(feedback.getRating());
             response.setFeedbackDateTime(feedback.getFeedbackDateTime());
-            response.setInvoiceId(feedback.getInvoice().getInvoiceID());
+            response.setOrderId(feedback.getOrder().getOrderID());
             responses.add(response);
         }
         return responses;
@@ -70,14 +70,9 @@ public class FeedbackServiceImpl implements IFeedbackService {
     public List<feedbackResponse> getVeterinaFeedback(String veterinaId) {
         Veterinarian veterinarian = veterinarianRepository.findByVeterinarianID(veterinaId).orElseThrow(()-> new AppException("Veterina not found"));
         List<Order> orders = orderRepository.findByVeterinarian(veterinarian);
-        List<Invoice> invoices = new ArrayList<>();
-        for (Order order : orders) {
-            Invoice invoice = invoiceRepository.findByOrder(order).orElseThrow(()-> new AppException("Invoice not found"));
-            invoices.add(invoice);
-        }
         List<Feedback> feedbacks = new ArrayList<>();
-        for (Invoice invoice : invoices) {
-            Feedback feedback = feedbackRepository.findByInvoice(invoice).orElseThrow(()-> new AppException("Feedback not found"));
+        for (Order order : orders) {
+            Feedback feedback = feedbackRepository.findByOrder(order).orElseThrow(()-> new AppException("order not found"));
             feedbacks.add(feedback);
         }
 
@@ -88,7 +83,7 @@ public class FeedbackServiceImpl implements IFeedbackService {
             response.setComment(feedback.getComment());
             response.setRating(feedback.getRating());
             response.setFeedbackDateTime(feedback.getFeedbackDateTime());
-            response.setInvoiceId(feedback.getInvoice().getInvoiceID());
+            response.setOrderId(feedback.getOrder().getOrderID());
             responses.add(response);
         }
         return responses;

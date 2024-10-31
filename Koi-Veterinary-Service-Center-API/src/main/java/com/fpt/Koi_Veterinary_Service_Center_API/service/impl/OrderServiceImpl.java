@@ -3,6 +3,7 @@ package com.fpt.Koi_Veterinary_Service_Center_API.service.impl;
 import com.fpt.Koi_Veterinary_Service_Center_API.dto.request.*;
 
 import com.fpt.Koi_Veterinary_Service_Center_API.dto.response.OrderDetailResponse;
+import com.fpt.Koi_Veterinary_Service_Center_API.dto.response.invoiceResponse;
 import com.fpt.Koi_Veterinary_Service_Center_API.dto.response.orderResponse;
 import com.fpt.Koi_Veterinary_Service_Center_API.entity.*;
 import com.fpt.Koi_Veterinary_Service_Center_API.entity.enums.OrderStatus;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +35,8 @@ public class OrderServiceImpl implements IOrderService {
     private TravelExpenseRepository travelExpenseRepository;
     @Autowired
     private ServiceRepository serviceRepository;
+    @Autowired
+    private InvoiceRepository invoiceRepository;
 
     @Override
     public orderResponse addOrder(createOrderRequest createOrderRequest) {
@@ -168,6 +172,27 @@ public class OrderServiceImpl implements IOrderService {
         Order order = orderRepository.findByOrderID(orderId).orElseThrow(()-> new AppException("Order not found"));
         order.setStatus(status.getStatus());
         Order savedOrder = orderRepository.save(order);
+        if(status.getStatus()== OrderStatus.done){
+            int total = order.getTravelExpense().getFee();
+            List<OrderDetail> orderDetails = order.getOrderDetails();
+            for(OrderDetail orderDetail : orderDetails){
+                total += orderDetail.getService().getPrice() * orderDetail.getQuantity();
+            }
+            Invoice invoice = new Invoice();
+            invoice.setInvDate(LocalDateTime.now());
+            invoice.setTotal(total);
+            invoice.setOrder(order);
+            invoice.setMethod("cash");
+            Invoice savedInvoice = invoiceRepository.save(invoice);
+
+            orderResponse response = new orderResponse();
+            response.setInvDate(savedInvoice.getInvDate());
+            response.setOrderId(savedInvoice.getOrder().getOrderID());
+            response.setTotal(savedInvoice.getTotal());
+            response.setInvoiceId(savedInvoice.getInvoiceID());
+            response.setMethod(savedInvoice.getMethod());
+            return response;
+        }
 
         orderResponse response = new orderResponse();
         List<OrderDetailResponse> detailResponses = new ArrayList<>();

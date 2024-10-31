@@ -13,4 +13,5 @@ public class invoiceResponse {
     private int total;
     private LocalDateTime invDate;
     private String orderId;
+    private String method;
 }
