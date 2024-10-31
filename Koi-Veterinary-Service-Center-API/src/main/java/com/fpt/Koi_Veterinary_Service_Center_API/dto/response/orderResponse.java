@@ -23,7 +23,7 @@ public class orderResponse {
     private List<OrderDetailResponse> services;
     private OrderStatus status;
     private String invoiceId;
-    private int total;
+    private Integer total;
     private LocalDateTime invDate;
     private String method;
 }
