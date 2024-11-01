@@ -1,5 +1,6 @@
 ﻿import { useEffect, useState } from 'react';
 import { fetchServices } from '../config/api.jsx';
+import './css/Service.css'
 
 const CustomerServices = () => {
     const [dichVu, setDichVu] = useState([]);
@@ -17,10 +18,10 @@ const CustomerServices = () => {
     }, []);
 
     return (
-        <div>
-            <h1>Dịch Vụ Cá Koi</h1>
+        <div className="service-container">
+            <h1 className="service-title">Dịch Vụ Cá Koi</h1>
 
-            <table border="1" style={{ marginTop: '20px', width: '100%', textAlign: 'left' }}>
+            <table className="service-table">
                 <thead>
                     <tr>
                         <th>Tên Dịch Vụ</th>
@@ -31,15 +32,15 @@ const CustomerServices = () => {
                 <tbody>
                     {dichVu.length > 0 ? (
                         dichVu.sort((dv)=>(dv.name)).filter(dv => dv.type !== 'Thuốc').map((dv) => (
-                            <tr key={dv.serviceID}>
-                                <td>{dv.name}</td>
-                                <td>{dv.type}</td>
-                                <td>{dv.price.toLocaleString('vi-VN')} VND</td>
-                            </tr>
-                        ))
+                                <tr key={dv.serviceID}>
+                                    <td>{dv.name}</td>
+                                    <td>{dv.type}</td>
+                                    <td>{dv.price.toLocaleString('vi-VN')} VND</td>
+                                </tr>
+                            ))
                     ) : (
                         <tr>
-                            <td colSpan="3">Không có dịch vụ nào.</td>
+                            <td colSpan="3" className="service-no-data">Không có dịch vụ nào.</td>
                         </tr>
                     )}
                 </tbody>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import api from './config/axios'
 import './Login_SignUp.css';  // Assuming the styles are similar, CSS file is reused.
+import { useNavigate } from 'react-router-dom';
 
 function LoginSignUp() {
   const [userID, setUserID] = useState('');
@@ -10,6 +11,7 @@ function LoginSignUp() {
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmitLogin = async (e) => {
     e.preventDefault();
@@ -20,11 +22,18 @@ function LoginSignUp() {
         userID,
         password,
       });
-
-      const token = response.data.token; // Assuming the token is returned in the response
-      localStorage.setItem('authToken', token); // Save token in local storage
-      console.log('Login successful:', response.data);
-      
+      const data = response.data; // Assuming the token is returned in the response
+      sessionStorage.setItem('user', data.token); // Save token in local storage
+      if (data.role === 'C') {
+          navigate('/');
+      } else if (data.role === 'V') {
+          navigate('/veterinaPage');
+      } else if (data.role === 'S') {
+          navigate('/staff');
+      } else if(data.role === 'M'){
+          navigate('/manager')
+      }
+      window.location.reload();
       // Handle successful login (e.g., save token, redirect, etc.)
     } catch (error) {
       console.log(error.response ? error.response.data.message : 'Sign In failed!');

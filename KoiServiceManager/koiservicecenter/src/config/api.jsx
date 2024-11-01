@@ -1,7 +1,7 @@
 ﻿/* eslint-disable react-refresh/only-export-components */
 import axios from 'axios';
 
-const BASE_URL = 'https://localhost:8080/api';
+const BASE_URL = 'http://localhost:8080/api';
 
 const getAuthHeaders = () => {
     const token = sessionStorage.getItem('user'); // Fetch the token from sessionStorage

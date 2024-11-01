@@ -1,136 +1,89 @@
-﻿import { useEffect, useState } from 'react';
-import clock_icon from '../assets/clock_icon.png';
-import logo from '../assets/fpt_university_logo.jpg';
-import mail_icon from '../assets/mail_icon.png';
+﻿import { useEffect, useState } from "react";
+import clock_icon from "../assets/clock_icon.png";
+import logo from "../assets/fpt_university_logo.jpg";
+import mail_icon from "../assets/mail_icon.png";
 import { jwtDecode } from "jwt-decode";
-import { fetchUserID } from "../config/api.jsx"
+import { fetchUserID } from "../config/api.jsx";
+import { NavLink, Outlet } from "react-router-dom";
+import "./css/Header.css";
 
 const Header = () => {
-    const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null);
 
-
-    // Fetch user from localStorage on component mount
-    useEffect(() => {
-        const loadUser = async () => {
-            const token = sessionStorage.getItem('user');
-            if (token) {
-                setUser(await fetchUserID(jwtDecode(token).sub));
-                console.log(user);
-            }
-        }
-        loadUser();
-    }, []);
-
-    const handleLogout = () => {
-        sessionStorage.removeItem('user');
-        setUser(null);
-        window.location.href = '/';
+  // Fetch user from localStorage on component mount
+  useEffect(() => {
+    const loadUser = async () => {
+      const token = sessionStorage.getItem("user");
+      if (token) {
+        setUser(await fetchUserID(jwtDecode(token)));
+        console.log(user);
+      }
     };
+    loadUser();
+  },[]);
 
-    return (
-        <>
-            <div style={{
-                backgroundColor: 'lightblue',
-                padding: '20px 300px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                color: 'black',
-            }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <span style={{ marginRight: '20px' }}>📞 Hotline: 028 7300 5588</span>
-                    <a style={{
-                        marginRight: '20px',
-                        textDecoration: 'none',
-                        color: 'black'
-                    }} href="https://maps.app.goo.gl/pHN7n6czhj67Y3UdA" target="_blank">📍 Address: Lot E2a-7, Street D1, D. D1, Long Thanh My, Thu Duc City, Ho Chi Minh 700000</a>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
-                    {user ? (
-                        <div className="user-dropdown-container">
-                            <span style={{ cursor: 'pointer', fontWeight: 'bold' }}>Welcome, {user.name}</span>
-                            <div className="user-dropdown">
-                                <a href="/profile" style={{ display: 'block', padding: '10px', textDecoration: 'none', color: 'black' }}>Profile</a>
-                                <a href="/orders" style={{ display: 'block', padding: '10px', textDecoration: 'none', color: 'black' }}>Orders Service</a>
-                                <span onClick={handleLogout} style={{ display: 'block', padding: '10px', textDecoration: 'none', color: 'black', cursor: 'pointer' }}>Logout</span>
-                            </div>
-                        </div>
-                    ) : (
-                        <a href="/login" style={{ textDecoration: 'none' }}>Login or Register</a>
-                    )}
-                </div>
-            </div>
+  const handleLogout = () => {
+    sessionStorage.removeItem("user");
+    setUser(null);
+    window.location.href = "/";
+  };
 
-            <div style={{
-                color: 'black',
-                margin: '10px 100px',
-                padding: '10px 300px 5px 300px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-            }}>
-                <div>
-                    <img src={logo} alt="Veterinarian Service" style={{ height: '75px', width: 'auto' }}></img>
-                </div>
-                <div style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    marginLeft: '5px'
-                }}>
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
-                        <img src={mail_icon} style={{ height: '75px', width: 'auto' }} alt="Mail Icon"></img>
-                        <p style={{ width: '150px', lineHeight: '1.5', marginLeft: '10px' }}> 24/7 Support <br />
-                            Hotline: <br />
-                            028 7300 5588
-                        </p>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
-                        <img src={clock_icon} style={{ height: '75px', width: 'auto' }} alt="Clock Icon"></img>
-                        <p style={{ width: '150px', lineHeight: '1.5', marginLeft: '10px' }}> Working hours <br />
-                            Monday - Saturday<br />
-                            7:30am to 8:00pm
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div style={{
-                padding: '20px 300px',
-                display: 'flex',
-                gap: '20px',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                position: 'sticky',
-                top: 0,
-                backgroundColor: 'lightblue',
-                zIndex: 1000
-            }}>
-                <a href="/" style={{ color: '#333', textDecoration: 'none', fontWeight: 'bold' }}>HOME</a>
-                <a href="/service" style={{ color: '#333', textDecoration: 'none', fontWeight: 'bold' }}>SERVICE</a>
-                <a href="/veterina" style={{ color: '#333', textDecoration: 'none', fontWeight: 'bold' }}>VETERINA</a>
-                <a href="/aboutus" style={{ color: '#333', textDecoration: 'none', fontWeight: 'bold' }}>ABOUT US</a>
-                <a href="/faq" style={{ color: '#333', textDecoration: 'none', fontWeight: 'bold' }}>FAQ</a>
-                <a href="https://www.facebook.com/FPTU.HCM" target="_blank" style={{ color: '#333', textDecoration: 'none', fontWeight: 'bold' }}>CONTACT</a>
-            </div>
+  return (
+    <>
+      <div className="header-container">
+        <div className="header-info">
+          <span>📞 Hotline: 028 7300 5588</span>
+          <a href="https://maps.app.goo.gl/pHN7n6czhj67Y3UdA" target="_blank">
+            📍 Address: Lot E2a-7, Street D1, Thu Duc City...
+          </a>
+        </div>
+        <div className="user-dropdown-container">
+          {user ? (
+            <>
+              <span>Welcome, {user.name}</span>
+              <div className="user-dropdown">
+                <NavLink to="/profile">Hồ sơ</NavLink>
+                <span onClick={handleLogout}>Logout</span>
+              </div>
+            </>
+          ) : (
+            <NavLink className="nav-link" to="/login">ĐĂNG NHẬP</NavLink>
+          )}
+        </div>
+      </div>
 
-            <style>
-                {`
-                    .user-dropdown {
-                        display: none;
-                        position: absolute;
-                        top: 100%;
-                        right: 0;
-                        background-color: white;
-                        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-                        border-radius: 5px;
-                        z-index: 1000;
-                    }
-                    .user-dropdown-container:hover .user-dropdown {
-                        display: block;
-                    }
-                `}
-            </style>
-        </>
-    );
+      <div className="logo-container">
+        <img src={logo} alt="Veterinarian Service" />
+        <div className="info-box">
+          <img src={mail_icon} alt="Mail Icon" />
+          <p>
+            24/7 Support <br />
+            Hotline: 028 7300 5588
+          </p>
+        </div>
+        <div className="info-box">
+          <img src={clock_icon} alt="Clock Icon" />
+          <p>
+            Working hours <br />
+            Mon - Sat
+            <br />
+            7:30am to 8:00pm
+          </p>
+        </div>
+      </div>
+      <div className="navbar">
+        <NavLink className="nav-link" to="/">TRANG CHỦ</NavLink>
+        <NavLink className="nav-link" to="/service">DỊCH VỤ</NavLink>
+        <NavLink className="nav-link" to="/veterina">BÁC SĨ</NavLink>
+        <NavLink className="nav-link" to="/aboutus">VỀ CHÚNG TÔI</NavLink>
+        <NavLink className="nav-link" to="/faq">FAQ</NavLink>
+        <NavLink className="nav-link" to="https://www.facebook.com/FPTU.HCM" target="_blank">
+          LIÊN HỆ
+        </NavLink>
+      </div>
+      <Outlet />
+    </>
+  );
 };
 
 export default Header;

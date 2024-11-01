@@ -6,16 +6,6 @@
     padding: 0;
 }
 
-body {
-    font-family: 'Open Sans', Helvetica, Arial, sans-serif;
-    background: #ffffff;
-    height: 100vh; /* Full height of the viewport */
-    display: flex;
-    justify-content: center; /* Center horizontally */
-    align-items: center;     /* Center vertically */
-    background-color: #ffffff; /* Optional, if you want to keep a white background */
-}
-
 input,
 button {
     border: none;
@@ -303,3 +293,20 @@ input {
     -webkit-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0);
 }
+
+.form.sign-up {
+    position: relative;
+    width: 640px;
+    max-height: 650px; /* Set maximum height for scrollable content */
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding: 50px 30px 20px;
+    -webkit-transition: -webkit-transform 1.2s ease-in-out;
+    transition: transform 1.2s ease-in-out;
+    transition: transform 1.2s ease-in-out, -webkit-transform 1.2s ease-in-out;
+}
+
+/* Hide scrollbar for WebKit browsers */
+.form.sign-up::-webkit-scrollbar {
+    display: none;
+}
+

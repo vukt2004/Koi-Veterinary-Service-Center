@@ -1,13 +1,13 @@
+// Profile.jsx
 import React, { useEffect, useState } from 'react';
-import { getUserId } from '../utils.jsx';
+import { getUserId } from '../ultis/utils.jsx';
 import { fetchUserID } from '../config/api.jsx';
 import FishTable from './FishTable.jsx';
-import CustomerOrders from './CustomerOrders.jsx';
+import CustomerOrders from './CustomerOrders.jsx'
+import './css/Profile.css'
 
 const Profile = () => {
     const [user, setUser] = useState(null);
-    const [showFishTable, setShowFishTable] = useState(false);
-    const [showCustomerOrders, setShowCustomerOrders] = useState(false);
 
     useEffect(() => {
         const loadUserData = async () => {
@@ -24,24 +24,18 @@ const Profile = () => {
     }
 
     return (
-        <div>
+        <div className="profile-container"> {/* Apply CSS class */}
             <h2>Profile Information</h2>
-            <p><b>UserID:</b> {user.userID}</p>
-            <p><b>Name:</b> {user.name}</p>
-            <p><b>Email:</b> {user.email}</p>
-            <p><b>Phone Number:</b> {user.phoneNumber}</p>
-            <p><b>Role:</b> {user.role}</p>
-            <p><b>Address:</b> {user.address}</p>
+            <p><strong>UserID:</strong> {user.userID}</p>
+            <p><strong>Name:</strong> {user.name}</p>
+            <p><strong>Email:</strong> {user.email}</p>
+            <p><strong>Phone Number:</strong> {user.phoneNumber}</p>
+            <p><strong>Role:</strong> {user.role}</p>
+            <p><strong>Address:</strong> {user.address}</p>
 
-            <button onClick={() => setShowFishTable(!showFishTable)}>
-                {showFishTable ? 'Hide Fish Table' : 'Show Fish Table'}
-            </button>
-            {showFishTable && <FishTable userID={user.userID} role={'C'} />}
-
-            <button onClick={() => setShowCustomerOrders(!showCustomerOrders)}>
-                {showCustomerOrders ? 'Hide Customer Orders' : 'Show Customer Orders'}
-            </button>
-            {showCustomerOrders && <CustomerOrders userID={user.userID} />}
+            <h3>Fish Data</h3>
+            <FishTable userID={user.userID} role={user.role} />
+            <CustomerOrders userID={user.userID} />
         </div>
     );
 };
