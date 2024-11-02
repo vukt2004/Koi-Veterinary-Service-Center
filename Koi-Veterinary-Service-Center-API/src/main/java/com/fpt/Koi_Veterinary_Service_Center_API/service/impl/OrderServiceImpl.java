@@ -10,6 +10,7 @@ import com.fpt.Koi_Veterinary_Service_Center_API.entity.enums.OrderStatus;
 import com.fpt.Koi_Veterinary_Service_Center_API.exception.AppException;
 import com.fpt.Koi_Veterinary_Service_Center_API.repository.*;
 import com.fpt.Koi_Veterinary_Service_Center_API.service.IOrderService;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -61,7 +62,11 @@ public class OrderServiceImpl implements IOrderService {
         Order order = new Order();
         if(createOrderRequest.getVeterinaID()!=null){
             Veterinarian veterinarian = veterinarianRepository.findByVeterinarianID(createOrderRequest.getVeterinaID()).orElseThrow(()-> new AppException("Veterinarian not found"));
-            order.setVeterinarian(veterinarian);
+            List<Order> orders = orderRepository.findByVeterinarianAndOrderDateAndSlot(veterinarian,createOrderRequest.getDate(), slot);
+            if (orders == null || orders.isEmpty()) {
+                order.setVeterinarian(veterinarian);
+            }
+            else throw new AppException("Veterinarian not available");
         }
         order.setUser(user);
         order.setOrderDate(createOrderRequest.getDate());

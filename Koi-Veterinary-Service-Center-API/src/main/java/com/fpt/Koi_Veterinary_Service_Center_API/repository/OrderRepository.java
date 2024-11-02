@@ -14,6 +14,7 @@ import java.util.Optional;
 public interface OrderRepository extends JpaRepository<Order, String> {
     Optional<Order> findByOrderID(String orderID);
     List<Order> findByOrderDateAndSlot(LocalDate orderDate, Slot slot);
+    List<Order> findByVeterinarianAndOrderDateAndSlot(Veterinarian veterinarian, LocalDate orderDate, Slot slot);
     List<Order> findByVeterinarian(Veterinarian veterinarian);
     List<Order> findByUser(User user);
 }
