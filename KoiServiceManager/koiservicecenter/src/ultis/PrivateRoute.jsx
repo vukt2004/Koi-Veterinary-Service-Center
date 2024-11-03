@@ -1,26 +1,25 @@
-// PrivateRoute.js
+// PrivateRoute.jsx
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode';
 
-const PrivateRoute = ({ Component }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+const PrivateRoute = ({ Component, role}) => {
+    const [isAuthenticated, setIsAuthenticated] = useState(true);
 
-  useEffect(() => {
-    const token = sessionStorage.getItem('user');
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        // You can add additional checks here (like token expiration)
-        setIsAuthenticated(true);
-      } catch (error) {
-        console.error("Invalid token:", error);
-        setIsAuthenticated(false);
-      }
-    }
-  }, []);
+    useEffect(() => {
+        const token = sessionStorage.getItem('user');
+        if (token) {
+            if (role === sessionStorage.getItem('role')) {
+                setIsAuthenticated(true);
+            } else {
+                setIsAuthenticated(false);
+            }
+        } else {
+            setIsAuthenticated(false);
+        }
+        setTimeout(() => console.log(isAuthenticated), 5000)
+    }, []);
 
-  return isAuthenticated ? <Component /> : <Navigate to="/login" />;
+    return isAuthenticated ? <Component /> : <Navigate to='/login' />;
 };
 
 export default PrivateRoute;

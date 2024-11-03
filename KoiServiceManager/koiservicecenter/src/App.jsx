@@ -8,10 +8,15 @@ import Service from './component/Service.jsx';
 import Veterina from './component/Veterina.jsx';
 import OrdersForm from './component/OrdersForm.jsx';
 import Profile from './component/Profile.jsx';
+import InvoicePage from './component/InvoicePage.jsx'
+
 import StaffPage from '../staff/StaffPage.jsx';
+
 import Manager from '../manager/ManagerPage.jsx'
+
 import VeterinaPage from '../veterina/VeterinaPage.jsx';
-import PrivateRoute from './ultis/PrivateRoute.jsx';
+
+import PrivateRoute from '../src/ultils/PrivateRoute.jsx';
 
 function App() {
     return (
@@ -23,14 +28,15 @@ function App() {
                 <Route path='/service' element={<Service />}/>
                 <Route path='/veterina' element={<Veterina />}/>
                 <Route path='/login' element={<Login />}/>
-                <Route path='/orderform' element={<PrivateRoute Component={OrdersForm}/>}/>
+                <Route path='/orderform' element={<PrivateRoute Component={OrdersForm} role='C'/>}/>
                 {/* <Route path='/orderform' element={<OrdersForm />}/> */}
-                <Route path='/profile' element={<Profile />}/>
+                <Route path='/profile' element={<Profile />} />
+                <Route path='/invoice' element={<InvoicePage/> }/>
             </Route>
 
-            <Route path='/staff' element={<StaffPage />}/>
-            <Route path='/manager' element={<Manager />}/>
-            <Route path='/veterinaPage' element={<VeterinaPage />}/>
+            <Route path='/staffPage' element={<PrivateRoute Component={StaffPage} role='S' />} />
+            <Route path='/managerPage' element={<PrivateRoute Component={Manager} role ='M'/>}/>
+            <Route path='/veterinaPage' element={<PrivateRoute Component={VeterinaPage} role='V' />} />
         </Routes>
         
     );

@@ -35,16 +35,20 @@ const FeedbackPage = () => {
     const handleSubmitFeedback = async () => {
         try {
             if (!invoiceId) {
-                console.error('Invoice ID is not available');
                 return;
             }
-            await createFeedBack({
+            const response = await createFeedBack({
                 comment: feedback.comment,
                 rating: feedback.rating,
                 invoiceId
             });
-            alert('Feedback submitted successfully');
-            navigate('/');
+            if (response) {
+                alert('Feedback đã gửi thành công!');
+                navigate('/profile');
+            } else {
+                alert('Có lỗi khi gửi feedback!')
+            }
+            
         } catch (error) {
             console.error('Failed to submit feedback:', error);
         }
