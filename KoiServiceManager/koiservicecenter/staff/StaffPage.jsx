@@ -1,31 +1,41 @@
 ﻿import React, { useState } from 'react';
-import QuanLyDichVuCaKoi from './ServiceManagement'; 
+import QuanLyDichVuCaKoi from './ServiceManagement';
 import QuanLyDonHang from './OrdersManagement';
+import './css/StaffPage.css'; // Import the CSS file
 
 const StaffPage = () => {
-    const [activePage, setActivePage] = useState('services');
+    const [activePage, setActivePage] = useState('orders');
 
     // Xử lý chuyển tiếp giữa các phần
     const handlePageChange = (page) => {
         setActivePage(page);
     };
 
+    const handleLogout = () => {
+        sessionStorage.removeItem("user");
+        window.location.href = "/";
+    };
+
     return (
-        <div>
-            <div style={{ display: 'flex', justifyContent: 'space-around', marginBottom: '20px' }}>
-                <button onClick={() => handlePageChange('services')} style={{ padding: '10px 20px' }}>
+        <div className="container"> {/* Use the container class */}
+            <div className="button-container"> {/* Use the button container class */}
+                <button onClick={() => handlePageChange('services')}>
                     Quản Lý Dịch Vụ
                 </button>
-                <button onClick={() => handlePageChange('orders')} style={{ padding: '10px 20px' }}>
+                <button onClick={() => handlePageChange('orders')}>
                     Quản Lý Đơn Hàng
                 </button>
+                <button onClick={() => handleLogout()}>Logout</button>
             </div>
+
             {/* Nội dung sẽ hiển thị dựa trên trang hiện tại */}
-            {activePage === 'services' && <QuanLyDichVuCaKoi />}
-            {activePage === 'orders' && <QuanLyDonHang />}
+            <div className="content"> {/* Optionally wrap content in a div with a class */}
+                {activePage === 'services' && <QuanLyDichVuCaKoi />}
+                {activePage === 'orders' && <QuanLyDonHang />}
+            </div>
+            
         </div>
     );
 }
 
 export default StaffPage;
-

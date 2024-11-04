@@ -43,13 +43,14 @@ const OrderManagement = () => {
 
         getUser();
         fetchData();
-    }, []);
+    }, [currentStatus]); // Added currentStatus to dependencies
 
     const filterOrdersByStatus = (status) => {
         const filtered = orders.filter((order) => order.status === status);
         setFilteredOrders(filtered);
         setCurrentStatus(status);
         setCurrentPage(1); // Reset to page 1 on status change
+        sessionStorage.setItem('currentStatus', status); // Save status in sessionStorage
     };
 
     const paginate = (pageNumber) => {
@@ -102,88 +103,81 @@ const OrderManagement = () => {
     const renderPagination = () => {
         const pages = [];
 
-        // Show "Prev" link if not on the first page
         if (currentPage > 1) {
             pages.push(
-                <span key="prev" onClick={() => paginate(currentPage - 1)} style={{ cursor: 'pointer' }}>
+                <span key="prev" onClick={() => paginate(currentPage - 1)} className="pagination-item">
                     « Prev
                 </span>
             );
         }
 
-        // Always show page 1
         pages.push(
-            <span key="1" onClick={() => paginate(1)} style={{ cursor: currentPage === 1 ? 'default' : 'pointer' }}>
+            <span key="1" onClick={() => paginate(1)} className="pagination-item">
                 1
             </span>
         );
 
-        // Add "..." if there's a gap between page 1 and the current page when currentPage > 3
         if (currentPage > 3) {
-            pages.push(<span key="start-ellipsis">...</span>);
+            pages.push(<span key="start-ellipsis" className="pagination-item">...</span>);
         }
 
-        // Show the current page if it's not the first or last page
         if (currentPage > 1 && currentPage < totalPages) {
             pages.push(
-                <span key="current" style={{ fontWeight: 'bold', cursor: 'default' }}>
+                <span key="current" className="pagination-item current-page">
                     {currentPage}
                 </span>
             );
         }
 
-        // Add "..." if there's a gap between the current page and the max page when near the end
         if (currentPage < totalPages - 2) {
-            pages.push(<span key="end-ellipsis">...</span>);
+            pages.push(<span key="end-ellipsis" className="pagination-item">...</span>);
         }
 
-        // Always show the last page if there are multiple pages
         if (totalPages > 1) {
             pages.push(
                 <span
                     key={totalPages}
                     onClick={() => paginate(totalPages)}
-                    style={{ cursor: currentPage === totalPages ? 'default' : 'pointer' }}
+                    className="pagination-item"
                 >
                     {totalPages}
                 </span>
             );
         }
 
-        // Show "Next" link if not on the last page
         if (currentPage < totalPages) {
             pages.push(
-                <span key="next" onClick={() => paginate(currentPage + 1)} style={{ cursor: 'pointer' }}>
+                <span key="next" onClick={() => paginate(currentPage + 1)} className="pagination-item">
                     Next »
                 </span>
             );
         }
 
-        return <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>{pages}</div>;
+        return <div className="pagination">{pages}</div>;
     };
 
     return (
-        <div>
+        <div className="order-management">
             <h1>Order Management</h1>
             <ToastContainer />
-            <div>
+            <div className="filter-buttons">
                 <button onClick={() => filterOrdersByStatus('pending')}>Pending</button>
                 <button onClick={() => filterOrdersByStatus('accept')}>Accepted</button>
                 <button onClick={() => filterOrdersByStatus('done')}>Completed</button>
                 <button onClick={() => filterOrdersByStatus('cancel')}>Canceled</button>
             </div>
 
-            <table border="1" style={{ margin: '10px' }}>
+            <table className="order-table">
                 <thead>
                     <tr>
-                        <th>Order ID</th>
-                        <th>User ID</th>
-                        <th>Veterina</th>
-                        <th>Date</th>
+                        <th>Nã đơn</th>
+                        <th>Mã khách hàng</th>
+                        <th>Bác sĩ</th>
+                        <th>Ngày đặt lịch</th>
                         <th>Slot</th>
-                        <th>Address</th>
+                        <th>Địa chỉ đặt lịch</th>
                         <th>Services</th>
-                        <th>Status</th>
+                        <th>Ghi chú</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -196,7 +190,7 @@ const OrderManagement = () => {
                                 {order.veterinaId || order.status !== 'pending' ? (
                                     veterinas.find((vet) => vet.veterinaID === order.veterinaId)?.name || 'Unknown'
                                 ) : (
-                                    <select onChange={(e) => handleSelectVeterina(order.orderId, e.target.value)}>
+                                    <select onChange={(e) => handleSelectVeterina(order.orderId, e.target.value)} className="veterina-select">
                                         <option value="">Select Veterina</option>
                                         {veterinas
                                             .filter((vet) =>
@@ -220,9 +214,9 @@ const OrderManagement = () => {
                                     </div>
                                 ))}
                             </td>
-                            <td>{order.status}</td>
+                            <td>{order.description}</td>
                             {order.status === 'pending' ? (
-                                <td><button onClick={() => handleCancel(order.orderId)}>Cancel</button></td>
+                                <td><button onClick={() => handleCancel(order.orderId)} className="cancel-button">Hủy đơn này</button></td>
                             ) : (
                                 <td></td>
                             )}
@@ -234,6 +228,91 @@ const OrderManagement = () => {
             <div className="pagination">
                 {renderPagination()}
             </div>
+
+            <style jsx>{`
+                .order-management {
+                    font-family: Arial, sans-serif;
+                    padding: 20px;
+                    max-width: 1200px;
+                    margin: auto;
+                }
+
+                h1 {
+                    text-align: center;
+                }
+
+                .filter-buttons {
+                    display: flex;
+                    justify-content: center;
+                    margin-bottom: 20px;
+                }
+
+                button {
+                    margin: 0 5px;
+                    padding: 10px 15px;
+                    border: none;
+                    background-color: #4CAF50;
+                    color: white;
+                    cursor: pointer;
+                    border-radius: 5px;
+                }
+
+                button:hover {
+                    background-color: #45a049;
+                }
+
+                .order-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-bottom: 20px;
+                }
+
+                th, td {
+                    border: 1px solid #ddd;
+                    padding: 10px;
+                    text-align: left;
+                }
+
+                th {
+                    background-color: #f2f2f2;
+                }
+
+                .cancel-button {
+                    background-color: #f44336;
+                    color: white;
+                    border: none;
+                    padding: 5px 10px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                }
+
+                .cancel-button:hover {
+                    background-color: #d32f2f;
+                }
+
+                .pagination {
+                    display: flex;
+                    justify-content: center;
+                    margin-top: 20px;
+                }
+
+                .pagination-item {
+                    margin: 0 5px;
+                    cursor: pointer;
+                }
+
+                .current-page {
+                    font-weight: bold;
+                    color: #4CAF50;
+                }
+
+                .veterina-select {
+                    padding: 5px;
+                    border-radius: 5px;
+                    border: 1px solid #ddd;
+                }
+
+            `}</style>
         </div>
     );
 };
