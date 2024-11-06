@@ -1,7 +1,7 @@
 ﻿/* eslint-disable react-refresh/only-export-components */
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8080/api';
+const BASE_URL = 'https://localhost:8080/api';
 
 const getAuthHeaders = () => {
     const token = sessionStorage.getItem('user'); // Fetch the token from sessionStorage
@@ -95,6 +95,16 @@ export const fetchVeterinas = async () => {
     }
 };
 
+export const createVeterina = async (vetedata) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/veterinas`, vetedata, getAuthHeaders());
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching veterinas:', error);
+        return { error: 'Could not fetch veterinas' };
+    }
+};
+
 export const fetchServices = async () => {
     try {
         const response = await axios.get(`${BASE_URL}/services`);
@@ -125,15 +135,15 @@ export const fetchOrders = async () => {
     }
 };
 
-export const initiatePayment = async (orderId) => {
+export const initiatePayment = async (orderId, status) => {
     try {
-        const response = await axios.post(`${BASE_URL}/payment/${orderId}`, {}, getAuthHeaders());
-
+        const response = await axios.post(`${BASE_URL}/payment/${orderId}/${status}`, {}, getAuthHeaders());
+        console.log(response);
         const paymentUrl = response.data.body;
 
         return paymentUrl;
     } catch (error) {
-        console.error('Payment initiation failed:', error);
+        console.error(error);
         return null;
     }
 };
@@ -153,19 +163,18 @@ export const fetchOrdersByUser = async (userID) => {
         const response = await axios.get(`${BASE_URL}/orders/user/${userID}`, getAuthHeaders());
         return response.data;
     } catch (error) {
-        console.error('Error fetching orders:', error);
-        return { error: 'Could not fetch orders' };
-    }
+        console.error(error);
+        return null;
+    } 
 };
 
 export const fetchInvoiceByOrderId = async (orderId) => {
     try {
         const response = await axios.get(`${BASE_URL}/invoices/orders/${orderId}`, getAuthHeaders());
-        console.log(response.data)
         return response.data;
-    } catch (error) {
-        console.error('Error fetching invoice:', error);
-        return { error: 'Could not fetch invoice' };
+    } catch (e) {
+        console.error(e);
+        return null; 
     }
 };
 
@@ -178,7 +187,7 @@ export const createFeedBack = async ({ comment, rating, invoiceId }) => {
         return response.data;
     } catch (error) {
         console.error('Error creating feedback:', error);
-        return { error: 'Could not submit feedback' };
+        return null;
     }
 };
 
@@ -219,8 +228,8 @@ export const fetchFeedback = async () => {
         const response = await axios.get(`${BASE_URL}/feedbacks`, getAuthHeaders());
         return response.data;
     } catch (error) {
-        console.error('Error fetching feedbacks:', error);
-        return { error: 'Could not fetch feedbacks' };
+        console.log(error)
+        return null;
     }
 };
 
@@ -307,7 +316,7 @@ export const DeleteServiceInOrder = async (orderID, serviceID) => {
 
 export const addService = async (serviceData) => {
     try {
-        const response = await axios.post(`${BASE_URL}/services/add`, serviceData, getAuthHeaders());
+        const response = await axios.post(`${BASE_URL}/service/add`, serviceData, getAuthHeaders());
         return response.data;
     } catch (error) {
         console.error('Error creating order:', error);
@@ -317,7 +326,7 @@ export const addService = async (serviceData) => {
 
 export const updateService = async (serviceData) => {
     try {
-        const response = await axios.post(`${BASE_URL}/services/add`, serviceData, getAuthHeaders());
+        const response = await axios.put(`${BASE_URL}/service/update`, serviceData, getAuthHeaders());
         return response.data;
     } catch (error) {
         console.error('Error creating order:', error);
@@ -328,7 +337,7 @@ export const updateService = async (serviceData) => {
 
 export const deleteService = async (serviceID) => {
     try {
-        const response = await axios.delete(`${BASE_URL}services/${serviceID}`);
+        const response = await axios.delete(`${BASE_URL}/service/${serviceID}`);
         return response.data;
     } catch (error) {
         console.error('Error delete service:', error);

@@ -1,11 +1,11 @@
 ﻿import { useEffect, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import { fetchServices, addService, deleteService, updateService } from '../src/config/api.jsx';
-import './css/QuanLyDichVuCaKoi.css'; // Import the CSS file
+import './css/ServiceManagement.css';
 
-const QuanLyDichVuCaKoi = () => {
+const ServiceManagement = () => {
     const [dichVu, setDichVu] = useState([]);
-    const [dichVuMoi, setDichVuMoi] = useState({ name: '', type: '', price: '', maxQuantity: '' });
+    const [dichVuMoi, setDichVuMoi] = useState({ name: '', type: '', price: '', maxQuantity: '', service: true });
     const [dichVuDangChinhSua, setDichVuDangChinhSua] = useState(null);
 
     useEffect(() => {
@@ -20,11 +20,11 @@ const QuanLyDichVuCaKoi = () => {
         const response = await addService(dichVuMoi);
         if (response) {
             toast.success('Thêm dịch vụ thành công');
-            setDichVu([...dichVu, { ...dichVuMoi, serviceID: response.serviceID }]); // Assuming response contains the new service ID
+            setDichVu([...dichVu, { ...dichVuMoi, serviceID: response.serviceID }]);
         } else {
             toast.error('Lỗi khi thêm dịch vụ');
         }
-        setDichVuMoi({ name: '', type: '', price: '', maxQuantity: '' });
+        setDichVuMoi({ name: '', type: '', price: '', maxQuantity: '', service: true });
     };
 
     const handleCapNhatDichVu = async () => {
@@ -64,6 +64,7 @@ const QuanLyDichVuCaKoi = () => {
                         <th>Loại</th>
                         <th>Giá (VND)</th>
                         <th>Số lượng đặt hàng tối đa</th>
+                        <th>Cho phép đặt lịch?</th>
                         <th>Hành Động</th>
                     </tr>
                 </thead>
@@ -75,6 +76,7 @@ const QuanLyDichVuCaKoi = () => {
                             <td>{dv.type}</td>
                             <td>{dv.price.toLocaleString('vi-VN')} VND</td>
                             <td>{dv.maxQuantity}</td>
+                            <td>{dv.service ? 'Có' : 'Không'}</td>
                             <td>
                                 <button className="button" onClick={() => setDichVuDangChinhSua(dv)}>Sửa</button>
                                 <button className="button" onClick={() => handleXoaDichVu(dv.serviceID)}>Xóa</button>
@@ -122,11 +124,19 @@ const QuanLyDichVuCaKoi = () => {
                         onChange={(e) => setDichVuMoi({ ...dichVuMoi, maxQuantity: e.target.value })}
                     />
                 </div>
+                <div className="input-group">
+                    <label>Cho phép đặt lịch?</label>
+                    <input
+                        type="checkbox"
+                        checked={dichVuMoi.service}
+                        onChange={(e) => setDichVuMoi({ ...dichVuMoi, service: e.target.checked })}
+                    />
+                </div>
                 <button className="button" onClick={handleThemDichVu}>Thêm Dịch Vụ</button>
             </div>
 
             {dichVuDangChinhSua && (
-                <div>
+                <section>
                     <h2>Sửa Dịch Vụ</h2>
                     <div className="input-group">
                         <label>Tên dịch vụ</label>
@@ -161,16 +171,21 @@ const QuanLyDichVuCaKoi = () => {
                             onChange={(e) => setDichVuDangChinhSua({ ...dichVuDangChinhSua, maxQuantity: parseFloat(e.target.value) })}
                         />
                     </div>
+                    <div className="input-group">
+                        <label>Cho phép đặt lịch?</label>
+                        <input
+                            type="checkbox"
+                            checked={dichVuDangChinhSua.service}
+                            onChange={(e) => setDichVuDangChinhSua({ ...dichVuDangChinhSua, service: e.target.checked })}
+                        />
+                    </div>
                     <button className="button" onClick={handleCapNhatDichVu}>Cập Nhật Dịch Vụ</button>
                     <button className="button" onClick={() => setDichVuDangChinhSua(null)}>Hủy</button>
-                </div>
-            )}
 
-            <footer className="footer">
-                <p>© 2024 Quản Lý Dịch Vụ Cá Koi</p>
-            </footer>
+                </section>
+            )}
         </div>
     );
 };
 
-export default QuanLyDichVuCaKoi;
+export default ServiceManagement;

@@ -1,7 +1,8 @@
 ﻿import React, { useState } from 'react';
-import QuanLyDichVuCaKoi from './ServiceManagement';
+import ServiceManagement from './ServiceManagement';
 import QuanLyDonHang from './OrdersManagement';
 import './css/StaffPage.css'; // Import the CSS file
+import Schedule from './Schedule';
 
 const StaffPage = () => {
     const [activePage, setActivePage] = useState('orders');
@@ -30,10 +31,11 @@ const StaffPage = () => {
 
             {/* Nội dung sẽ hiển thị dựa trên trang hiện tại */}
             <div className="content"> {/* Optionally wrap content in a div with a class */}
-                {activePage === 'services' && <QuanLyDichVuCaKoi />}
+                {activePage === 'services' && <ServiceManagement />}
                 {activePage === 'orders' && <QuanLyDonHang />}
             </div>
-            
+
+            <Schedule />
         </div>
     );
 }

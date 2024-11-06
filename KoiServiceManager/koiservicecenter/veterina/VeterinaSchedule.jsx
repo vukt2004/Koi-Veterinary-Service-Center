@@ -1,11 +1,11 @@
-﻿import { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { fetchSlots, fetchOrdersByVeterina } from '../src/config/api.jsx';
 import { ToastContainer, toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 import 'react-toastify/dist/ReactToastify.css';
 import './VeterinaSchedule.css';
 
-const VeterinaSchedule = ({ veterinaId }) => {
+const VeterinaSchedule = ({ veterinaId, onSlotSelect }) => {
     const [slots, setSlots] = useState([]);
     const [orders, setOrders] = useState([]);
     const [userRole, setUserRole] = useState('');
@@ -26,6 +26,7 @@ const VeterinaSchedule = ({ veterinaId }) => {
                 toast.error("Error loading data");
                 console.error(error);
             }
+            console.log(veterinaId)
         };
 
         loadData();
@@ -42,8 +43,8 @@ const VeterinaSchedule = ({ veterinaId }) => {
         return days;
     };
 
-    const handleSelectSlot = (veterinaID, formattedDate, slot) => {
-        console.log("Selected:", { veterinaID, formattedDate, slot });
+    const handleSelectSlot = (veterinaID, date, slot) => {
+        onSlotSelect(veterinaID, date, slot);
     };
 
     return (
@@ -78,15 +79,24 @@ const VeterinaSchedule = ({ veterinaId }) => {
                                         const slotOrder = orders.find(o => o.slot === slot.slot && o.orderDate === formattedDate);
                                         const isDisabled = !slotOrder;
 
+                                        const slotDateTime = new Date(day);
+                                        slotDateTime.setHours(
+                                            slot.startTime.split(":")[0],
+                                            slot.startTime.split(":")[1]
+                                        );
+
+                                        // Use the current date and time
+                                        const currentDateTime = new Date();
+
                                         return (
                                             <td key={day}>
-                                                {userRole === 'C' && isDisabled ? (
+                                                {userRole === 'C' && isDisabled && slotDateTime > currentDateTime ? (
                                                     <button
                                                         style={{
                                                             backgroundColor: '#3498db',
                                                             color: 'white'
                                                         }}
-                                                        onClick={() => handleSelectSlot(veterinaId, formattedDate, slot.slot)}>
+                                                        onClick={() => handleSelectSlot(veterinaId, day, slot)}>
                                                         Chọn
                                                     </button>
                                                 ) : userRole !== 'C' && slotOrder ? (
@@ -115,7 +125,8 @@ const VeterinaSchedule = ({ veterinaId }) => {
 };
 
 VeterinaSchedule.propTypes = {
-    veterinaId: PropTypes.string.isRequired
+    veterinaId: PropTypes.string.isRequired,
+    onSlotSelect: PropTypes.func.isRequired,
 };
 
 export default VeterinaSchedule;

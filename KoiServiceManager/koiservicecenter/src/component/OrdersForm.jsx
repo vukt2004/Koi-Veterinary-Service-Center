@@ -5,6 +5,7 @@ import { ToastContainer, toast } from 'react-toastify'; // Importing react-toast
 import 'react-toastify/dist/ReactToastify.css'; // npm install react-toastify
 import { useNavigate } from 'react-router-dom';
 import "./css/OrderForm.css";
+import VeterinaSchedule from '../../veterina/VeterinaSchedule.jsx';
 
 const OrdersForm = () => {
     const [slots, setSlots] = useState([]);
@@ -13,6 +14,9 @@ const OrdersForm = () => {
     const [user, setUser] = useState(null);
     const [travelExpenses, setTravelExpenses] = useState([]);
     const navigate = useNavigate();
+
+    const [availableSlots, setAvailableSlots] = useState({});
+    const [searchVeterina, setSearchVeterina] = useState('');
 
     const [selectedSlot, setSelectedSlot] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null);
@@ -46,6 +50,30 @@ const OrdersForm = () => {
         loadData();
     }, []);
 
+    useEffect(() => {
+        const checkSlotAvailability = async () => {
+            const slotAvailability = {};
+
+            for (const day of getNext7Days()) {
+                const formattedDate = day.toISOString().split('T')[0];
+                slotAvailability[formattedDate] = {};
+
+                for (const slot of slots) {
+                    const orders = await fetchOrdersInSelectedSlot(formattedDate, slot.slot);
+                    const activeOrders = orders.filter(order => order.status !== 'cancel');
+                    const availableVeterinas = veterinas.filter(vet =>
+                        !activeOrders.some(order => order.veterinaId === vet.veterinaID)
+                    );
+
+                    slotAvailability[formattedDate][slot.slot] = availableVeterinas;
+                }
+            }
+            setAvailableSlots(slotAvailability);
+        };
+
+        checkSlotAvailability();
+    }, [slots, veterinas]);
+
     const getNext7Days = () => {
         const days = [];
         const today = new Date();
@@ -57,23 +85,15 @@ const OrdersForm = () => {
         return days;
     };
 
-    const handleSlotSelection = async (date, slot) => {
+    const handleSlotSelection = (date, slot) => {
         setSelectedDate(date);
         setSelectedSlot(slot);
-        try {
-            // Lấy danh sách đơn hàng trong slot đã chọn
-            const formattedDate = date.toISOString().split('T')[0];
-            const orders = await fetchOrdersInSelectedSlot(formattedDate, slot.slot);
-            const activeOrders = orders.filter(order => order.status !== 'cancel');
-            console.log(activeOrders);
 
-            // Lọc danh sách bác sĩ trống trong slot
-            const availableVeterinas = veterinas.filter(vet =>
-                !activeOrders.some(order => order.veterinaId === vet.veterinaId)
-            );
+        const formattedDate = date.toISOString().split('T')[0];
+        console.log(searchVeterina)
+        if (searchVeterina === '') {
+            const availableVeterinas = availableSlots[formattedDate]?.[slot.slot] || [];
             setVeterinasInSelectedSlot(availableVeterinas);
-
-            // Thông báo thành công nếu có bác sĩ khả dụng
             if (availableVeterinas.length > 0) {
                 toast.success(`Bạn đã chọn Slot: ${slot.startTime} - ${slot.endTime} vào ngày ${date.toLocaleDateString()}`);
                 if (selectedVeterina && !availableVeterinas.some(vet => vet.veterinaId === selectedVeterina.veterinaId)) {
@@ -85,9 +105,10 @@ const OrdersForm = () => {
                 setSelectedDate(null);
                 setSelectedSlot(null);
             }
-        } catch (e) {
-            toast.error('Lỗi khi tải đơn hàng trong slot đã chọn.');
+        } else {
+            toast.success(`Bạn đã chọn Slot: ${slot.startTime} - ${slot.endTime} vào ngày ${date.toLocaleDateString()}`);
         }
+        
     };
 
     const handleServiceSelection = (serviceID) => {
@@ -162,6 +183,11 @@ const OrdersForm = () => {
         setPay(prevPay => !prevPay);
     };
 
+    const handleSlotSelect = (veterinaID, date, slot) => {
+        setSelectedVeterina(veterinaID);
+        handleSlotSelection(date, slot)
+    };
+
     const handleBooking = async () => {
         if (!selectedDate || !selectedSlot) {
             alert('Vui lòng chọn Ngày và Slot!');
@@ -201,6 +227,9 @@ const OrdersForm = () => {
             }
         }
 
+        if (searchVeterina !== '') {
+            setSelectedVeterina(searchVeterina);
+        }
         const newOrder = {
             userID: user.userID,
             veterinaID: selectedVeterina || null,
@@ -210,12 +239,13 @@ const OrdersForm = () => {
             address: completeAddress,
         };
 
+        
         try {
             const result = await createOrder(newOrder);
             setSelectedVeterina(null);
             setSelectedDate(null);
             setSelectedSlot(null);
-            if (result) {
+            if (result !== "Veterinarian not available") {
                 const { orderId, orderDate, address, status } = result;
 
                 console.log(pay);
@@ -237,7 +267,7 @@ const OrdersForm = () => {
                         toast.error('Đã xảy ra lỗi khi xử lý thanh toán. Đơn đã bị hủy, vui lòng tạo lại');
                         await updateOrderStatus(orderId, 'cancel');
                     }
-                } else { 
+                } else {
                     toast.success(`Đơn hàng của bạn đã được đặt thành công!\nMã đơn: ${orderId}\nNgày đặt: ${orderDate}\nĐịa chỉ: ${address}\nTrạng thái: ${status}`);
                     toast.warning('Bạn sẽ được chuyển về trang chủ sau 5 giây');
                     setTimeout(() => {
@@ -248,97 +278,126 @@ const OrdersForm = () => {
                 toast.error('Đã có lỗi xảy ra khi đặt đơn hàng.');
             }
         } catch (error) {
+            console.log(error)
             toast.error('Lỗi kết nối! Vui lòng thử lại.');
         }
     };
 
     return (
         <div className="orders-form">
-            <h1 className="orders-title">Quản lý đơn đặt hàng</h1>
+            <h1 className="orders-title">Đơn đặt lịch</h1>
             <ToastContainer />
 
-            {/* Render bảng slot */}
-            <section className="section slot-selection">
-                {/* Render bảng slot */}
-                <div className="slot-table-container">
-                    <table className="slot-table" border="1">
-                        <thead>
-                            <tr>
-                                <th>Slot</th>
-                                {getNext7Days().map((day) => (
-                                    <th key={day}>
-                                        {day.toLocaleDateString("vi-VN", {
-                                            weekday: "short",
-                                            day: "numeric",
-                                            month: "numeric",
-                                        })}
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {slots.map((slot) => (
-                                <tr key={slot.slot}>
-                                    <td>
-                                        {slot.startTime} - {slot.endTime}
-                                    </td>
-                                    {getNext7Days().map((day) => {
-                                        const slotDateTime = new Date(day);
-                                        slotDateTime.setHours(
-                                            slot.startTime.split(":")[0],
-                                            slot.startTime.split(":")[1]
-                                        );
-
-                                        // Use the current date and time
-                                        const currentDateTime = new Date();
-
-                                        return (
-                                            <td key={day}>
-                                                {slotDateTime > currentDateTime && (
-                                                    <button
-                                                        className="select-slot-button"
-                                                        onClick={() => handleSlotSelection(day, slot)}
-                                                    >
-                                                        Chọn
-                                                    </button>
-                                                )}
-                                            </td>
-                                        );
-                                    })}
-                                </tr>
+            <div>
+                <section className="vet-selection">
+                    <label>Tìm Bác Sĩ:</label>
+                    <select onChange={(e) => setSearchVeterina(e.target.value)} value={searchVeterina || ''}>
+                        <option value="">Chọn bác sĩ</option>
+                        {veterinas
+                            .map((vet) => (
+                                <option key={vet.veterinaID} value={vet.veterinaID}>
+                                    {vet.name} - {vet.description}
+                                </option>
                             ))}
-                        </tbody>
-                    </table>
-                </div>
-                {/* Hiển thị thông tin slot và ngày đã chọn */}
-                {selectedSlot && selectedDate && (
-                    <div className="selected-info">
-                        <p>
-                            Slot đã chọn: {selectedSlot.startTime} - {selectedSlot.endTime}
-                        </p>
-                        <p>Ngày đã chọn: {selectedDate.toLocaleDateString()}</p>
-                    </div>
-                )}
-            </section>
+                    </select>
+                </section>
+            </div>
+            {searchVeterina !== '' ? (
+                <VeterinaSchedule veterinaId={searchVeterina} onSlotSelect={handleSlotSelect} />
+            ) : (
+                <>
+                    {/* Render bảng slot */}
+                    <section className="section slot-selection">
+                        {/* Render bảng slot */}
+                        <div className="slot-table-container">
+                            <table className="slot-table" border="1">
+                                <thead>
+                                    <tr>
+                                        <th>Slot</th>
+                                        {getNext7Days().map((day) => (
+                                            <th key={day}>
+                                                {day.toLocaleDateString("vi-VN", {
+                                                    weekday: "short",
+                                                    day: "numeric",
+                                                    month: "numeric",
+                                                })}
+                                            </th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {slots.map((slot) => (
+                                        <tr key={slot.slot}>
+                                            <td>
+                                                {slot.startTime} - {slot.endTime}
+                                            </td>
+                                            {getNext7Days().map((day) => {
 
-            <section className="section ">
-                {/* Chọn bác sĩ */}
-                {selectedSlot && (
-                    <section className="vet-selection">
-                        <label>Chọn Bác Sĩ:</label>
-                        <select onChange={(e) => setSelectedVeterina(e.target.value)} value={selectedVeterina || ''}>
-                            <option value="">Chọn bác sĩ</option>
-                            {veterinasInSelectedSlot
-                                .map((vet) => (
-                                    <option key={vet.veterinaID} value={vet.veterinaID}>
-                                        {vet.name} - {vet.description}
-                                    </option>
-                                ))}
-                        </select>
+                                                const formattedDate = day.toISOString().split('T')[0];
+                                                const availableVeterinas = availableSlots[formattedDate]?.[slot.slot] || [];
+                                                const isDisabled = availableVeterinas.length === 0;
+
+                                                const slotDateTime = new Date(day);
+                                                slotDateTime.setHours(
+                                                    slot.startTime.split(":")[0],
+                                                    slot.startTime.split(":")[1]
+                                                );
+
+                                                // Use the current date and time
+                                                const currentDateTime = new Date();
+
+                                                return (
+                                                    <td key={day}>
+                                                        {slotDateTime > currentDateTime && (
+                                                            <button
+                                                                className={`select-slot-button ${isDisabled ? 'disabled-button' : ''}`}
+                                                                style={{ backgroundColor: isDisabled ? 'red' : '' }}
+                                                                onClick={() => !isDisabled && handleSlotSelection(day, slot)}
+                                                                disabled={isDisabled}
+                                                            >
+                                                                {isDisabled ? 'Hết bác sĩ' : 'Chọn'}
+                                                            </button>
+                                                        )}
+                                                    </td>
+                                                );
+                                            })}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        {/* Hiển thị thông tin slot và ngày đã chọn */}
+                        {selectedSlot && selectedDate && (
+                            <div className="selected-info">
+                                <p>
+                                    Slot đã chọn: {selectedSlot.startTime} - {selectedSlot.endTime}
+                                </p>
+                                <p>Ngày đã chọn: {selectedDate.toLocaleDateString()}</p>
+                            </div>
+                        )}
                     </section>
-                )}
-            </section>
-            
+
+                    <section className="section ">
+                        {/* Chọn bác sĩ */}
+                        {selectedSlot && (
+                            <section className="vet-selection">
+                                <label>Chọn Bác Sĩ:</label>
+                                <select onChange={(e) => setSelectedVeterina(e.target.value)} value={selectedVeterina || ''}>
+                                    <option value="">Chọn bác sĩ</option>
+                                    {veterinasInSelectedSlot
+                                        .map((vet) => (
+                                            <option key={vet.veterinaID} value={vet.veterinaID}>
+                                                {vet.name} - {vet.description}
+                                            </option>
+                                        ))}
+                                </select>
+                            </section>
+                        )}
+                    </section>
+                </>
+            )}
+
+
             {/* Chọn dịch vụ */}
             <section className="section ">
                 {/* Chọn dịch vụ */}
@@ -350,7 +409,7 @@ const OrdersForm = () => {
                     >
                         <option value="">-- Chọn Dịch Vụ --</option>
                         {services
-                            .filter((service) => service.type !== "Thuốc")
+                            .filter((service) => service.service === true)
                             .map((service) => (
                                 <option key={service.serviceID} value={service.serviceID}>
                                     {service.name} - {service.price} đ
@@ -409,42 +468,42 @@ const OrdersForm = () => {
             {/* Chọn địa chỉ */}
             <section className="section">
                 {/* Chọn địa chỉ */}
-                    <h3>Chọn Địa Chỉ:</h3>
-                    <section className="use-my-address">
-                        <input
-                            type="checkbox"
-                            checked={useMyAddress}
-                            onChange={handleUseMyAddress}
-                        />
-                        <label>
-                            Sử dụng địa chỉ của tôi: {user?.address || "Chưa có địa chỉ"}
-                        </label>
+                <h3>Chọn Địa Chỉ:</h3>
+                <section className="use-my-address">
+                    <input
+                        type="checkbox"
+                        checked={useMyAddress}
+                        onChange={handleUseMyAddress}
+                    />
+                    <label>
+                        Sử dụng địa chỉ của tôi: {user?.address || "Chưa có địa chỉ"}
+                    </label>
+                </section>
+
+                {!useMyAddress && (
+                    <section className="address-input">
+                        <select
+                            onChange={(e) => setSelectedAddress(e.target.value)}
+                            value={selectedAddress}
+                        >
+                            <option value="">-- Chọn Quận/Huyện --</option>
+                            {travelExpenses.map((address) => (
+                                <option key={address.expenseID} value={address.endLocation}>
+                                    {address.endLocation} - {address.fee}VND
+                                </option>
+                            ))}
+                        </select>
+                        {selectedAddress !== "Online" && selectedAddress !== "" && (
+                            <input
+                                value={addressDetails}
+                                onChange={(e) => setAddressDetails(e.target.value)}
+                                placeholder="Nhập thêm chi tiết địa chỉ"
+                            />
+                        )}
                     </section>
-                    
-                    {!useMyAddress && (
-                        <section className="address-input">
-                            <select
-                                onChange={(e) => setSelectedAddress(e.target.value)}
-                                value={selectedAddress}
-                            >
-                                <option value="">-- Chọn Quận/Huyện --</option>
-                                {travelExpenses.map((address) => (
-                                    <option key={address.expenseID} value={address.endLocation}>
-                                        {address.endLocation} - {address.fee}VND
-                                    </option>
-                                ))}
-                            </select>
-                            {selectedAddress !== "Online" && selectedAddress !== "" && (
-                                <input
-                                    value={addressDetails}
-                                    onChange={(e) => setAddressDetails(e.target.value)}
-                                    placeholder="Nhập thêm chi tiết địa chỉ"
-                                />
-                            )}
-                        </section>
-                    )}
+                )}
             </section>
-            
+
 
             <section className="section payment-section">
                 {selectedAddress === "Online" ? (
@@ -464,7 +523,7 @@ const OrdersForm = () => {
             </section>
 
             {/* Booking Button */}
-            
+
             <button className="booking-button" onClick={handleBooking}>
                 Đặt Lịch
             </button>

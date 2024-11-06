@@ -10,14 +10,11 @@ const OrderManagement = () => {
     const [veterinas, setVeterinas] = useState([]);
     const [filteredOrders, setFilteredOrders] = useState([]);
     const [services, setServices] = useState([]);
-    const [user, setUser] = useState(null);
 
     const [currentPage, setCurrentPage] = useState(() => {
         return parseInt(sessionStorage.getItem('currentPage')) || 1;
     });
-    const [currentStatus, setCurrentStatus] = useState(() => {
-        return sessionStorage.getItem('currentStatus') || 'pending';
-    });
+
     const ordersPerPage = 10;
 
     useEffect(() => {
@@ -26,8 +23,6 @@ const OrderManagement = () => {
             const userData = await fetchUserID(userId);
             if (userData.role !== 'M' && userData.role !== 'S') {
                 Navigate('/');
-            } else {
-                setUser(userData);
             }
         };
 
@@ -38,17 +33,15 @@ const OrderManagement = () => {
             setServices(servicesData);
             setOrders(ordersData);
             setVeterinas(veterinasData.filter((vet) => vet.status === true));
-            filterOrdersByStatus(currentStatus);  // Load current status on reload
         };
 
         getUser();
         fetchData();
-    }, [currentStatus]); // Added currentStatus to dependencies
+    }, []); // Added currentStatus to dependencies
 
     const filterOrdersByStatus = (status) => {
         const filtered = orders.filter((order) => order.status === status);
         setFilteredOrders(filtered);
-        setCurrentStatus(status);
         setCurrentPage(1); // Reset to page 1 on status change
         sessionStorage.setItem('currentStatus', status); // Save status in sessionStorage
     };
@@ -229,7 +222,7 @@ const OrderManagement = () => {
                 {renderPagination()}
             </div>
 
-            <style jsx>{`
+            <style>{`
                 .order-management {
                     font-family: Arial, sans-serif;
                     padding: 20px;
