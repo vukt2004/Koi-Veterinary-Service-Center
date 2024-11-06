@@ -25,8 +25,7 @@ const CustomerOrders = ({ userID }) => {
 
             const feedbackSet = new Set();
             for (let order of filteredOrders) {
-                const invoice = await fetchInvoiceByOrderId(order.orderId);
-                if (fetchedFeedback.some((fb) => fb.invoiceId === invoice?.invoiceId)) {
+                if (fetchedFeedback.some((fb) => fb.orderId === order.orderId)) {
                     feedbackSet.add(order.orderId);
                 }
             }
