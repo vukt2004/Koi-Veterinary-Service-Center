@@ -16,7 +16,7 @@ import Manager from '../manager/ManagerPage.jsx'
 
 import VeterinaPage from '../veterina/VeterinaPage.jsx';
 
-import PrivateRoute from '../src/ultils/PrivateRoute.jsx';
+import PrivateRoute from '../src/utils/PrivateRoute.jsx';
 
 function App() {
     return (

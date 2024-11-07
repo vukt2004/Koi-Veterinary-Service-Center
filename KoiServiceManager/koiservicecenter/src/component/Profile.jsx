@@ -1,5 +1,5 @@
 ﻿import React, { useEffect, useState } from 'react';
-import { getUserId } from '../ultils/utils.jsx';
+import { getUserId } from '../utils/utils.jsx';
 import { fetchUserID } from '../config/api.jsx';
 import FishTable from './FishTable.jsx';
 import CustomerOrders from './CustomerOrders.jsx';

@@ -5,7 +5,7 @@ import mail_icon from "../assets/mail_icon.png";
 import { fetchUserID } from "../config/api.jsx";
 import { NavLink, Outlet } from "react-router-dom";
 import "./css/Header.css";
-import { getUserId } from '../ultils/utils.jsx'
+import { getUserId } from '../utils/utils.jsx'
 
 const Header = () => {
     const [user, setUser] = useState(null);

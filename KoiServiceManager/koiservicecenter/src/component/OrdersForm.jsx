@@ -1,5 +1,5 @@
 ﻿import { useEffect, useState } from 'react';
-import { getUserId } from '../ultils/utils.jsx'
+import { getUserId } from '../utils/utils.jsx'
 import { fetchSlots, fetchVeterinas, fetchOrdersInSelectedSlot, fetchServices, createOrder, fetchUserID, fetchTravelExpense, initiatePayment, updateOrderStatus } from '../config/api.jsx';
 import { ToastContainer, toast } from 'react-toastify'; // Importing react-toastify
 import 'react-toastify/dist/ReactToastify.css'; // npm install react-toastify

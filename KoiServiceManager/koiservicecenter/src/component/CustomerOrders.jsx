@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState } from 'react';
 import { fetchFeedback, fetchOrdersByUser, updateOrderStatus, fetchInvoiceByOrderId } from '../config/api.jsx';
-import { getSlots } from '../ultils/utils.jsx';
+import { getSlots } from '../utils/utils.jsx';
 import { ToastContainer, toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import './css/CustomerOrders.css'; // Make sure to import your CSS file here

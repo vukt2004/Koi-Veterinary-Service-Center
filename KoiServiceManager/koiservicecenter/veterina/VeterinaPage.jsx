@@ -1,5 +1,5 @@
 import VeterinaOrders from './VeterinaOrders.jsx'
-import { getUserId } from '../src/ultils/utils.jsx'
+import { getUserId } from '../src/utils/utils.jsx'
 import { fetchVeterinas } from '../src/config/api.jsx'
 import React, { useEffect, useState } from 'react';
 
