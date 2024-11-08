@@ -53,7 +53,7 @@ public class OrderController {
     }
 
     @GetMapping("/orders/veterina/{veterinaId}")
-    @PreAuthorize("hasAuthority('Manager') or hasAuthority('Staff') or hasAuthority('Veterina')")
+    @PreAuthorize("hasAuthority('Manager') or hasAuthority('Staff') or hasAuthority('Veterina') or hasAuthority('Customer')")
     public ResponseEntity<?> getOrderByVeterinaID(@PathVariable("veterinaId") String veterinaId) {
         List<orderResponse> responses = orderService.getOrderByVeterinaID(veterinaId);
         return new ResponseEntity<>(responses, HttpStatus.OK);
