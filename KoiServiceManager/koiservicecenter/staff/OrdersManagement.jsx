@@ -1,7 +1,5 @@
-﻿import React, { useEffect, useState } from 'react';
-import { jwtDecode } from 'jwt-decode';
-import { Navigate } from 'react-router-dom';
-import { fetchOrders, fetchVeterinas, fetchUserID, addOrderVeterina, fetchServices, updateOrderStatus } from '../src/config/api.jsx';
+﻿import { useEffect, useState } from 'react';
+import { fetchOrders, fetchVeterinas, addOrderVeterina, fetchServices, updateOrderStatus } from '../src/config/api.jsx';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -18,13 +16,6 @@ const OrderManagement = () => {
     const ordersPerPage = 10;
 
     useEffect(() => {
-        const getUser = async () => {
-            const userId = jwtDecode(sessionStorage.getItem('user')).sub;
-            const userData = await fetchUserID(userId);
-            if (userData.role !== 'M' && userData.role !== 'S') {
-                Navigate('/');
-            }
-        };
 
         const fetchData = async () => {
             const ordersData = await fetchOrders();
@@ -35,7 +26,6 @@ const OrderManagement = () => {
             setVeterinas(veterinasData.filter((vet) => vet.status === true));
         };
 
-        getUser();
         fetchData();
     }, []); // Added currentStatus to dependencies
 
@@ -85,7 +75,7 @@ const OrderManagement = () => {
 
     const sortedOrders = filteredOrders
         .sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate))
-        .sort((a, b) => (a.veterinaId === null ? -1 : 1));
+        .sort((a) => (a.veterinaId === null ? -1 : 1));
 
     const indexOfLastOrder = currentPage * ordersPerPage;
     const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
@@ -180,7 +170,7 @@ const OrderManagement = () => {
                             <td>{order.orderId}</td>
                             <td>{order.userId}</td>
                             <td>
-                                {order.veterinaId || order.status !== 'pending' ? (
+                                {order.veterinaId || order.status !== 'cancel' ? (
                                     veterinas.find((vet) => vet.veterinaID === order.veterinaId)?.name || 'Unknown'
                                 ) : (
                                     <select onChange={(e) => handleSelectVeterina(order.orderId, e.target.value)} className="veterina-select">

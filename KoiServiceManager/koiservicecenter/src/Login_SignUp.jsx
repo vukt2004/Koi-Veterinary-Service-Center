@@ -50,6 +50,19 @@ function LoginSignUp() {
     const handleSubmitLogin = async (e) => {
         e.preventDefault();
         setLoading(true);
+
+        if (!userID) {
+            window.alert('Tài khoản không được để trống!');
+            setLoading(false);
+            return;
+        }
+
+        if (!password) {
+            window.alert('Mật khẩu không được để trống!');
+            setLoading(false);
+            return;
+        }
+
         try {
             const response = await api.post('/login', {
                 userID,
@@ -65,20 +78,54 @@ function LoginSignUp() {
                 window.alert("Tài khoản hoặc mật khẩu không đúng");
             }
         } catch (error) {
-            window.alert("Lôi khi login");
+            console.log(error);
+            window.alert("Lỗi khi đăng nhập");
         } finally {
             setLoading(false);
         }
     };
 
+
     const handleSubmitRegister = async (e) => {
         e.preventDefault();
         setLoading(true);
-        if (password !== confirmPass) {
-            window.alert('Nhập lại mật khẩu không khớp!');
+
+        if (!password) {
+            window.alert('Mật khẩu không được để trống!');
             setLoading(false);
             return;
         }
+
+        if (!selectedAddress) {
+            window.alert('Vui lòng chọn địa chỉ của bạn!');
+            setLoading(false);
+            return;
+        }
+
+        if (selectedAddress !== 'Online' && !addressDetails) {
+            window.alert('Vui lòng nhập địa chỉ chi tiết!');
+            setLoading(false);
+            return;
+        }
+
+        const containsDistrictName = userLocation.some(location => addressDetails.includes(location));
+        if (containsDistrictName) {
+            window.alert('Địa chỉ chi tiết không được chứa tên quận/huyện!');
+            setLoading(false);
+            return;
+        }
+
+        const phoneRegex = /^0\d{9}$/;
+        if (!phone) {
+            window.alert('Số điện thoại không được để trống!');
+            setLoading(false);
+            return;
+        } else if (!phoneRegex.test(phone)) {
+            window.alert('Số điện thoại không đúng định dạng!');
+            setLoading(false);
+            return;
+        }
+
         const completeAddress = selectedAddress === 'Online' ? 'Online' : `${addressDetails}, ${selectedAddress}`;
         try {
             const user = { userID: userID, email, password, name: fullName, phoneNumber: phone, address: completeAddress };
@@ -95,6 +142,7 @@ function LoginSignUp() {
             setLoading(false);
         }
     };
+
 
     const [isSignUp, setIsSignUp] = useState(false);
     const toggleSignUp = () => setIsSignUp(!isSignUp);
@@ -140,7 +188,7 @@ function LoginSignUp() {
                         <span>Mật khẩu</span>
                         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                     </label>
-                    <label>
+                    <label>A
                         <span>Nhập lại mật khẩu</span>
                         <input type="password" value={confirmPass} onChange={(e) => setConfirmPass(e.target.value)} required />
                     </label>
@@ -174,7 +222,7 @@ function LoginSignUp() {
                                 type="text"
                                 value={addressDetails}
                                 onChange={(e) => setAddressDetails(e.target.value)}
-                                placeholder="Enter additional address details"
+                                placeholder="Nhập địa chỉ chi tiết"
                                 required
                             />
                         </label>

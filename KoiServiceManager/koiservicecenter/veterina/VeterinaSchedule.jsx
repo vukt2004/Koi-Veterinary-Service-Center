@@ -1,6 +1,5 @@
-﻿import React, { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { fetchSlots, fetchOrdersByVeterina } from '../src/config/api.jsx';
-import { ToastContainer, toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 import 'react-toastify/dist/ReactToastify.css';
 import './VeterinaSchedule.css';
@@ -23,10 +22,8 @@ const VeterinaSchedule = ({ veterinaId, onSlotSelect }) => {
                     setOrders(ordersData);
                 }
             } catch (error) {
-                toast.error("Error loading data");
                 console.error(error);
             }
-            console.log(veterinaId)
         };
 
         loadData();
@@ -49,7 +46,6 @@ const VeterinaSchedule = ({ veterinaId, onSlotSelect }) => {
 
     return (
         <>
-            <ToastContainer />
             <h1><b>Lịch của bác sĩ</b></h1>
             <section className="schedule-section slot-selection">
                 <div className="schedule-slot-table-container">

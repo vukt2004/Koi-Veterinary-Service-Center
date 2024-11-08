@@ -1,18 +1,22 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
-import { fetchOrders } from '../src/config/api.jsx';
+﻿import { useState, useEffect, useRef } from 'react';
+import { fetchOrders, fetchInvoices } from '../src/config/api.jsx';
 
 function Dashboard() {
     const [orders, setOrders] = useState([]);
+    const [invoices, setInvoices] = useState([]);
     const [timeFrame, setTimeFrame] = useState('all');
     const [filteredOrders, setFilteredOrders] = useState([]);
+    const [hoveredData, setHoveredData] = useState(null); // Track hovered data
     const dayChartRef = useRef(null);
     const monthChartRef = useRef(null);
-    const statusChartRef = useRef(null);
 
     useEffect(() => {
         fetchOrders().then((data) => {
             setOrders(data);
             filterOrders(data, timeFrame);
+        });
+        fetchInvoices().then((data) => {
+            setInvoices(data);
         });
     }, []);
 
@@ -33,9 +37,22 @@ function Dashboard() {
         filterOrders(orders, timeFrame);
     }, [timeFrame, orders]);
 
+    const totalRevenue = invoices.reduce((sum, invoice) => sum + invoice.total, 0);
+
+    const paymentRatio = () => {
+        const onlinePayments = invoices.filter(invoice => invoice.method === 'online').length;
+        const cashPayments = invoices.filter(invoice => invoice.method === 'cash').length;
+        const totalPayments = onlinePayments + cashPayments;
+        return {
+            onlinePercentage: totalPayments ? ((onlinePayments / totalPayments) * 100).toFixed(2) : 0,
+            cashPercentage: totalPayments ? ((cashPayments / totalPayments) * 100).toFixed(2) : 0,
+        };
+    };
+
+    const completedOrdersCount = filteredOrders.filter(order => order.status === 'done').length;
+
     const orderCountByStatus = (status) => filteredOrders.filter(order => order.status === status).length;
     const totalOrders = filteredOrders.length;
-    const completedOrders = orderCountByStatus('completed');
     const cancelRate = totalOrders ? ((orderCountByStatus('cancel') / totalOrders) * 100).toFixed(2) : 0;
 
     const ordersByDay = filteredOrders.reduce((acc, order) => {
@@ -55,26 +72,6 @@ function Dashboard() {
         const previousTotal = previousPeriodOrders.length;
         const growthRate = previousTotal ? ((totalOrders - previousTotal) / previousTotal * 100).toFixed(2) : 0;
         return growthRate;
-    };
-
-    const orderStatusBreakdown = () => {
-        const statuses = [...new Set(orders.map(order => order.status))];
-        return statuses.map(status => ({
-            status,
-            count: orderCountByStatus(status),
-            percentage: ((orderCountByStatus(status) / totalOrders) * 100).toFixed(2),
-        }));
-    };
-
-    const topCustomers = () => {
-        const customerOrders = filteredOrders.reduce((acc, order) => {
-            acc[order.customer] = (acc[order.customer] || 0) + 1;
-            return acc;
-        }, {});
-        return Object.entries(customerOrders)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 5)
-            .map(([customer, count]) => ({ customer, count }));
     };
 
     const drawChart = (canvas, labels, data, type) => {
@@ -117,9 +114,36 @@ function Dashboard() {
         });
     };
 
+
+    const handleMouseMove = (e, canvas, labels, data) => {
+        const canvasRect = canvas.getBoundingClientRect();
+        const x = e.clientX - canvasRect.left;  // Mouse X position relative to canvas
+        const y = e.clientY - canvasRect.top; 
+
+        const barWidth = (canvas.width - 40) / data.length;
+
+        // Check if mouse is over any bar or point
+        const index = Math.floor((x - 20) / barWidth);
+        if (index >= 0 && index < data.length) {
+            setHoveredData({ label: labels[index], value: data[index] });
+        } else {
+            setHoveredData(null);
+        }
+
+    };
+
     useEffect(() => {
-        if (dayChartRef.current) drawChart(dayChartRef.current, Object.keys(ordersByDay), Object.values(ordersByDay), 'line');
-        if (monthChartRef.current) drawChart(monthChartRef.current, Object.keys(ordersByMonth), Object.values(ordersByMonth), 'bar');
+        if (dayChartRef.current) {
+            const canvas = dayChartRef.current;
+            canvas.addEventListener('mousemove', (e) => handleMouseMove(e, canvas, Object.keys(ordersByDay), Object.values(ordersByDay)));
+            drawChart(canvas, Object.keys(ordersByDay), Object.values(ordersByDay), 'line');
+        }
+
+        if (monthChartRef.current) {
+            const canvas = monthChartRef.current;
+            canvas.addEventListener('mousemove', (e) => handleMouseMove(e, canvas, Object.keys(ordersByMonth), Object.values(ordersByMonth)));
+            drawChart(canvas, Object.keys(ordersByMonth), Object.values(ordersByMonth), 'bar');
+        }
     }, [ordersByDay, ordersByMonth]);
 
     return (
@@ -127,50 +151,62 @@ function Dashboard() {
             <h2 style={{ color: '#333' }}>Dashboard</h2>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
                 <div style={{ padding: '10px', border: '1px solid #ddd', borderRadius: '5px' }}>
-                    <h3>Total Orders</h3>
-                    <p style={{ fontSize: '1.5em' }}>{totalOrders}</p>
+                    <h3>Tổng doanh thu</h3>
+                    <p style={{ fontSize: '1.5em' }}>{totalRevenue.toLocaleString()} VND</p>
                 </div>
                 <div style={{ padding: '10px', border: '1px solid #ddd', borderRadius: '5px' }}>
-                    <h3>Cancel Rate</h3>
+                    <h3>Tỉ lệ thanh toán Online/Tiền mặt</h3>
+                    <p style={{ fontSize: '1.2em' }}>
+                        Online: {paymentRatio().onlinePercentage}% / Cash: {paymentRatio().cashPercentage}%
+                    </p>
+                </div>
+                <div style={{ padding: '10px', border: '1px solid #ddd', borderRadius: '5px' }}>
+                    <h3>Tổng lịch hẹn đã hoàn thành</h3>
+                    <p style={{ fontSize: '1.5em', color: '#28a745' }}>{completedOrdersCount}</p>
+                </div>
+                <div style={{ padding: '10px', border: '1px solid #ddd', borderRadius: '5px' }}>
+                    <h3>Tỉ lệ hủy lịch</h3>
                     <p style={{ fontSize: '1.5em', color: '#f00' }}>{cancelRate}%</p>
                 </div>
                 <div style={{ padding: '10px', border: '1px solid #ddd', borderRadius: '5px' }}>
-                    <h3>Order Growth Rate</h3>
+                    <h3>Tỉ lệ tăng trưởng</h3>
                     <p style={{ fontSize: '1.5em', color: '#007bff' }}>{calculateGrowthRate()}%</p>
                 </div>
                 <div>
-                    <label htmlFor="time-frame" style={{ fontWeight: 'bold' }}>Filter by:</label>
-                    <select id="time-frame" onChange={(e) => setTimeFrame(e.target.value)} style={{ marginLeft: '10px', padding: '5px' }}>
-                        <option value="all">All Time</option>
-                        <option value="week">Last 7 Days</option>
-                        <option value="month">Last Month</option>
+                    <label htmlFor="time-frame" style={{ fontWeight: 'bold' }}>Chọn khoảng thời gian: </label>
+                    <select
+                        id="time-frame"
+                        value={timeFrame}
+                        onChange={(e) => setTimeFrame(e.target.value)}
+                        style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ddd' }}
+                    >
+                        <option value="all">Tất cả</option>
+                        <option value="week">Tuần</option>
+                        <option value="month">Tháng</option>
                     </select>
                 </div>
             </div>
 
-            <div style={{ marginBottom: '20px' }}>
-                <h3>Orders per Day</h3>
-                <canvas ref={dayChartRef} width="600" height="200" style={{ border: '1px solid #ddd', borderRadius: '5px' }}></canvas>
-            </div>
+            <h3>Biểu đồ đơn hàng theo ngày</h3>
+            <canvas
+                ref={dayChartRef}
+                width="500"
+                height="300"
+                style={{ border: '1px solid #ddd', marginBottom: '20px' }}
+            ></canvas>
+            {hoveredData && (
+                <div style={{ position: 'absolute', top: '50px', left: '20px', backgroundColor: '#fff', padding: '5px', border: '1px solid #ccc', borderRadius: '5px' }}>
+                    <p><strong>{hoveredData.label}</strong>: {hoveredData.value}</p>
+                </div>
+            )}
 
-            <div style={{ marginBottom: '20px' }}>
-                <h3>Orders per Month</h3>
-                <canvas ref={monthChartRef} width="600" height="200" style={{ border: '1px solid #ddd', borderRadius: '5px' }}></canvas>
-            </div>
-
-            <div style={{ marginBottom: '20px' }}>
-                <h3>Top 5 Customers by Orders</h3>
-                <ul>
-                    {topCustomers().map((customer, index) => (
-                        <li key={index}>{customer.customer}: {customer.count} orders</li>
-                    ))}
-                </ul>
-            </div>
-
-            <div style={{ marginBottom: '20px' }}>
-                <h3>Order Status Breakdown</h3>
-                <canvas ref={statusChartRef} width="400" height="200" style={{ border: '1px solid #ddd', borderRadius: '5px' }}></canvas>
-            </div>
+            <h3>Biểu đồ đơn hàng theo tháng</h3>
+            <canvas
+                ref={monthChartRef}
+                width="500"
+                height="300"
+                style={{ border: '1px solid #ddd' }}
+            ></canvas>
         </div>
     );
 }

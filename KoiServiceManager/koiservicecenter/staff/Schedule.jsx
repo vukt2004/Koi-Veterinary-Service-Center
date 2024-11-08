@@ -1,7 +1,7 @@
 ﻿import { useEffect, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify'; // Importing react-toastify
 import 'react-toastify/dist/ReactToastify.css'; // npm install react-toastify
-import { updateOrderStatus, fetchSlots, fetchVeterinas, fetchOrdersInSelectedSlot, fetchServices, fetchUserID, fetchTravelExpense, addOrderVeterina } from '../src/config/api.jsx';
+import { updateOrderStatus, fetchSlots, fetchVeterinas, fetchOrdersInSelectedSlot, fetchServices, addOrderVeterina } from '../src/config/api.jsx';
 
 const Schedule = () => {
     const [slots, setSlots] = useState([]);
@@ -9,9 +9,6 @@ const Schedule = () => {
     const [services, setServices] = useState([]);
 
     const [availableSlots, setAvailableSlots] = useState({});
-
-    const [selectedSlot, setSelectedSlot] = useState(null);
-    const [selectedDate, setSelectedDate] = useState(null);
     const [orderInSlot, setOrderInSlot] = useState()
 
     useEffect(() => {
@@ -61,9 +58,6 @@ const Schedule = () => {
     };
 
     const handleSlotSelection = (date, slot) => {
-        setSelectedDate(date);
-        setSelectedSlot(slot);
-
         const formattedDate = date.toISOString().split('T')[0];
         const order = availableSlots[formattedDate]?.[slot.slot] || [];
         setOrderInSlot(order);
@@ -104,7 +98,8 @@ const Schedule = () => {
 
     return (
         <section>
-        <h1>Lịch làm việc</h1>
+            <h1>Lịch làm việc</h1>
+            <ToastContainer/>
             <div className="slot-table-container">
                 <table className="slot-table" border="1">
                     <thead>
