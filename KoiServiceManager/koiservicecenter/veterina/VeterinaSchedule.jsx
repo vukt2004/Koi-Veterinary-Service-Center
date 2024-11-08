@@ -19,7 +19,8 @@ const VeterinaSchedule = ({ veterinaId, onSlotSelect }) => {
 
                 if (veterinaId) {
                     const ordersData = await fetchOrdersByVeterina(veterinaId);
-                    setOrders(ordersData);
+                    const sortedOrders = ordersData.filter(o => o.status !== 'cancel');
+                    setOrders(sortedOrders);
                 }
             } catch (error) {
                 console.error(error);

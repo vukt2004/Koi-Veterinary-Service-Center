@@ -139,6 +139,11 @@ const OrderManagement = () => {
         return <div className="pagination">{pages}</div>;
     };
 
+    const getVeterinaName = (veterinaId) => {
+        const veterina = veterinas.find((vet) => vet.veterinaID === veterinaId);
+        return veterina ? veterina.name : 'Unknown Veterina';
+    };
+
     return (
         <div className="order-management">
             <h1>Order Management</h1>
@@ -153,7 +158,7 @@ const OrderManagement = () => {
             <table className="order-table">
                 <thead>
                     <tr>
-                        <th>Nã đơn</th>
+                        <th>Mã đơn</th>
                         <th>Mã khách hàng</th>
                         <th>Bác sĩ</th>
                         <th>Ngày đặt lịch</th>
@@ -170,11 +175,13 @@ const OrderManagement = () => {
                             <td>{order.orderId}</td>
                             <td>{order.userId}</td>
                             <td>
-                                {order.veterinaId || order.status !== 'cancel' ? (
+                                {order.status === 'cancel' || order.status === 'done' ? (
                                     veterinas.find((vet) => vet.veterinaID === order.veterinaId)?.name || 'Unknown'
                                 ) : (
                                     <select onChange={(e) => handleSelectVeterina(order.orderId, e.target.value)} className="veterina-select">
-                                        <option value="">Select Veterina</option>
+                                        <option value={order.veterinaId !== null ? order.veterinaId : ''}>
+                                            {order.veterinaId ? getVeterinaName(order.veterinaId) : 'Chọn bác sĩ'}
+                                        </option>
                                         {veterinas
                                             .filter((vet) =>
                                                 isVeterinaAvailable(vet.veterinaID, order.orderDate, order.slot)

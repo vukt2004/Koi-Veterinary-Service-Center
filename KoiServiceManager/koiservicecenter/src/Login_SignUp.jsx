@@ -90,27 +90,89 @@ function LoginSignUp() {
         e.preventDefault();
         setLoading(true);
 
+        if (!userID) {
+            window.alert('Tài khoản không được để trống!');
+            setLoading(false);
+            return;
+        }
+        if (userID.length > 100) {
+            window.alert('Tài khoản không được dài quá 100 ký tự!');
+            setLoading(false);
+            return;
+        }
+
+        if (!fullName) {
+            window.alert('Tên đầy đủ không được để trống!');
+            setLoading(false);
+            return;
+        }
+
         if (!password) {
             window.alert('Mật khẩu không được để trống!');
             setLoading(false);
             return;
         }
+        if (password.length < 2) {
+            window.alert('Mật khẩu phải có ít nhất 2 ký tự!');
+            setLoading(false);
+            return;
+        }
+        if (password.length > 100) {
+            window.alert('Mật khẩu không được dài quá 100 ký tự!');
+            setLoading(false);
+            return;
+        }
 
-        if (!selectedAddress) {
+        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+        if (!email || !emailRegex.test(email)) {
+            window.alert('Email không hợp lệ!');
+            setLoading(false);
+            return;
+        }
+
+        if (selectedAddress !== 'Online') {
+            if (!addressDetails || addressDetails.trim() === "") {
+                window.alert('Địa chỉ chi tiết không được để trống!');
+                setLoading(false);
+                return;
+            }
+
+            const invalidCharsRegex = /[*&^%$#@!]/;
+            if (invalidCharsRegex.test(addressDetails)) {
+                window.alert('Địa chỉ chi tiết không được chứa ký tự đặc biệt!');
+                setLoading(false);
+                return;
+            }
+
+            if (addressDetails.length < 7) {
+                window.alert('Địa chỉ chi tiết phải có ít nhất 7 ký tự!');
+                setLoading(false);
+                return;
+            }
+
+            if (addressDetails.length > 100) {
+                window.alert('Địa chỉ chi tiết không được dài quá 100 ký tự!');
+                setLoading(false);
+                return;
+            }
+
+            const isOnlyNumbers = /^\d+$/.test(addressDetails);
+            if (isOnlyNumbers) {
+                window.alert('Địa chỉ chi tiết không thể chỉ chứa số!');
+                setLoading(false);
+                return;
+            }
+
+            const containsDistrictName = userLocation.some(location => addressDetails.includes(location));
+            if (containsDistrictName) {
+                window.alert('Địa chỉ chi tiết không được chứa tên quận/huyện!');
+                setLoading(false);
+                return;
+            }
+        }
+
+        if (!selectedAddress || selectedAddress.trim() === "") {
             window.alert('Vui lòng chọn địa chỉ của bạn!');
-            setLoading(false);
-            return;
-        }
-
-        if (selectedAddress !== 'Online' && !addressDetails) {
-            window.alert('Vui lòng nhập địa chỉ chi tiết!');
-            setLoading(false);
-            return;
-        }
-
-        const containsDistrictName = userLocation.some(location => addressDetails.includes(location));
-        if (containsDistrictName) {
-            window.alert('Địa chỉ chi tiết không được chứa tên quận/huyện!');
             setLoading(false);
             return;
         }
@@ -127,21 +189,31 @@ function LoginSignUp() {
         }
 
         const completeAddress = selectedAddress === 'Online' ? 'Online' : `${addressDetails}, ${selectedAddress}`;
+
+        const user = {
+            userID: userID,
+            email,
+            password,
+            name: fullName,
+            phoneNumber: phone,
+            address: completeAddress
+        };
+
         try {
-            const user = { userID: userID, email, password, name: fullName, phoneNumber: phone, address: completeAddress };
             const response = await api.post('/register', user);
             if (response) {
                 window.alert('Đăng kí thành công');
+                navigate('/login');
             } else {
                 window.alert('Đăng kí thất bại');
             }
-            navigate('/login');
         } catch (error) {
             window.alert(error.response ? error.response.data : 'Đăng kí thất bại!');
         } finally {
             setLoading(false);
         }
     };
+
 
 
     const [isSignUp, setIsSignUp] = useState(false);
@@ -206,7 +278,7 @@ function LoginSignUp() {
                     </label>
                     <label>
                         <span>Địa chỉ của bạn</span><br></br>
-                        <select value={selectedAddress} onChange={(e) => setSelectedAddress(e.target.value)} required>
+                        <select value={selectedAddress} onChange={(e) => setSelectedAddress(e.target.value)} className="select" required>
                             <option value="">-- Chọn quận/huyện (Online nếu ngoài Tp.HCM) --</option>
                             {userLocation.map((location) => (
                                 <option key={location} value={location}>

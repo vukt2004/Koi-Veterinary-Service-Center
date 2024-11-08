@@ -95,6 +95,10 @@ const Schedule = () => {
         return veterinaOrders.length === 0;
     };
 
+    const getVeterinaName = (veterinaId) => {
+        const veterina = veterinas.find((vet) => vet.veterinaID === veterinaId);
+        return veterina ? veterina.name : 'Unknown Veterina';
+    };
 
     return (
         <section>
@@ -150,7 +154,7 @@ const Schedule = () => {
                     <table className="order-table">
                         <thead>
                             <tr>
-                                <th>Nã đơn</th>
+                                <th>Mã đơn</th>
                                 <th>Mã khách hàng</th>
                                 <th>Bác sĩ</th>
                                 <th>Ngày đặt lịch</th>
@@ -167,11 +171,13 @@ const Schedule = () => {
                                     <td>{order.orderId}</td>
                                     <td>{order.userId}</td>
                                     <td>
-                                        {order.veterinaId || order.status !== 'pending' ? (
+                                        {order.status === 'cancel' || order.status === 'done' ? (
                                             veterinas.find((vet) => vet.veterinaID === order.veterinaId)?.name || 'Unknown'
                                         ) : (
                                             <select onChange={(e) => handleSelectVeterina(order.orderId, e.target.value)} className="veterina-select">
-                                                <option value="">Select Veterina</option>
+                                                <option value={order.veterinaId !== null ? order.veterinaId : ''}>
+                                                    {order.veterinaId ? getVeterinaName(order.veterinaId) : 'Chọn bác sĩ'}
+                                                </option>
                                                 {veterinas
                                                     .filter((vet) =>
                                                         isVeterinaAvailable(vet.veterinaID, order.orderDate, order.slot)
