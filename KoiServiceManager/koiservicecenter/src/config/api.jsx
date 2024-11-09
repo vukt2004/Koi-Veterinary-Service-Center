@@ -64,6 +64,16 @@ export const updateFish = async (fishId, fishData) => {
     }
 };
 
+export const getFeedbackByVeterinaId = async (veterinaID) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/feedbacks/${veterinaID}`, getAuthHeaders());
+        return response.data;
+    } catch (error) {
+        console.error('fetchFeedback:', error);
+        return null;
+    }
+}
+
 export const deleteFish = async (fishId) => {
     try {
         const response = await axios.delete(`${BASE_URL}/fish/${fishId}`, {}, getAuthHeaders());
