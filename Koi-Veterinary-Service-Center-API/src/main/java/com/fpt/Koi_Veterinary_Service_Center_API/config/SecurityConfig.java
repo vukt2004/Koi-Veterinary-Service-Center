@@ -44,7 +44,8 @@ public class SecurityConfig {
                                 "/api/services/**",
                                 "/api/slot/**",
                                 "/api/slots/**",
-                                "/api/payment-success/**")
+                                "/api/payment-success/**",
+                                "/api/feedbacks/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
