@@ -72,8 +72,10 @@ public class FeedbackServiceImpl implements IFeedbackService {
         List<Order> orders = orderRepository.findByVeterinarian(veterinarian);
         List<Feedback> feedbacks = new ArrayList<>();
         for (Order order : orders) {
-            Feedback feedback = feedbackRepository.findByOrder(order).orElseThrow(()-> new AppException("order not found"));
-            feedbacks.add(feedback);
+            Feedback feedback = feedbackRepository.findByOrder(order);
+            if (feedback!=null) {
+                feedbacks.add(feedback);
+            }
         }
 
         List<feedbackResponse> responses = new ArrayList<>();
