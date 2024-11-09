@@ -1,5 +1,5 @@
 ﻿import React, { useEffect, useState } from 'react';
-import { fetchFish, addFish } from '../config/api.jsx';
+import { fetchFish, addFish, updateFish, deleteFish } from '../config/api.jsx';
 import './css/FishTable.css'; // Ensure to use the correct CSS file
 
 const FishTable = ({ userID, role }) => {
@@ -12,6 +12,8 @@ const FishTable = ({ userID, role }) => {
         describe: ''
     });
 
+    const [updatingFish, setUpdatingFish] = useState(null);
+
     const loadFishData = async () => {
         try {
             const fishData = await fetchFish(userID);
@@ -23,7 +25,7 @@ const FishTable = ({ userID, role }) => {
 
     useEffect(() => {
         loadFishData();
-    }, [userID]);
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -33,9 +35,28 @@ const FishTable = ({ userID, role }) => {
         }));
     };
 
+    const validateFishData = (fish) => {
+        if (fish.weight <= 0 || fish.weight >= 10) {
+            alert('Trọng lượng phải lớn hơn 0 và nhỏ hơn 10.');
+            return false;
+        }
+        if (fish.length <= 0 || fish.length >= 120) {
+            alert('Độ dài phải lớn hơn 0 và nhỏ hơn 120.');
+            return false;
+        }
+        if (fish.month <= 0 || fish.month >= 1000) {
+            alert('Tháng tuổi phải lớn hơn 0 và nhỏ hơn 1000.');
+            return false;
+        }
+        return true;
+    };
+
     // Add new fish
     const handleAddFish = async (e) => {
         e.preventDefault();
+        if (!validateFishData(newFish)) {
+            return;
+        }
         try {
             const newFishData = { ...newFish, userID };
             const result = await addFish(newFishData);
@@ -52,9 +73,47 @@ const FishTable = ({ userID, role }) => {
         }
     };
 
+    const handleUpdate = async () => {
+        if (!validateFishData(updatingFish)) {
+            return;
+        }
+        try {
+            const fishId = updatingFish.fishID;
+            setUpdatingFish({
+                ...updatingFish,
+                userID,
+                fishId: null
+            });
+
+            const response = await updateFish(fishId, updatingFish);
+
+            if (response) {
+                setUpdatingFish({ ...updatingFish, fishId: fishId });
+                alert('Cập nhật thành công');
+                // Update fishList in local state
+                setFishList(prevFishList => prevFishList.map(f => f.fishID === fishId ? updatingFish : f));
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setUpdatingFish(null);
+        }
+    };
+
+    const handleDelete = async (id) => {
+        try {
+            const response = await deleteFish(id);
+            if (response) {
+                alert('Xóa thành công');
+                setFishList(prevFishList => prevFishList.filter(f => f.fishID !== id));
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return (
         <section className="fish-table-container">
-
             {fishList.length > 0 ? (
                 <table className="fish-table">
                     <thead>
@@ -82,8 +141,8 @@ const FishTable = ({ userID, role }) => {
                                 <td>{fish.describe}</td>
                                 {role === 'C' && (
                                     <>
-                                        <td><button className="update-button">Cập nhật</button></td>
-                                        <td><button className="delete-button">Xóa</button></td>
+                                        <td><button className="update-button" onClick={() => setUpdatingFish(fish)}>Cập nhật</button></td>
+                                        <td><button className="delete-button" onClick={() => handleDelete(fish.fishID)}>Xóa</button></td>
                                     </>
                                 )}
                             </tr>
@@ -91,15 +150,13 @@ const FishTable = ({ userID, role }) => {
                     </tbody>
                 </table>
             ) : (
-                <div className="no-data-message">
-                    Bạn chưa thêm con cá nào
-                </div>
+                <div className="no-data-message">Chưa thêm con cá nào</div>
             )}
 
             {role === 'C' && (
                 <section className="add-fish-section">
                     <button className="toggle-add-fish-button" onClick={() => setShowAddForm(!showAddForm)}>
-                        {showAddForm ? 'Huy thêm' : 'Thêm cá mới'}
+                        {showAddForm ? 'Hủy' : 'Thêm cá mới'}
                     </button>
                     {showAddForm && (
                         <section className="add-fish-form">
@@ -126,6 +183,47 @@ const FishTable = ({ userID, role }) => {
                             </form>
                         </section>
                     )}
+                </section>
+            )}
+
+            {updatingFish && (
+                <section>
+                    <h2>Sửa thông tin cá Koi</h2>
+                    <div className="input-group">
+                        <label>Trọng lượng</label>
+                        <input
+                            type="number"
+                            value={updatingFish.weight}
+                            onChange={(e) => setUpdatingFish({ ...updatingFish, weight: parseFloat(e.target.value) })}
+                        />
+                    </div>
+                    <div className="input-group">
+                        <label>Độ dài</label>
+                        <input
+                            type="number"
+                            value={updatingFish.length}
+                            onChange={(e) => setUpdatingFish({ ...updatingFish, length: parseInt(e.target.value) })}
+                        />
+                    </div>
+                    <div className="input-group">
+                        <label>Tháng tuổi</label>
+                        <input
+                            type="number"
+                            value={updatingFish.month}
+                            onChange={(e) => setUpdatingFish({ ...updatingFish, month: parseInt(e.target.value) })}
+                        />
+                    </div>
+                    <div className="input-group">
+                        <label>Mô tả</label>
+                        <input
+                            type="text"
+                            min="1"
+                            value={updatingFish.describe}
+                            onChange={(e) => setUpdatingFish({ ...updatingFish, describe: e.target.value })}
+                        />
+                    </div>
+                    <button className="button" onClick={handleUpdate}>Cập nhật thông tin</button>
+                    <button className="button" onClick={() => setUpdatingFish(null)}>Hủy</button>
                 </section>
             )}
         </section>
