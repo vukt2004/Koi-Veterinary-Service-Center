@@ -67,7 +67,7 @@ function Home() {
         </NavLink>
       </div>
       <div className="image-placeholder">
-        [Hình ảnh minh họa về quy trình chăm sóc cá Koi chuyên nghiệp]
+        <img src="https://hatalandscape.com/public/uploads/files/ca-koi-774039.jpg" alt="Koi" />
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { getUserId } from '../utils/utils.jsx';
 import { fetchUserID } from '../config/api.jsx';
 import FishTable from './FishTable.jsx';
@@ -43,7 +43,7 @@ const Profile = () => {
     return (
         <div className="profile-container">
             <h2>Hồ sơ</h2>
-            <p><b>Id người dùng:</b> {user.userID}</p>
+            <p><b>Id:</b> {user.userID}</p>
             <p><b>Tên:</b> {user.name}</p>
             <p><b>Email:</b> {user.email}</p>
             <p><b>Số điện thoại:</b> {user.phoneNumber}</p>

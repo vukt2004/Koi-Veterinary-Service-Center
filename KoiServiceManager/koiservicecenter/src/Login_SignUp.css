@@ -310,7 +310,7 @@ input {
     display: none;
 }
 
-select {
+.select-place {
     width: 100%;
     padding: 10px;
     font-size: 16px;
@@ -323,13 +323,13 @@ select {
     outline: none;
 }
 
-select:focus {
+.select-place:focus {
     border-color: #4caf50; /* Change color on focus */
     background-color: #fff;
     box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
 }
 
-select option {
+.select-place option {
     padding: 10px;
 }
 

@@ -101,202 +101,244 @@ const Schedule = () => {
     };
 
     return (
-        <section>
+        <section className="schedule-section">
             <h1>Lịch làm việc</h1>
             <ToastContainer/>
-            <div className="slot-table-container">
-                <table className="slot-table" border="1">
-                    <thead>
-                        <tr>
-                            <th>Slot</th>
-                            {getNext7Days().map((day) => (
-                                <th key={day}>
-                                    {day.toLocaleDateString("vi-VN", {
-                                        weekday: "short",
-                                        day: "numeric",
-                                        month: "numeric",
-                                    })}
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {slots.map((slot) => (
-                            <tr key={slot.slot}>
-                                <td>
-                                    {slot.startTime} - {slot.endTime}
-                                </td>
-                                {getNext7Days().map((day) => {
-                                    const formattedDate = day.toISOString().split('T')[0];
-                                    const order = availableSlots[formattedDate]?.[slot.slot] || [];
-                                    const isDisabled = order.length === 0;
-
-                                    return (
-                                        <td key={day}>
-                                            <button
-                                                className={`select-slot-button ${isDisabled ? 'disabled-button' : ''}`}
-                                                style={{ backgroundColor: isDisabled ? 'red' : '' }}
-                                                onClick={() => !isDisabled && handleSlotSelection(day, slot)}
-                                                disabled={isDisabled}
-                                            >
-                                                {isDisabled ? 'Trống lịch' : order.length}
-                                            </button>
-                                        </td>
-                                    );
-                                })}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-            {orderInSlot && (
-                <>
-                    <table className="order-table">
+            <div className="schedule-container">
+                <div className="slot-table-container">
+                    <table className="slot-table" border="1">
                         <thead>
                             <tr>
-                                <th>Mã đơn</th>
-                                <th>Mã khách hàng</th>
-                                <th>Bác sĩ</th>
-                                <th>Ngày đặt lịch</th>
                                 <th>Slot</th>
-                                <th>Địa chỉ đặt lịch</th>
-                                <th>Services</th>
-                                <th>Ghi chú</th>
-                                <th>Action</th>
+                                {getNext7Days().map((day) => (
+                                    <th key={day}>
+                                        {day.toLocaleDateString("vi-VN", {
+                                            weekday: "short",
+                                            day: "numeric",
+                                            month: "numeric",
+                                        })}
+                                    </th>
+                                ))}
                             </tr>
                         </thead>
                         <tbody>
-                            {orderInSlot.map((order) => (
-                                <tr key={order.orderId}>
-                                    <td>{order.orderId}</td>
-                                    <td>{order.userId}</td>
+                            {slots.map((slot) => (
+                                <tr key={slot.slot}>
                                     <td>
-                                        {order.status === 'cancel' || order.status === 'done' ? (
-                                            veterinas.find((vet) => vet.veterinaID === order.veterinaId)?.name || 'Unknown'
-                                        ) : (
-                                            <select onChange={(e) => handleSelectVeterina(order.orderId, e.target.value)} className="veterina-select">
-                                                <option value={order.veterinaId !== null ? order.veterinaId : ''}>
-                                                    {order.veterinaId ? getVeterinaName(order.veterinaId) : 'Chọn bác sĩ'}
-                                                </option>
-                                                {veterinas
-                                                    .filter((vet) =>
-                                                        isVeterinaAvailable(vet.veterinaID, order.orderDate, order.slot)
-                                                    )
-                                                    .map((vet) => (
-                                                        <option key={vet.veterinaID} value={vet.veterinaID}>
-                                                            {vet.name}
-                                                        </option>
-                                                    ))}
-                                            </select>
-                                        )}
+                                        {slot.startTime} - {slot.endTime}
                                     </td>
-                                    <td>{order.orderDate}</td>
-                                    <td>{order.slot}</td>
-                                    <td>{order.address}</td>
-                                    <td>
-                                        {order.services.map((service) => (
-                                            <div key={service.serviceID}>
-                                                <p>{getServiceNameById(service.serviceID)} - Qty: {service.quantity}</p>
-                                            </div>
-                                        ))}
-                                    </td>
-                                    <td>{order.description}</td>
-                                    {order.status === 'pending' ? (
-                                        <td><button onClick={() => handleCancel(order.orderId)} className="cancel-button">Hủy đơn</button></td>
-                                    ) : (
-                                        <td></td>
-                                    )}
+                                    {getNext7Days().map((day) => {
+                                        const formattedDate = day.toISOString().split('T')[0];
+                                        const order = availableSlots[formattedDate]?.[slot.slot] || [];
+                                        const isDisabled = order.length === 0;
+
+                                        return (
+                                            <td key={day}>
+                                                <button
+                                                    className={`select-slot-button ${isDisabled ? 'disabled-button' : ''}`}
+                                                    style={{ backgroundColor: isDisabled ? 'red' : '' }}
+                                                    onClick={() => !isDisabled && handleSlotSelection(day, slot)}
+                                                    disabled={isDisabled}
+                                                >
+                                                    {isDisabled ? 'Trống lịch' : order.length}
+                                                </button>
+                                            </td>
+                                        );
+                                    })}
                                 </tr>
                             ))}
                         </tbody>
                     </table>
+                </div>
+                {orderInSlot && (
+                    <div className="order-table-container">
+                        <table className="order-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã đơn</th>
+                                    <th>Mã khách hàng</th>
+                                    <th>Bác sĩ</th>
+                                    <th>Ngày đặt lịch</th>
+                                    <th>Slot</th>
+                                    <th>Địa chỉ đặt lịch</th>
+                                    <th>Services</th>
+                                    <th>Ghi chú</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {orderInSlot.map((order) => (
+                                    <tr key={order.orderId}>
+                                        <td>{order.orderId}</td>
+                                        <td>{order.userId}</td>
+                                        <td>
+                                            {order.status === 'cancel' || order.status === 'done' ? (
+                                                veterinas.find((vet) => vet.veterinaID === order.veterinaId)?.name || 'Unknown'
+                                            ) : (
+                                                <select onChange={(e) => handleSelectVeterina(order.orderId, e.target.value)} className="veterina-select">
+                                                    <option value={order.veterinaId !== null ? order.veterinaId : ''}>
+                                                        {order.veterinaId ? getVeterinaName(order.veterinaId) : 'Chọn bác sĩ'}
+                                                    </option>
+                                                    {veterinas
+                                                        .filter((vet) =>
+                                                            isVeterinaAvailable(vet.veterinaID, order.orderDate, order.slot)
+                                                        )
+                                                        .map((vet) => (
+                                                            <option key={vet.veterinaID} value={vet.veterinaID}>
+                                                                {vet.name}
+                                                            </option>
+                                                        ))}
+                                                </select>
+                                            )}
+                                        </td>
+                                        <td>{order.orderDate}</td>
+                                        <td>{order.slot}</td>
+                                        <td>{order.address}</td>
+                                        <td>
+                                            {order.services.map((service) => (
+                                                <div key={service.serviceID}>
+                                                    <p>{getServiceNameById(service.serviceID)} - Qty: {service.quantity}</p>
+                                                </div>
+                                            ))}
+                                        </td>
+                                        <td>{order.description}</td>
+                                        {order.status === 'pending' ? (
+                                            <td><button onClick={() => handleCancel(order.orderId)} className="cancel-button">Hủy đơn</button></td>
+                                        ) : (
+                                            <td></td>
+                                        )}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
 
-                    <style>{`
-                .order-management {
-                    font-family: Arial, sans-serif;
-                    padding: 20px;
-                    max-width: 1200px;
-                    margin: auto;
-                }
+                <style>{`
+                    .schedule-section {
+                        padding: 20px;
+                        width: 100%;
+                    }
 
-                h1 {
-                    text-align: center;
-                }
+                    .schedule-container {
+                        max-width: 100%;
+                        overflow-x: auto;
+                    }
 
-                .filter-buttons {
-                    display: flex;
-                    justify-content: center;
-                    margin-bottom: 20px;
-                }
+                    .slot-table-container {
+                        margin-bottom: 20px;
+                        overflow-x: auto;
+                    }
 
-                button {
-                    margin: 0 5px;
-                    padding: 10px 15px;
-                    border: none;
-                    background-color: #4CAF50;
-                    color: white;
-                    cursor: pointer;
-                    border-radius: 5px;
-                }
+                    .order-table-container {
+                        margin-top: 20px;
+                        overflow-x: auto;
+                    }
 
-                button:hover {
-                    background-color: #45a049;
-                }
+                    .slot-table, .order-table {
+                        min-width: 900px;
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-bottom: 20px;
+                    }
 
-                .order-table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-bottom: 20px;
-                }
+                    .order-management {
+                        font-family: Arial, sans-serif;
+                        padding: 20px;
+                        max-width: 1200px;
+                        margin: auto;
+                    }
 
-                th, td {
-                    border: 1px solid #ddd;
-                    padding: 10px;
-                    text-align: left;
-                }
+                    h1 {
+                        text-align: center;
+                    }
 
-                th {
-                    background-color: #f2f2f2;
-                }
+                    .filter-buttons {
+                        display: flex;
+                        justify-content: center;
+                        margin-bottom: 20px;
+                    }
 
-                .cancel-button {
-                    background-color: #f44336;
-                    color: white;
-                    border: none;
-                    padding: 5px 10px;
-                    border-radius: 5px;
-                    cursor: pointer;
-                }
+                    button {
+                        margin: 0 5px;
+                        padding: 10px 15px;
+                        border: none;
+                        background-color: #4CAF50;
+                        color: white;
+                        cursor: pointer;
+                        border-radius: 5px;
+                    }
 
-                .cancel-button:hover {
-                    background-color: #d32f2f;
-                }
+                    button:hover {
+                        background-color: #45a049;
+                    }
 
-                .pagination {
-                    display: flex;
-                    justify-content: center;
-                    margin-top: 20px;
-                }
+                    .order-table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-bottom: 20px;
+                    }
 
-                .pagination-item {
-                    margin: 0 5px;
-                    cursor: pointer;
-                }
+                    th, td {
+                        border: 1px solid #ddd;
+                        padding: 10px;
+                        text-align: left;
+                    }
 
-                .current-page {
-                    font-weight: bold;
-                    color: #4CAF50;
-                }
+                    th {
+                        background-color: #f2f2f2;
+                    }
 
-                .veterina-select {
-                    padding: 5px;
-                    border-radius: 5px;
-                    border: 1px solid #ddd;
-                }
+                    .cancel-button {
+                        background-color: #f44336;
+                        color: white;
+                        border: none;
+                        padding: 5px 10px;
+                        border-radius: 5px;
+                        cursor: pointer;
+                    }
 
-            `}</style>
-                </>
-            )}
+                    .cancel-button:hover {
+                        background-color: #d32f2f;
+                    }
+
+                    .pagination {
+                        display: flex;
+                        justify-content: center;
+                        margin-top: 20px;
+                    }
+
+                    .pagination-item {
+                        margin: 0 5px;
+                        cursor: pointer;
+                    }
+
+                    .current-page {
+                        font-weight: bold;
+                        color: #4CAF50;
+                    }
+
+                    .veterina-select {
+                        padding: 5px;
+                        border-radius: 5px;
+                        border: 1px solid #ddd;
+                    }
+
+                    .select-slot-button {
+                        min-width: 80px;
+                        width: 100px;
+                        white-space: nowrap;
+                    }
+
+                    th, td {
+                        min-width: 120px;
+                        white-space: nowrap;
+                        padding: 10px;
+                        text-align: left;
+                        border: 1px solid #ddd;
+                    }
+                `}</style>
+            </div>
         </section>
     );
 }

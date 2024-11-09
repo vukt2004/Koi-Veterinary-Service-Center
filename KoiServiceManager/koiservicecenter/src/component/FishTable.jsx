@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { fetchFish, addFish, updateFish, deleteFish } from '../config/api.jsx';
 import './css/FishTable.css'; // Ensure to use the correct CSS file
 

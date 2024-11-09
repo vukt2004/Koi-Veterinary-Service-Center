@@ -9,18 +9,22 @@ const Profile = () => {
     const [veterina, setVeterina] = useState(null);
     const [feedbacks, setFeedbacks] = useState([]);
     const [user, setUser] = useState(null);
-    const { loggedRole } = sessionStorage.getItem('role');
+    const { loggedRole } = 'C'
     useEffect(() => {
 
         const loadUserData = async () => {
-            if (loggedRole === 'V') {
-                const userId = getUserId();
-                const userData = await fetchUserID(userId);
-                setUser(userData);
+            if(loggedRole !== null){
+                if (loggedRole === 'V') {
+                    const userId = getUserId();
+                    const userData = await fetchUserID(userId);
+                    setUser(userData);
+                }
             }
+            
 
             const veterinasData = await fetchVeterinas();
             const veterinaData = veterinasData.find(vet => vet.veterinaID === veterinaID)
+            console.log(veterinaData)
             setVeterina(veterinaData);
 
             const feedBacksData = await getFeedbackByVeterinaId(veterinaID);
@@ -30,16 +34,15 @@ const Profile = () => {
         loadUserData();
     }, []);
 
-    if (!user) {
-        return <div>Loading...</div>;
-    }
+    // if (!user) {
+    //     return <div>Loading...</div>;
+    // }
 
     return (
         <div className="profile-container">
             <h2>Hồ sơ bác sĩ</h2>
 
-
-            {loggedRole === 'V' ? (
+        {user && (
                 <>
                     <p><b>Id Người dùng: </b> {user.userID}</p>
                     <p><b>Tên: </b> {user.name}</p>
@@ -48,9 +51,8 @@ const Profile = () => {
                     <p><b>Role: </b> {user.role}</p>
                     <p><b>Địa chỉ đăng kí: </b> {user.address}</p>
                 </>
-            ) : (
-                <></>
-            )}
+        )}
+            
             <p><b>Giới thiệu: </b>{veterina.description }</p>
 
             {feedbacks.map(f => {

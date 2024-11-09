@@ -2,12 +2,13 @@
 import { useLocation } from 'react-router-dom';
 import { fetchOrderById, fetchVeterinas, fetchServices } from '../config/api.jsx'; // Fetch functions for data
 import "./css/InvoicePage.css";
-
+import InvoiceRedirect from './InvoiceRedirect.jsx';
 const InvoicePage = () => {
     const location = useLocation();
     const [orderDetails, setOrderDetails] = useState(null);
     const [veterinas, setVeterinas] = useState([]);
     const [services, setServices] = useState([]);
+    const [role, setRole] = useState('');
 
     // Extract query parameters from the URL
     const queryParams = new URLSearchParams(location.search);
@@ -18,6 +19,10 @@ const InvoicePage = () => {
 
     // Fetch veterina and service data, along with order details
     useEffect(() => {
+        setRole(sessionStorage.getItem('role'));
+        if(role === 'V'){
+            <InvoiceRedirect />
+        }
         const fetchData = async () => {
             const order = await fetchOrderById(orderId);
             const veterinasData = await fetchVeterinas();

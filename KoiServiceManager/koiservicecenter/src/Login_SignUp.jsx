@@ -260,7 +260,7 @@ function LoginSignUp() {
                         <span>Mật khẩu</span>
                         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                     </label>
-                    <label>A
+                    <label>
                         <span>Nhập lại mật khẩu</span>
                         <input type="password" value={confirmPass} onChange={(e) => setConfirmPass(e.target.value)} required />
                     </label>
@@ -278,7 +278,7 @@ function LoginSignUp() {
                     </label>
                     <label>
                         <span>Địa chỉ của bạn</span><br></br>
-                        <select value={selectedAddress} onChange={(e) => setSelectedAddress(e.target.value)} className="select" required>
+                        <select value={selectedAddress} onChange={(e) => setSelectedAddress(e.target.value)} className="select-place" required>
                             <option value="">-- Chọn quận/huyện (Online nếu ngoài Tp.HCM) --</option>
                             {userLocation.map((location) => (
                                 <option key={location} value={location}>
