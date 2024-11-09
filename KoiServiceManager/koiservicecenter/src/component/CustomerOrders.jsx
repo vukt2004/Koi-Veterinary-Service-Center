@@ -1,13 +1,13 @@
 ﻿import { useEffect, useState } from 'react';
-import { fetchFeedback, fetchOrdersByUser, updateOrderStatus, fetchInvoiceByOrderId } from '../config/api.jsx';
+import { fetchFeedback, fetchOrdersByUser, updateOrderStatus} from '../config/api.jsx';
 import { getSlots } from '../utils/utils.jsx';
 import { ToastContainer, toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import './css/CustomerOrders.css'; // Make sure to import your CSS file here
 
 const CustomerOrders = ({ userID }) => {
     const [orders, setOrders] = useState([]);
-    const [feedback, setFeedback] = useState([]);
     const [slots, setSlots] = useState([]);
     const [feedbackOrders, setFeedbackOrders] = useState(new Set());
     const navigate = useNavigate();
@@ -19,7 +19,6 @@ const CustomerOrders = ({ userID }) => {
             setOrders(filteredOrders);
 
             const fetchedFeedback = await fetchFeedback();
-            setFeedback(fetchedFeedback);
 
             setSlots(getSlots());
 
@@ -46,6 +45,7 @@ const CustomerOrders = ({ userID }) => {
             setOrders(filteredOrders);
             toast.success('Hủy thành công');
         } catch (error) {
+            console.log(error)
             toast.error('Lỗi khi hủy lịch hẹn!');
         }
     };
@@ -53,6 +53,11 @@ const CustomerOrders = ({ userID }) => {
     const handleGiveFeedback = (orderId) => {
         navigate(`/feedback/${orderId}`);
     };
+
+    //const getSlotTime = (slot) => {
+    //    const foundSlot = slots.find(s => s.slot === slot);
+    //    return null;
+    //}
 
     const orderPriority = ["accept", "pending", "done"];
 
@@ -100,6 +105,10 @@ const CustomerOrders = ({ userID }) => {
             </table>
         </section>
     );
+};
+
+CustomerOrders.propTypes = {
+    userID: PropTypes.string.isRequired,
 };
 
 export default CustomerOrders;

@@ -1,7 +1,7 @@
 ﻿import { useEffect, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import { fetchServices, addService, deleteService, updateService } from '../src/config/api.jsx';
-import './css/QuanLyDichVuCaKoi.css';
+import './css/ServiceManagement.css';
 
 const ServiceManagement = () => {
     const [dichVu, setDichVu] = useState([]);

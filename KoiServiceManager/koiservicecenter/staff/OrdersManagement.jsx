@@ -56,10 +56,10 @@ const OrderManagement = () => {
     const handleSelectVeterina = async (orderId, veterinaId) => {
         const response = await addOrderVeterina(orderId, veterinaId);
         if (response) {
-            toast.success('Veterina added successfully!');
+            toast.success('Điều chỉnh bác sĩ thành công');
             setTimeout(() => window.location.reload(), 2000);
         } else {
-            toast.error('Failed to add veterina');
+            toast.error('Điều chỉnh bác sĩ thất bại');
         }
     };
 

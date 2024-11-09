@@ -1,0 +1,43 @@
+.profile-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+    .profile-container p {
+        font-size: 14px;
+        color: #555;
+    }
+
+    .profile-container h2 {
+        font-size: 24px;
+        margin-bottom: 15px;
+        color: #333;
+    }
+
+    .profile-container p {
+        font-size: 16px;
+        margin: 8px 0;
+        line-height: 1.5;
+        color: #555;
+    }
+
+    .profile-container b {
+        color: #222;
+    }
+
+article.feedback {
+    border: 1px solid #d3d3d3; /* Light gray border */
+    padding: 10px;
+    margin-bottom: 10px; /* Space between feedbacks */
+    border-radius: 5px; /* Optional: rounded corners */
+    background-color: #f9f9f9; /* Optional: light background */
+}
+
+    article.feedback p {
+        margin: 5px 0;
+    }

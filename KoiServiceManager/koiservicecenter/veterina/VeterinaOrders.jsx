@@ -5,6 +5,7 @@ import FishTable from '../src/component/FishTable.jsx'
 import 'react-toastify/dist/ReactToastify.css';
 import './VeterinaOrders.css'
 
+
 const VeterinaOrdersPage = () => {
     const [orders, setOrders] = useState([]);
     const [descriptions, setDescriptions] = useState({});
@@ -15,7 +16,6 @@ const VeterinaOrdersPage = () => {
     const [userContacts, setUserContacts] = useState({});
     const [onlinePay, setOnlinePay] = useState({});
     const [orderPayments, setOrderPayments] = useState({});
-    const [viewFish, setViewFish] = useState({});
 
     useEffect(() => {
         const loadData = async () => {
@@ -45,8 +45,14 @@ const VeterinaOrdersPage = () => {
                 setOrderPayments(payments);
             }
         };
+
+
         loadData();
     }, []);
+
+    const pendingOrders = orders.filter(order => order.status === 'pending');
+    const acceptedOrders = orders.filter(order => order.status === 'accept');
+    const completedOrders = orders.filter(order => order.status === 'done');
 
     const getUserContact = async (userId) => {
         try {
@@ -179,12 +185,11 @@ const VeterinaOrdersPage = () => {
         return service ? service.name : serviceID;
     };
 
-    const pendingOrders = orders.filter(order => order.status === 'pending');
-    const acceptedOrders = orders.filter(order => order.status === 'accept');
-    const completedOrders = orders.filter(order => order.status === 'done');
+    
 
     return (
         <div>
+
             <h1>Veterina Orders Management</h1>
 
             {validationMessage && <p style={{ color: 'red' }}>{validationMessage}</p>}

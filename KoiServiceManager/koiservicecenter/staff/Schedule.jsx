@@ -103,7 +103,7 @@ const Schedule = () => {
     return (
         <section className="schedule-section">
             <h1>Lịch làm việc</h1>
-            <ToastContainer/>
+            <ToastContainer />
             <div className="schedule-container">
                 <div className="slot-table-container">
                     <table className="slot-table" border="1">
@@ -162,6 +162,7 @@ const Schedule = () => {
                                     <th>Slot</th>
                                     <th>Địa chỉ đặt lịch</th>
                                     <th>Services</th>
+                                    <th>Trạng thái</th>
                                     <th>Ghi chú</th>
                                     <th>Action</th>
                                 </tr>
@@ -201,6 +202,7 @@ const Schedule = () => {
                                                 </div>
                                             ))}
                                         </td>
+                                        <td>{order.status}</td>
                                         <td>{order.description}</td>
                                         {order.status === 'pending' ? (
                                             <td><button onClick={() => handleCancel(order.orderId)} className="cancel-button">Hủy đơn</button></td>

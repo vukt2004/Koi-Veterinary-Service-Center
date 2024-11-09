@@ -1,6 +1,8 @@
-.page-container{
+.page-container {
+    height: 100vh;
     display: flex;
 }
+
 .siderbar-container {
     display: flex;
     flex-direction: column;
@@ -10,11 +12,13 @@
     max-width: 300px; /* Độ rộng tối đa cho sidebar, điều chỉnh theo ý thích */
     width: auto; /* Để độ rộng tự điều chỉnh dựa trên nội dung */
 }
-.component-container{
+
+.component-container {
     border: 5px;
     width: 90%;
 }
-.sidebar{
+
+.sidebar {
     margin-right: 10px;
     display: flex;
     flex-direction: column;
@@ -24,7 +28,7 @@
     overflow-y: auto; /* Thêm cuộn nếu nội dung của sidebar quá dài */
 }
 
-.logo{
+.logo {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -33,7 +37,7 @@
     padding: 15px;
 }
 
-.logo-icon{
+.logo-icon {
     width: 40px;
     height: 40px;
     display: flex;

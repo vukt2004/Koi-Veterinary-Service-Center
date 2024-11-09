@@ -6,21 +6,21 @@ import "./css/Sidebar.css";
 
 const { Sider } = Layout;
 const Sidebar = () => {
-  return (
-    <div className="page-container">
-      <div className="siderbar-container">
-        <Layout>
-          <Sider className="sidebar">
-            <Logo />
-            <MenuList />
-          </Sider>
-        </Layout>
-      </div>
-      <div className="component-container">
-        <Outlet />
-      </div>
-    </div>
-  );
+    return (
+        <div className="page-container">
+            <div className="siderbar-container">
+                <Layout>
+                    <Sider className="sidebar">
+                        <Logo />
+                        <MenuList />
+                    </Sider>
+                </Layout>
+            </div>
+            <div className="component-container">
+                <Outlet />
+            </div>
+        </div>
+    );
 };
 
 export default Sidebar;
