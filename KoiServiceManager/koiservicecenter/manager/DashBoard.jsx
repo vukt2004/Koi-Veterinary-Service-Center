@@ -1,5 +1,18 @@
 ﻿import { useState, useEffect, useRef } from 'react';
+import { Card, Row, Col, Select, Typography, Statistic } from 'antd';
+import { 
+    ArrowUpOutlined, 
+    ArrowDownOutlined,
+    DollarOutlined,
+    CheckCircleOutlined,
+    CloseCircleOutlined,
+    LineChartOutlined,
+    CreditCardOutlined
+} from '@ant-design/icons';
 import { fetchOrders, fetchInvoices } from '../src/config/api.jsx';
+
+const { Title } = Typography;
+const { Option } = Select;
 
 function Dashboard() {
     const [orders, setOrders] = useState([]);
@@ -147,66 +160,147 @@ function Dashboard() {
     }, [ordersByDay, ordersByMonth]);
 
     return (
-        <div style={{ fontFamily: 'Arial, sans-serif', padding: '20px' }}>
-            <h2 style={{ color: '#333' }}>Dashboard</h2>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-                <div style={{ padding: '10px', border: '1px solid #ddd', borderRadius: '5px' }}>
-                    <h3>Tổng doanh thu</h3>
-                    <p style={{ fontSize: '1.5em' }}>{totalRevenue.toLocaleString()} VND</p>
-                </div>
-                <div style={{ padding: '10px', border: '1px solid #ddd', borderRadius: '5px' }}>
-                    <h3>Tỉ lệ thanh toán Online/Tiền mặt</h3>
-                    <p style={{ fontSize: '1.2em' }}>
-                        Online: {paymentRatio().onlinePercentage}% / Cash: {paymentRatio().cashPercentage}%
-                    </p>
-                </div>
-                <div style={{ padding: '10px', border: '1px solid #ddd', borderRadius: '5px' }}>
-                    <h3>Tổng lịch hẹn đã hoàn thành</h3>
-                    <p style={{ fontSize: '1.5em', color: '#28a745' }}>{completedOrdersCount}</p>
-                </div>
-                <div style={{ padding: '10px', border: '1px solid #ddd', borderRadius: '5px' }}>
-                    <h3>Tỉ lệ hủy lịch</h3>
-                    <p style={{ fontSize: '1.5em', color: '#f00' }}>{cancelRate}%</p>
-                </div>
-                <div style={{ padding: '10px', border: '1px solid #ddd', borderRadius: '5px' }}>
-                    <h3>Tỉ lệ tăng trưởng</h3>
-                    <p style={{ fontSize: '1.5em', color: '#007bff' }}>{calculateGrowthRate()}%</p>
-                </div>
-                <div>
-                    <label htmlFor="time-frame" style={{ fontWeight: 'bold' }}>Chọn khoảng thời gian: </label>
-                    <select
-                        id="time-frame"
-                        value={timeFrame}
-                        onChange={(e) => setTimeFrame(e.target.value)}
-                        style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ddd' }}
-                    >
-                        <option value="all">Tất cả</option>
-                        <option value="week">Tuần</option>
-                        <option value="month">Tháng</option>
-                    </select>
-                </div>
+        <div className="dashboard-container" style={{ padding: '24px', background: '#f0f2f5', minHeight: '100vh' }}>
+            <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Title level={2} style={{ margin: 0 }}>Thống Kê Tổng Quan</Title>
+                <Select
+                    value={timeFrame}
+                    onChange={(value) => setTimeFrame(value)}
+                    style={{ width: 200 }}
+                    size="large"
+                >
+                    <Option value="all">Tất cả thời gian</Option>
+                    <Option value="week">7 ngày qua</Option>
+                    <Option value="month">30 ngày qua</Option>
+                </Select>
             </div>
 
-            <h3>Biểu đồ đơn hàng theo ngày</h3>
-            <canvas
-                ref={dayChartRef}
-                width="500"
-                height="300"
-                style={{ border: '1px solid #ddd', marginBottom: '20px' }}
-            ></canvas>
+            <Row gutter={[24, 24]}>
+                {/* Revenue Card */}
+                <Col xs={24} sm={12} lg={8} xl={6}>
+                    <Card 
+                        hoverable 
+                        className="dashboard-card"
+                        style={{ 
+                            borderRadius: '12px',
+                            height: '100%'
+                        }}
+                    >
+                        <Statistic
+                            title={<span style={{ fontSize: '16px', color: '#8c8c8c' }}>Tổng Doanh Thu</span>}
+                            value={totalRevenue}
+                            prefix={<DollarOutlined />}
+                            suffix="VND"
+                            valueStyle={{ color: '#52c41a', fontSize: '24px' }}
+                        />
+                    </Card>
+                </Col>
+
+                {/* Payment Ratio Card */}
+                <Col xs={24} sm={12} lg={8} xl={6}>
+                    <Card 
+                        hoverable 
+                        className="dashboard-card"
+                        style={{ borderRadius: '12px' }}
+                    >
+                        <Statistic
+                            title={<span style={{ fontSize: '16px', color: '#8c8c8c' }}>Thanh Toán Online</span>}
+                            value={paymentRatio().onlinePercentage}
+                            prefix={<CreditCardOutlined />}
+                            suffix="%"
+                            valueStyle={{ color: '#1890ff', fontSize: '24px' }}
+                        />
+                        <Statistic
+                            title={<span style={{ fontSize: '16px', color: '#8c8c8c', marginTop: '16px' }}>Thanh Toán Tiền Mặt</span>}
+                            value={paymentRatio().cashPercentage}
+                            suffix="%"
+                            valueStyle={{ color: '#faad14', fontSize: '24px' }}
+                        />
+                    </Card>
+                </Col>
+
+                {/* Completed Orders Card */}
+                <Col xs={24} sm={12} lg={8} xl={6}>
+                    <Card 
+                        hoverable 
+                        className="dashboard-card"
+                        style={{ borderRadius: '12px' }}
+                    >
+                        <Statistic
+                            title={<span style={{ fontSize: '16px', color: '#8c8c8c' }}>Lịch Hẹn Hoàn Thành</span>}
+                            value={completedOrdersCount}
+                            prefix={<CheckCircleOutlined />}
+                            valueStyle={{ color: '#52c41a', fontSize: '24px' }}
+                        />
+                    </Card>
+                </Col>
+
+                {/* Growth Rate Card */}
+                <Col xs={24} sm={12} lg={8} xl={6}>
+                    <Card 
+                        hoverable 
+                        className="dashboard-card"
+                        style={{ borderRadius: '12px' }}
+                    >
+                        <Statistic
+                            title={<span style={{ fontSize: '16px', color: '#8c8c8c' }}>Tỉ Lệ Tăng Trưởng</span>}
+                            value={calculateGrowthRate()}
+                            prefix={parseFloat(calculateGrowthRate()) >= 0 ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+                            suffix="%"
+                            valueStyle={{ 
+                                color: parseFloat(calculateGrowthRate()) >= 0 ? '#52c41a' : '#ff4d4f',
+                                fontSize: '24px'
+                            }}
+                        />
+                    </Card>
+                </Col>
+            </Row>
+
+            {/* Charts Section */}
+            <Row gutter={[24, 24]} style={{ marginTop: '24px' }}>
+                <Col xs={24} lg={12}>
+                    <Card 
+                        title={<Title level={4}>Biểu Đồ Theo Ngày</Title>}
+                        style={{ borderRadius: '12px' }}
+                    >
+                        <canvas
+                            ref={dayChartRef}
+                            width="500"
+                            height="300"
+                            style={{ width: '100%', height: 'auto' }}
+                        />
+                    </Card>
+                </Col>
+                <Col xs={24} lg={12}>
+                    <Card 
+                        title={<Title level={4}>Biểu Đồ Theo Tháng</Title>}
+                        style={{ borderRadius: '12px' }}
+                    >
+                        <canvas
+                            ref={monthChartRef}
+                            width="500"
+                            height="300"
+                            style={{ width: '100%', height: 'auto' }}
+                        />
+                    </Card>
+                </Col>
+            </Row>
+
+            {/* Hover Tooltip */}
             {hoveredData && (
-                <div style={{ position: 'absolute', top: '50px', left: '20px', backgroundColor: '#fff', padding: '5px', border: '1px solid #ccc', borderRadius: '5px' }}>
-                    <p><strong>{hoveredData.label}</strong>: {hoveredData.value}</p>
+                <div style={{
+                    position: 'absolute',
+                    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                    color: '#fff',
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    fontSize: '14px',
+                    zIndex: 1000,
+                    pointerEvents: 'none',
+                }}>
+                    <p style={{ margin: 0 }}><strong>{hoveredData.label}</strong>: {hoveredData.value}</p>
                 </div>
             )}
-
-            <h3>Biểu đồ đơn hàng theo tháng</h3>
-            <canvas
-                ref={monthChartRef}
-                width="500"
-                height="300"
-                style={{ border: '1px solid #ddd' }}
-            ></canvas>
         </div>
     );
 }

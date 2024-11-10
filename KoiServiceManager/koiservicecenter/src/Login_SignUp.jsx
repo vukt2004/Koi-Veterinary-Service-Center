@@ -72,7 +72,7 @@ function LoginSignUp() {
                 const data = response.data;
                 sessionStorage.setItem('user', data.token);
                 sessionStorage.setItem('role', data.role);
-                navigate(data.role === 'C' ? '/' : data.role === 'V' ? '/veterinaPage' : data.role === 'S' ? '/staffPage' : '/managerPage');
+                navigate(data.role === 'C' ? '/' : data.role === 'V' ? '/veterinaPage' : data.role === 'S' ? '/staffPage' : '/manager');
                 window.location.reload();
             } else {
                 window.alert("Tài khoản hoặc mật khẩu không đúng");

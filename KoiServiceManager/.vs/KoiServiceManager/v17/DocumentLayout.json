@@ -1,10 +1,18 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Light\\Desktop\\SWP_project\\Koi-Veterinary-Service-Center\\KoiServiceManager\\",
+  "WorkspaceRootPath": "E:\\SWP\\project\\KoiServiceManager\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{294C873F-9580-40C5-9719-81B82CD2C829}|KoiServiceCenter\\koiservicecenter.esproj|c:\\users\\light\\desktop\\swp_project\\koi-veterinary-service-center\\koiservicemanager\\koiservicecenter\\src\\app.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "AbsoluteMoniker": "D:0:0:{294C873F-9580-40C5-9719-81B82CD2C829}|KoiServiceCenter\\koiservicecenter.esproj|e:\\swp\\project\\koiservicemanager\\koiservicecenter\\src\\customerlayout.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{294C873F-9580-40C5-9719-81B82CD2C829}|KoiServiceCenter\\koiservicecenter.esproj|solutionrelative:koiservicecenter\\src\\customerlayout.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{294C873F-9580-40C5-9719-81B82CD2C829}|KoiServiceCenter\\koiservicecenter.esproj|e:\\swp\\project\\koiservicemanager\\koiservicecenter\\src\\app.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
       "RelativeMoniker": "D:0:0:{294C873F-9580-40C5-9719-81B82CD2C829}|KoiServiceCenter\\koiservicecenter.esproj|solutionrelative:koiservicecenter\\src\\app.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{294C873F-9580-40C5-9719-81B82CD2C829}|KoiServiceCenter\\koiservicecenter.esproj|e:\\swp\\project\\koiservicemanager\\koiservicecenter\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{294C873F-9580-40C5-9719-81B82CD2C829}|KoiServiceCenter\\koiservicecenter.esproj|solutionrelative:koiservicecenter\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,11 +22,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
-              "Name": "ST:0:0:{e1b7d1f8-9b3c-49b1-8f4f-bfc63a88835d}"
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
             },
             {
               "$type": "Bookmark",
@@ -33,18 +41,40 @@
               "Name": "ST:1:0:{e8b06f52-6d01-11d2-aa7d-00c04f990343}"
             },
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "CustomerLayout.jsx",
+              "DocumentMoniker": "E:\\SWP\\project\\KoiServiceManager\\koiservicecenter\\src\\CustomerLayout.jsx",
+              "RelativeDocumentMoniker": "koiservicecenter\\src\\CustomerLayout.jsx",
+              "ToolTip": "E:\\SWP\\project\\KoiServiceManager\\koiservicecenter\\src\\CustomerLayout.jsx",
+              "RelativeToolTip": "koiservicecenter\\src\\CustomerLayout.jsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2024-11-10T05:33:14.731Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
+              "Title": "index.html",
+              "DocumentMoniker": "E:\\SWP\\project\\KoiServiceManager\\koiservicecenter\\index.html",
+              "RelativeDocumentMoniker": "koiservicecenter\\index.html",
+              "ToolTip": "E:\\SWP\\project\\KoiServiceManager\\koiservicecenter\\index.html",
+              "RelativeToolTip": "koiservicecenter\\index.html",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2024-11-10T05:27:30.891Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "App.jsx",
-              "DocumentMoniker": "C:\\Users\\Light\\Desktop\\SWP_project\\Koi-Veterinary-Service-Center\\KoiServiceManager\\koiservicecenter\\src\\App.jsx",
+              "DocumentMoniker": "E:\\SWP\\project\\KoiServiceManager\\koiservicecenter\\src\\App.jsx",
               "RelativeDocumentMoniker": "koiservicecenter\\src\\App.jsx",
-              "ToolTip": "C:\\Users\\Light\\Desktop\\SWP_project\\Koi-Veterinary-Service-Center\\KoiServiceManager\\koiservicecenter\\src\\App.jsx",
+              "ToolTip": "E:\\SWP\\project\\KoiServiceManager\\koiservicecenter\\src\\App.jsx",
               "RelativeToolTip": "koiservicecenter\\src\\App.jsx",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAACEAAAAAAAAAAAAAAAsAAAA4AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
               "WhenOpened": "2024-11-07T18:56:30.648Z",
               "EditorCaption": ""

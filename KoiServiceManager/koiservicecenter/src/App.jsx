@@ -11,9 +11,9 @@ import InvoicePage from "./component/InvoicePage.jsx";
 import FeedbackPage from "./component/FeedbackPage.jsx";
 import CustomerLayout from './CustomerLayout.jsx'
 import PaymentFail from './component/PaymentFail.jsx'
-
-import Manager from "../manager/ManagerPage.jsx";
-
+import Sidebar_Manager from '../manager/Sidebar.jsx';
+import DashBoard from '../manager/DashBoard.jsx';
+import CreateVeterina from '../manager/CreateVeterina.jsx';
 import Schedule from "../staff/Schedule.jsx";
 import ServiceManagement from "../staff/ServiceManagement";
 import OrderManagement from "../staff/OrdersManagement";
@@ -60,10 +60,14 @@ function App() {
                 <Route path="/staffPage/serviceManagement" element={<ServiceManagement />} />
                 <Route path="/staffPage/orderManagement" element={<OrderManagement />} />
             </Route>
+            
             <Route
-                path="/managerPage"
-                element={<PrivateRoute Component={Manager} role="M" />}
-            />
+                path="/manager"
+                element={<PrivateRoute Component={Sidebar_Manager} role="M" />}
+            >
+                <Route path="/manager" element={<DashBoard />} />
+                <Route path="/manager/create-doctor" element={<CreateVeterina />} />
+            </Route>
             <Route element={<VetSidebar />}>
                 <Route path="/veterinaPage"
                     element={<PrivateRoute Component={VeterinaSchedule} role="V" />} />
