@@ -100,7 +100,7 @@ const VeterinaOrdersPage = () => {
     }
 
     const viewCustomerFish = (userId) => {
-        <FishTable userId={userId} role={'V'} />
+        return <FishTable userId={userId} role={'V'} />;
     };
 
     const isServiceAvailable = (orderServices, serviceID) => {
@@ -129,7 +129,7 @@ const VeterinaOrdersPage = () => {
         return totalServiceCost + travelFee;
     };
 
-   
+    
 
 
     const handleServiceChange = (e, orderId) => {
@@ -188,7 +188,7 @@ const VeterinaOrdersPage = () => {
     
 
     return (
-        <div>
+        <div className="veterina-orders">
 
             <h1>Veterina Orders Management</h1>
 
@@ -206,7 +206,8 @@ const VeterinaOrdersPage = () => {
                             <th>Date</th>
                             <th>Slot</th>
                             <th>Services</th>
-                            <th>Actions</th>
+                            <th>Fish</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -225,7 +226,9 @@ const VeterinaOrdersPage = () => {
                                 </td>
                                 <td>
                                     < FishTable userID={order.userId} role='V' />
-                                    <button className="button" onClick={() => handleStatusChange(order.orderId, 'accept')}>Accept</button>
+                                </td>
+                                <td>
+                                    <button className="pendingorder-button" onClick={() => handleStatusChange(order.orderId, 'accept')}>Accept</button>
                                 </td>
                             </tr>
                         ))}
@@ -260,7 +263,7 @@ const VeterinaOrdersPage = () => {
                                                 <td>{getServiceNameById(service.serviceID)}</td>
                                                 <td>{service.quantity}</td>
                                                 {orderPayments[order.orderId] ? <></> : (
-                                                    <td><button className="button" onClick={() => handleDeleteServiceInOrder(order.orderId, service.serviceID)}>Delete</button></td>
+                                                    <td><button className="order-button" onClick={() => handleDeleteServiceInOrder(order.orderId, service.serviceID)}>Delete</button></td>
                                                 )}
                                             </tr>
                                         ))}
@@ -275,8 +278,8 @@ const VeterinaOrdersPage = () => {
                                     onChange={(e) => handleDescriptionChange(e, order.orderId)}
                                 />
                             </label>
-                            <button className="button" onClick={() => viewCustomerFish(order.userId)}>View Customer Fish</button>
-                            <button className="button" onClick={() => handleAddDescription(order.orderId)}>Add Description</button>
+                            <button className="order-button" onClick={() => viewCustomerFish(order.userId)}>View Customer Fish</button>
+                            <button className="order-button" onClick={() => handleAddDescription(order.orderId)}>Add Description</button>
                             {orderPayments[order.orderId] ? (
                                 <p>Payment completed, cannot add services.</p>
                             ) : (
@@ -307,13 +310,13 @@ const VeterinaOrdersPage = () => {
                                             onChange={(e) => handleServiceChange(e, order.orderId)}
                                         />
                                     </label>
-                                    <button className="button" onClick={() => handleAddService(order.orderId)}>Add Service</button>
+                                    <button className="order-button" onClick={() => handleAddService(order.orderId)}>Add Service</button>
                                     <label>
                                         Thanh toán online<input type="checkbox" checked={onlinePay[order.orderId] | false} onChange={() => handlePaymentChange(order.orderId)} />
                                     </label>
                                 </>
                             )}
-                            <button className="button" onClick={() => handleDoneOrder(order.orderId)}>Hoàn thành</button>
+                            <button className="order-button" onClick={() => handleDoneOrder(order.orderId)}>Hoàn thành</button>
                         </div>
                     ))
                 ) : <p>No accepted orders found.</p>}

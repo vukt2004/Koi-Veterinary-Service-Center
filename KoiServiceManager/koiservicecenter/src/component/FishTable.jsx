@@ -222,8 +222,11 @@ const FishTable = ({ userID, role }) => {
                             onChange={(e) => setUpdatingFish({ ...updatingFish, describe: e.target.value })}
                         />
                     </div>
-                    <button className="button" onClick={handleUpdate}>Cập nhật thông tin</button>
-                    <button className="button" onClick={() => setUpdatingFish(null)}>Hủy</button>
+                    <div className="button-group">
+                        <button className="fish-button" onClick={handleUpdate}>Cập nhật thông tin</button>
+                    <button className="fish-button" onClick={() => setUpdatingFish(null)}>Hủy</button>
+                    </div>
+                    
                 </section>
             )}
         </section>

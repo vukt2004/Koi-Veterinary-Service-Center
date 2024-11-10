@@ -40,3 +40,49 @@
     .schedule-slot-table button {
         width: 100px;
     }
+
+.order-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin: 20px 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease;
+}
+
+.order-card:hover {
+    transform: translateY(-2px);
+}
+
+.order-card h3 {
+    color: #2c3e50;
+    margin-bottom: 16px;
+    font-size: 1.25rem;
+}
+
+.order-card p {
+    color: #555;
+    margin: 8px 0;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.order-card table {
+    width: 100%;
+    margin-top: 12px;
+    border-collapse: collapse;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.order-card th {
+    background: #f8f9fa;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.order-card td {
+    padding: 12px;
+    border-top: 1px solid #eee;
+}
