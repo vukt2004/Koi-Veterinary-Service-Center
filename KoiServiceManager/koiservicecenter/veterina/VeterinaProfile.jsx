@@ -48,7 +48,7 @@ const Profile = () => {
         <div className="profile-container">
             <h2>Hồ sơ bác sĩ</h2>
 
-            {loggedRole === 'V' && user && (
+            {loggedRole === 'V' && user && veterina &&(
                 <>
                     <p><b>Id Người dùng: </b> {user.userID}</p>
                     <p><b>Tên: </b> {user.name}</p>
@@ -56,10 +56,17 @@ const Profile = () => {
                     <p><b>Số điện thoại: </b> {user.phoneNumber}</p>
                     <p><b>Role: </b> {user.role}</p>
                     <p><b>Địa chỉ đăng kí: </b> {user.address}</p>
+                    <p><b>Giới thiệu:</b>{veterina.description}</p>
                 </>
             )}
 
-            {veterina && <p><b>Giới thiệu: </b>{veterina.description}</p>}
+            {veterina && (
+                <>
+                    <p><b>Tên bác sĩ: </b>{veterina.name}</p>
+                    <p><b>Giới thiệu: </b>{veterina.description}</p>
+                </>
+
+            )}
 
             <h2>Đánh giá</h2>
             {feedbacks ? (
@@ -68,7 +75,7 @@ const Profile = () => {
                 ) : (
                     feedbacks.map(f => {
                         const feedbackDate = new Date(f.feedbackDateTime).toLocaleString('vi-VN');
-                        const stars = '⭐'.repeat(f.rating); // Generate stars based on rating
+                        const stars = '⭐'.repeat(f.rating);
                         return (
                             <article key={f.feedbackId} className="feedback">
                                 <p>Ngày: {feedbackDate}</p>

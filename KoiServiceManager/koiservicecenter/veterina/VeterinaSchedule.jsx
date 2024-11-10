@@ -19,8 +19,10 @@ const VeterinaSchedule = ({ veterinaId, onSlotSelect }) => {
 
                 if (veterinaId) {
                     const ordersData = await fetchOrdersByVeterina(veterinaId);
+                    console.log(ordersData)
                     const sortedOrders = ordersData.filter(o => o.status !== 'cancel');
                     setOrders(sortedOrders);
+                    console.log(sortedOrders)
                 }
             } catch (error) {
                 console.error(error);
@@ -122,8 +124,8 @@ const VeterinaSchedule = ({ veterinaId, onSlotSelect }) => {
 };
 
 VeterinaSchedule.propTypes = {
-    veterinaId: PropTypes.string.isRequired,
-    onSlotSelect: PropTypes.func.isRequired,
+    veterinaId: PropTypes.string,
+    onSlotSelect: PropTypes.func,
 };
 
 export default VeterinaSchedule;
