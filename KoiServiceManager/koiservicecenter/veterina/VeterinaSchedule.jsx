@@ -1,31 +1,52 @@
 ﻿import { useEffect, useState } from 'react';
-import { fetchSlots, fetchOrdersByVeterina } from '../src/config/api.jsx';
+import { fetchSlots, fetchOrdersByVeterina, fetchVeterinas, fetchServices } from '../src/config/api.jsx';
 import PropTypes from 'prop-types';
+import { getUserId } from '../src/utils/utils.jsx';
 import 'react-toastify/dist/ReactToastify.css';
 import './VeterinaSchedule.css';
 
-const VeterinaSchedule = ({ veterinaId, onSlotSelect }) => {
+const VeterinaSchedule = ({ veterinaId: initialVeterinaId, onSlotSelect }) => {
     const [slots, setSlots] = useState([]);
     const [orders, setOrders] = useState([]);
     const [userRole, setUserRole] = useState('');
+    const [veterinaId, setVeterinaId] = useState(initialVeterinaId);
+    const [selected, setSelected] = useState(null);
+    const [services, setServices] = useState([]);
 
     useEffect(() => {
         setUserRole(sessionStorage.getItem('role'));
+    }, []);
 
+    useEffect(() => {
+        if (userRole === 'V') {
+            const getVeterinaId = async () => {
+                const userId = getUserId();
+                const veterinasData = await fetchVeterinas();
+                const veterinaData = veterinasData.find(vet => vet.userID === userId);
+                if (veterinaData) {
+                    setVeterinaId(veterinaData.veterinaID);
+                }
+            };
+            getVeterinaId();
+        }
+    }, [userRole]);
+
+    useEffect(() => {
         const loadData = async () => {
             try {
                 const slotsData = await fetchSlots();
                 setSlots(slotsData);
 
+                const servicesData = await fetchServices();
+                setServices(servicesData);
+
                 if (veterinaId) {
                     const ordersData = await fetchOrdersByVeterina(veterinaId);
-                    console.log(ordersData)
                     const sortedOrders = ordersData.filter(o => o.status !== 'cancel');
                     setOrders(sortedOrders);
-                    console.log(sortedOrders)
                 }
             } catch (error) {
-                console.error(error);
+                console.error('Error fetching data:', error);
             }
         };
 
@@ -43,8 +64,21 @@ const VeterinaSchedule = ({ veterinaId, onSlotSelect }) => {
         return days;
     };
 
+    const handleSlotSelection = (date, slot) => {
+        const formattedDate = date.toISOString().split('T')[0];
+        console.log(orders)
+        const order = orders.find(o => o.orderDate === formattedDate && o.slot === slot.slot)
+        setSelected(order);
+        console.log(selected)
+    };
+
     const handleSelectSlot = (veterinaID, date, slot) => {
         onSlotSelect(veterinaID, date, slot);
+    };
+
+    const getServiceNameById = (serviceID) => {
+        const service = services.find(s => s.serviceID === serviceID);
+        return service ? service.name : serviceID;
     };
 
     return (
@@ -84,7 +118,6 @@ const VeterinaSchedule = ({ veterinaId, onSlotSelect }) => {
                                             slot.startTime.split(":")[1]
                                         );
 
-                                        // Use the current date and time
                                         const currentDateTime = new Date();
 
                                         return (
@@ -100,6 +133,7 @@ const VeterinaSchedule = ({ veterinaId, onSlotSelect }) => {
                                                     </button>
                                                 ) : userRole !== 'C' && slotOrder ? (
                                                     <button
+                                                        onClick={() => !isDisabled && handleSlotSelection(day, slot)}
                                                         style={{
                                                             backgroundColor: slotOrder.status === 'pending' ? 'green' :
                                                                 slotOrder.status === 'accept' ? 'yellow' :
@@ -119,6 +153,33 @@ const VeterinaSchedule = ({ veterinaId, onSlotSelect }) => {
                     </table>
                 </div>
             </section>
+
+            {selected && (
+                <div key={selected.orderId} className="order-card">
+                    <h3>Order ID: {selected.orderId}</h3>
+                    <p>Address: {selected.address}</p>
+                    <p>Date: {selected.orderDate}</p>
+                    <p>Slot: {selected.slot}</p>
+                    <p>Services:
+                        <table border="1">
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {selected.services.map(service => (
+                                    <tr key={service.serviceID}>
+                                        <td>{getServiceNameById(service.serviceID)}</td>
+                                        <td>{service.quantity}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </p>
+                </div>
+            )}
         </>
     );
 };

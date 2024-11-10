@@ -3,6 +3,7 @@ import { HomeOutlined, DatabaseOutlined, PoweroffOutlined } from "@ant-design/ic
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getUserId } from '../../src/utils/utils.jsx';
+import { fetchVeterinas } from '../../src/config/api.jsx'
 
 const MenuList = () => {
     const [veterinaID, setVeterinaID] = useState('');

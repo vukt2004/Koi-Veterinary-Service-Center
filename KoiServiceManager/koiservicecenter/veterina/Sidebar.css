@@ -1,12 +1,12 @@
 .page-container {
-    height: 100vh;
+    min-height: 100vh;
+    height: auto;
     display: flex;
 }
 
 .siderbar-container {
     display: flex;
     flex-direction: column;
-    height: auto; /* Để sidebar tự điều chỉnh theo nội dung */
     flex-shrink: 0;
     min-width: 200px; /* Độ rộng tối thiểu cho sidebar */
     max-width: 300px; /* Độ rộng tối đa cho sidebar, điều chỉnh theo ý thích */
