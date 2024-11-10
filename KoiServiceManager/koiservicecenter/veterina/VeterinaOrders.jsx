@@ -11,11 +11,12 @@ const VeterinaOrdersPage = () => {
     const [descriptions, setDescriptions] = useState({});
     const [services, setServices] = useState([]);
     const [newService, setNewService] = useState({});
-    const [validationMessage, setValidationMessage] = useState('');
     const [travelExpenses, setTravelExpenses] = useState([]);
     const [userContacts, setUserContacts] = useState({});
     const [onlinePay, setOnlinePay] = useState({});
     const [orderPayments, setOrderPayments] = useState({});
+    const [viewCustomerFish, setViewCustomerFish] = useState(false);
+    const [selectedUserId, setSelectedUserId] = useState(null);
 
     useEffect(() => {
         const loadData = async () => {
@@ -23,6 +24,7 @@ const VeterinaOrdersPage = () => {
 
             if (storedVeterina) {
                 const ordersData = await fetchOrdersByVeterina(storedVeterina.veterinaID);
+                console.log(ordersData);
                 setOrders(ordersData);
 
                 const servicesData = await fetchServices();
@@ -99,8 +101,15 @@ const VeterinaOrdersPage = () => {
         }
     }
 
-    const viewCustomerFish = (userId) => {
-        return <FishTable userId={userId} role={'V'} />;
+    const handleViewCustomerFish = (userId) => {
+        console.log(userId)
+        setSelectedUserId(userId);
+        setViewCustomerFish(true);
+    };
+
+    const closeModal = () => {
+        setViewCustomerFish(false);
+        setSelectedUserId(null);
     };
 
     const isServiceAvailable = (orderServices, serviceID) => {
@@ -157,13 +166,11 @@ const VeterinaOrdersPage = () => {
         if (serviceID && quantity && selectedService) {
             const maxQuantity = selectedService.maxQuantity;
             if (quantity > maxQuantity) {
-                setValidationMessage(`The maximum quantity for ${selectedService.name} is ${maxQuantity}.`);
-                toast.warn(`The maximum quantity for ${selectedService.name} is ${maxQuantity}.`);
+                toast.warn(`Số lượng tối đa cho dịch vụ ${selectedService.name} là ${maxQuantity}.`);
             } else {
                 await addServiceToOrder(orderId, serviceID, parseInt(quantity));
-                toast.success('Service added successfully!');
+                toast.success('Thêm dịch vụ thành công');
                 setNewService({ ...newService, [orderId]: {} });
-                setValidationMessage('');
                 setTimeout(() => window.location.reload(), 2000);
             }
         }
@@ -173,10 +180,10 @@ const VeterinaOrdersPage = () => {
         console.log(serviceId);
         const response = await DeleteServiceInOrder(orderId, serviceId);
         if (response) {
-            toast.success('Remove service success');
+            toast.success('Xóa dịch xụ ra khỏi orders thành công');
             setTimeout(() => window.location.reload(), 2000);
         } else {
-            toast.error('Remove service failed');
+            toast.error('Xóa dịch vụ thất bại');
         }
     }
 
@@ -185,29 +192,25 @@ const VeterinaOrdersPage = () => {
         return service ? service.name : serviceID;
     };
 
-    
-
     return (
         <div className="veterina-orders">
 
             <h1>Veterina Orders Management</h1>
 
-            {validationMessage && <p style={{ color: 'red' }}>{validationMessage}</p>}
-
             <ToastContainer />
 
-            <h2>Pending Orders</h2>
+            <h2>Lịch hẹn chờ chấp thuận</h2>
             {pendingOrders.length > 0 ? (
                 <table className="order-table" border='1'>
                     <thead>
                         <tr>
-                            <th>Order ID</th>
-                            <th>Address</th>
-                            <th>Date</th>
+                            <th>Mã đơn</th>
+                            <th>Địa chỉ</th>
+                            <th>Ngày thực hiện</th>
                             <th>Slot</th>
-                            <th>Services</th>
-                            <th>Fish</th>
-                            <th>Action</th>
+                            <th>Dịch vụ</th>
+                            <th>Cá</th>
+                            <th>Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -225,7 +228,8 @@ const VeterinaOrdersPage = () => {
                                     ))}
                                 </td>
                                 <td>
-                                    < FishTable userID={order.userId} role='V' />
+                                    <button className="pendingorder-button" onClick={() => handleViewCustomerFish(order.userId) }>Xem</button>
+                                    
                                 </td>
                                 <td>
                                     <button className="pendingorder-button" onClick={() => handleStatusChange(order.orderId, 'accept')}>Accept</button>
@@ -235,7 +239,16 @@ const VeterinaOrdersPage = () => {
                     </tbody>
                 </table>
             ) : (
-                <p>No pending orders.</p>
+                <p>Không có lịch hẹn nào chờ chấp thuận.</p>
+            )}
+
+            {viewCustomerFish && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <span className="close" onClick={closeModal}>&times;</span>
+                        <FishTable userID={selectedUserId} role={'V'} />
+                    </div>
+                </div>
             )}
 
             <h2>Accepted Orders</h2>
@@ -243,18 +256,18 @@ const VeterinaOrdersPage = () => {
                 {acceptedOrders.length > 0 ? (
                     acceptedOrders.map(order => (
                         <div key={order.orderId} className="order-card">
-                            <h3>Order ID: {order.orderId}</h3>
-                            <p>Address: {order.address}</p>
-                            <p>Date: {order.orderDate}</p>
+                            <h3>Mã đơn: {order.orderId}</h3>
+                            <p>Địa chỉ: {order.address}</p>
+                            <p>Ngày thực hiện: {order.orderDate}</p>
                             <p>Slot: {order.slot}</p>
-                            <p>User Contact: {userContacts[order.userId] || 'Loading...'}</p>
-                            <p>Services:
+                            <p>Thông tin liên lạc: {userContacts[order.userId] || 'Loading...'}</p>
+                            <p>Dịch vụ:
                                 <table border="1">
                                     <thead>
                                         <tr>
-                                            <th>Service</th>
-                                            <th>Quantity</th>
-                                            <th>Delete</th>
+                                            <th>Dịch vụ</th>
+                                            <th>Số lượng</th>
+                                            <th>Xóa</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -270,21 +283,21 @@ const VeterinaOrdersPage = () => {
                                     </tbody>
                                 </table>
                             </p>
-                            <p>Total price: {calculateTotalPrice(order).toLocaleString('vi-VN')}</p>
+                            <p>Tổng chi phí: {calculateTotalPrice(order).toLocaleString('vi-VN')}</p>
                             <label>
-                                Description:
+                                Mô tả:
                                 <input
                                     value={descriptions[order.orderId] || ''}
                                     onChange={(e) => handleDescriptionChange(e, order.orderId)}
                                 />
                             </label>
-                            <button className="order-button" onClick={() => viewCustomerFish(order.userId)}>View Customer Fish</button>
-                            <button className="order-button" onClick={() => handleAddDescription(order.orderId)}>Add Description</button>
+                            <button className="order-button" onClick={() => handleAddDescription(order.orderId)}>Thêm mô tả</button>
+                            <button className="order-button" onClick={() => handleViewCustomerFish(order.userId)}>Xem danh sách cá</button>
                             {orderPayments[order.orderId] ? (
-                                <p>Payment completed, cannot add services.</p>
+                                <p>Đã thanh toán, không thể thay đổi dịch vụ.</p>
                             ) : (
                                 <>
-                                    <h4>Add Service</h4>
+                                    <h4>Thêm dịch vụ</h4>
                                     <select
                                         name="serviceID"
                                         value={newService[order.orderId]?.serviceID || ''}
@@ -310,7 +323,7 @@ const VeterinaOrdersPage = () => {
                                             onChange={(e) => handleServiceChange(e, order.orderId)}
                                         />
                                     </label>
-                                    <button className="order-button" onClick={() => handleAddService(order.orderId)}>Add Service</button>
+                                    <button className="order-button" onClick={() => handleAddService(order.orderId)}>Thêm dịch vụ</button>
                                     <label>
                                         Thanh toán online<input type="checkbox" checked={onlinePay[order.orderId] | false} onChange={() => handlePaymentChange(order.orderId)} />
                                     </label>
@@ -319,20 +332,20 @@ const VeterinaOrdersPage = () => {
                             <button className="order-button" onClick={() => handleDoneOrder(order.orderId)}>Hoàn thành</button>
                         </div>
                     ))
-                ) : <p>No accepted orders found.</p>}
+                ) : <p>Chưa có lịch hẹn được chấp thuận.</p>}
             </div>
 
-            <h2>Completed Orders</h2>
+            <h2>Lịch hẹn đã hoàn thành</h2>
             {completedOrders.length > 0 ? (
                 <table className="order-table" border="1">
                     <thead>
                         <tr>
-                            <th>Order ID</th>
-                            <th>Address</th>
-                            <th>Date</th>
+                            <th>Mã đơn</th>
+                            <th>Địa chỉ</th>
+                            <th>Ngày thực hiện</th>
                             <th>Slot</th>
-                            <th>Services</th>
-                            <th>Description</th>
+                            <th>Dịch vụ</th>
+                            <th>Mô tả</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -355,7 +368,7 @@ const VeterinaOrdersPage = () => {
                     </tbody>
                 </table>
             ) : (
-                <p>No completed orders.</p>
+                <p>Chưa có lịch hẹn hoàn thành.</p>
             )}
         </div>
 
