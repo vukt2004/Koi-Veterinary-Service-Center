@@ -20,7 +20,7 @@ export const fetchUsers = async () => {
         return response.data;
     } catch (error) {
         console.error('Error fetching users:', error);
-        return { error: 'Could not fetch users' };
+        return null;
     }
 };
 
@@ -30,7 +30,7 @@ export const fetchUserID = async (userID) => {
         return response.data;
     } catch (error) {
         console.error('Error fetching users:', error);
-        return { error: 'Could not fetch users' };
+        return null;
     }
 };
 
@@ -40,7 +40,7 @@ export const fetchFish = async (userID) => {
         return response.data;
     } catch (error) {
         console.error('Error fetching users:', error);
-        return { error: 'Could not fetch users' };
+        return null;
     }
 };
 
@@ -50,7 +50,7 @@ export const addFish = async (fishData) => {
         return response.data;
     } catch (error) {
         console.error('Error adding fish:', error);
-        return { error: 'Could not add fish' };
+        return null;
     }
 };
 
@@ -60,7 +60,7 @@ export const updateFish = async (fishId, fishData) => {
         return response.data;
     } catch (error) {
         console.error('Error updating fish:', error);
-        return { error: 'Could not update fish' };
+        return null;
     }
 };
 
@@ -76,14 +76,13 @@ export const getFeedbackByVeterinaId = async (veterinaID) => {
 
 export const deleteFish = async (fishId) => {
     try {
-        const response = await axios.delete(`${BASE_URL}/fish/${fishId}`, {}, getAuthHeaders());
+        const response = await axios.delete(`${BASE_URL}/fish/${fishId}`, getAuthHeaders());
         return response.data;
     } catch (error) {
         console.error('Error deleting fish:', error);
-        return { error: 'Could not delete fish' };
+        return null;
     }
 };
-
 
 export const fetchSlots = async () => {
     try {
@@ -91,7 +90,7 @@ export const fetchSlots = async () => {
         return response.data;
     } catch (error) {
         console.error('Error fetching slots:', error);
-        return { error: 'Could not fetch slots' };
+        return null;
     }
 };
 
@@ -101,17 +100,17 @@ export const fetchVeterinas = async () => {
         return response.data;
     } catch (error) {
         console.error('Error fetching veterinas:', error);
-        return { error: 'Could not fetch veterinas' };
+        return null;
     }
 };
 
 export const createVeterina = async (vetedata) => {
     try {
-        const response = await axios.post(`${BASE_URL}/veterinas`, vetedata, getAuthHeaders());
+        const response = await axios.post(`${BASE_URL}/veterina/add`, vetedata, getAuthHeaders());
         return response.data;
     } catch (error) {
         console.error('Error fetching veterinas:', error);
-        return { error: 'Could not fetch veterinas' };
+        return null;
     }
 };
 
@@ -121,19 +120,19 @@ export const fetchServices = async () => {
         return response.data;
     } catch (error) {
         console.error('Error fetching services:', error);
-        return { error: 'Could not fetch services' };
+        return null;
     }
 };
+
 export const fetchTravelExpense = async () => {
     try {
         const response = await axios.get(`${BASE_URL}/expenses`, getAuthHeaders());
         return response.data;
     } catch (error) {
         console.error('Error fetching services:', error);
-        return { error: 'Could not fetch services' };
+        return null;
     }
 };
-
 
 export const fetchOrders = async () => {
     try {
@@ -141,16 +140,14 @@ export const fetchOrders = async () => {
         return response.data;
     } catch (error) {
         console.error('Error fetching orders:', error);
-        return { error: 'Could not fetch orders' };
+        return null;
     }
 };
 
 export const initiatePayment = async (orderId, status) => {
     try {
         const response = await axios.post(`${BASE_URL}/payment/${orderId}/${status}`, {}, getAuthHeaders());
-        console.log(response);
         const paymentUrl = response.data.body;
-
         return paymentUrl;
     } catch (error) {
         console.error(error);
@@ -164,7 +161,7 @@ export const fetchOrdersByVeterina = async (veterinaID) => {
         return response.data;
     } catch (error) {
         console.error('Error fetching orders:', error);
-        return { error: 'Could not fetch orders' };
+        return null;
     }
 };
 
@@ -201,14 +198,13 @@ export const createFeedBack = async ({ comment, rating, orderId }) => {
     }
 };
 
-
 export const fetchOrdersInSelectedSlot = async (date, slot) => {
     try {
         const response = await axios.get(`${BASE_URL}/orders/OrderAndSlot/${date}/${slot}`, getAuthHeaders());
         return response.data;
     } catch (error) {
         console.error('Error fetching orders:', error);
-        return { error: 'Could not fetch orders' };
+        return null;
     }
 };
 
@@ -218,10 +214,9 @@ export const fetchOrderById = async (orderId) => {
         return response.data;
     } catch (error) {
         console.error('Error fetching orders:', error);
-        return { error: 'Could not fetch orders' };
+        return null;
     }
 };
-
 
 export const fetchInvoices = async () => {
     try {
@@ -229,7 +224,7 @@ export const fetchInvoices = async () => {
         return response.data;
     } catch (error) {
         console.error('Error fetching invoices:', error);
-        return { error: 'Could not fetch invoices' };
+        return null
     }
 };
 
@@ -249,7 +244,7 @@ export const updateOrderStatus = async (orderId, status) => {
         return response.data;
     } catch (error) {
         console.error('Error updating order status:', error);
-        return { error: 'Could not update order status' };
+        return null;
     }
 };
 
@@ -259,7 +254,7 @@ export const addOrderDescription = async (orderId, description) => {
         return response.data;
     } catch (error) {
         console.error('Error adding order description:', error);
-        return { error: 'Could not add order description' };
+        return null;
     }
 };
 
@@ -269,10 +264,9 @@ export const addOrderVeterina = async (orderId, veterinaID) => {
         return response.data;
     } catch (error) {
         console.error('Error adding order veterina:', error);
-        return { error: 'Could not add order veterina' };
+        return null;
     }
 };
-
 
 export const addServiceToOrder = async (orderId, serviceID, quantity) => {
     try {
@@ -280,7 +274,7 @@ export const addServiceToOrder = async (orderId, serviceID, quantity) => {
         return response.data;
     } catch (error) {
         console.error('Error adding service to order:', error);
-        return { error: 'Could not add service to order' };
+        return null;
     }
 };
 
@@ -290,7 +284,7 @@ export const removeServiceFromOrder = async (orderId, serviceID) => {
         return response.data;
     } catch (error) {
         console.error('Error removing service from order:', error);
-        return { error: 'Could not remove service from order' };
+        return null;
     }
 };
 
@@ -300,7 +294,7 @@ export const updateTravelExpense = async (expenseId, fee, endLocation) => {
         return response.data;
     } catch (error) {
         console.error('Error updating travel expense:', error);
-        return { error: 'Could not update travel expense' };
+        return null;
     }
 };
 
@@ -310,7 +304,7 @@ export const createOrder = async (orderData) => {
         return response.data;
     } catch (error) {
         console.error('Error creating order:', error);
-        return { success: false, message: error.message };
+        return null;
     }
 };
 
@@ -320,7 +314,7 @@ export const DeleteServiceInOrder = async (orderID, serviceID) => {
         return response.data;
     } catch (error) {
         console.error('Error delete service in', { orderID }, ':', error);
-        return { error: 'Could not delete service' };
+        return null;
     }
 };
 
@@ -330,7 +324,7 @@ export const addService = async (serviceData) => {
         return response.data;
     } catch (error) {
         console.error('Error creating order:', error);
-        return { success: false, message: error.message };
+        return null;
     }
 };
 
@@ -340,10 +334,9 @@ export const updateService = async (serviceData) => {
         return response.data;
     } catch (error) {
         console.error('Error creating order:', error);
-        return { success: false, message: error.message };
+        return null;
     }
 };
-
 
 export const deleteService = async (serviceID) => {
     try {
@@ -351,7 +344,7 @@ export const deleteService = async (serviceID) => {
         return response.data;
     } catch (error) {
         console.error('Error delete service:', error);
-        return { error: 'Could not delete service' };
+        return null;
     }
 };
 

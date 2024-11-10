@@ -25,10 +25,10 @@ const MenuList = () => {
     return (
         <Menu theme="dark">
             <Menu.Item key="home" icon={<HomeOutlined />}>
-                <Link to="/veterinaPage">Trang Chủ</Link>
+                <Link to="/veterinaPage">Lịch làm việc</Link>
             </Menu.Item>
             <Menu.Item key="manageKoiService" icon={<DatabaseOutlined />}>
-                <Link to="/veterinaPage/orders">Quản Lý Dịch Vụ</Link>
+                <Link to="/veterinaPage/orders">Quản Lý Lịch hẹn</Link>
             </Menu.Item>
             <Menu.Item key="manageOrder" icon={<DatabaseOutlined />}>
                 <Link to={`/veterinaPage/profile/${veterinaID}`}>Hồ sơ</Link>

@@ -1,41 +1,32 @@
 ﻿import { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { fetchOrderById, fetchVeterinas, fetchServices } from '../config/api.jsx'; // Fetch functions for data
-import './css/InvoicePage.css';
-import InvoiceRedirect from './InvoiceRedirect.jsx';
+import { fetchOrderById, fetchVeterinas, fetchServices } from '../src/config/api.jsx';
+import '../src/component/css/InvoicePage.css';
 
 const InvoicePage = () => {
     const location = useLocation();
     const [orderDetails, setOrderDetails] = useState(null);
     const [veterinas, setVeterinas] = useState([]);
     const [services, setServices] = useState([]);
-    const [role, setRole] = useState(null); // Store role state
-    const roleChecked = useRef(false); // To ensure role is checked only once
+    const [role, setRole] = useState(null);
+    const roleChecked = useRef(false);
 
-    // Extract query parameters from the URL
     const queryParams = new URLSearchParams(location.search);
     const invoiceId = queryParams.get('invoiceId');
     const total = queryParams.get('total');
     const invDate = queryParams.get('invDate');
     const orderId = queryParams.get('orderId');
 
-    // Fetch veterina and service data, along with order details
     useEffect(() => {
         if (!roleChecked.current) {
             const fetchedRole = sessionStorage.getItem('role');
-            setRole(fetchedRole); // Set the role state once
-            roleChecked.current = true; // Mark the role check as completed
+            setRole(fetchedRole);
+            roleChecked.current = true;
         }
-    }, []); // Empty dependency array ensures this effect runs only once
+    }, []);
 
     useEffect(() => {
-        if (role) {
-            if (role === 'V') {
-                return <InvoiceRedirect />;
-            }
-        }
 
-        // Fetch data only if the role is available (after it has been checked)
         const fetchData = async () => {
             const order = await fetchOrderById(orderId);
             const veterinasData = await fetchVeterinas();
@@ -47,19 +38,17 @@ const InvoicePage = () => {
         };
 
         fetchData();
-    }, [orderId, role]); // Only fetch data when orderId or role changes
+    }, [orderId, role]);
 
     if (!orderDetails) {
         return <p>Loading...</p>;
     }
 
-    // Function to get the veterina name by ID
     const getVeterinaName = (veterinaId) => {
         const veterina = veterinas.find((vet) => vet.veterinaID === veterinaId);
         return veterina ? veterina.name : 'Unknown Veterina';
     };
 
-    // Function to get the service name by ID
     const getServiceName = (serviceId) => {
         const service = services.find((srv) => srv.serviceID === serviceId);
         return service ? service.name : 'Unknown Service';

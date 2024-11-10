@@ -23,6 +23,7 @@ import VetSidebar from "../veterina/sidebar.jsx";
 import VeterinaProfile from "../veterina/VeterinaProfile.jsx"
 import VeterinaOrders from "../veterina/VeterinaOrders.jsx";
 import VeterinaSchedule from "../veterina/VeterinaSchedule.jsx";
+import VeterineInvoicePage from '../veterina/VeterinaInvoicePage.jsx'
 
 import PrivateRoute from "../src/utils/PrivateRoute.jsx";
 
@@ -66,9 +67,10 @@ function App() {
             <Route element={<VetSidebar />}>
                 <Route path="/veterinaPage"
                     element={<PrivateRoute Component={VeterinaSchedule} role="V" />} />
-                <Route path="/veterinaPage/invoice" element={<InvoicePage />} />
+                <Route path="/veterinaPage/invoice" element={<VeterineInvoicePage />} />
                 <Route path="/veterinaPage/orders" element={<VeterinaOrders />} />
                 <Route path="/veterinaPage/profile/:veterinaID" element={<VeterinaProfile />} />
+                <Route path="/veterinaPage/payment-fail" element={<PaymentFail />} />
             </Route>
 
         </Routes>
