@@ -60,7 +60,7 @@ const Profile = () => {
                 </>
             )}
 
-            {veterina && (
+            {veterina && loggedRole === 'C'(
                 <>
                     <p><b>Tên bác sĩ: </b>{veterina.name}</p>
                     <p><b>Giới thiệu: </b>{veterina.description}</p>
